@@ -1,0 +1,32 @@
+# T02 evidence — vitest integration suite on PostgreSQL 16.13
+# generated: 2026-09-24T08:08:53Z
+# command: DATABASE_URL=postgres://redai@127.0.0.1:55432/postgres pnpm exec vitest run tests/integration/db
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ tests/integration/db/active-run.test.ts (3 tests) 1094ms
+   ✓ active-run uniqueness (INV-002) > enforces max_active_runs_chat = 1 via the partial unique index 377ms
+   ✓ active-run uniqueness (INV-002) > allows a new active run once the previous run reaches a terminal state 327ms
+   ✓ active-run uniqueness (INV-002) > does NOT cap active runs per workspace in the DB (application-level invariant) 389ms
+ ✓ tests/integration/db/event-counter.test.ts (2 tests) 1088ms
+   ✓ event counter: commit-ordered, gap-free per workspace (INV-009) > serializes two concurrent transactions so counter order == commit order 698ms
+   ✓ event counter: commit-ordered, gap-free per workspace (INV-009) > produces a gap-free, unique sequence under many concurrent commits 389ms
+ ✓ tests/integration/db/immutability.test.ts (4 tests) 1463ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects UPDATE of a scope_version (immutable authority) 379ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects UPDATE of a finding_version (verification history is immutable) 326ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects payload overwrite of a finalized artifact but allows non-payload updates 389ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > allows payload changes while an artifact is still pending (not yet finalized) 368ms
+ ✓ tests/integration/db/migrations.test.ts (3 tests) 648ms
+   ✓ migrations: fresh apply + ordered upgrade smoke > applies 0001 then 0002 in order on an empty DB, tracking each 316ms
+   ✓ migrations: fresh apply + ordered upgrade smoke > rejects a recorded migration whose on-disk checksum changed (drift guard) 322ms
+ ✓ tests/integration/db/composite-fk.test.ts (2 tests) 649ms
+   ✓ composite FK: cross-project references are rejected > a run cannot reference a chat that lives in a different project 326ms
+   ✓ composite FK: cross-project references are rejected > a message cannot attach to a run from a different project 322ms
+
+ Test Files  5 passed (5)
+      Tests  14 passed (14)
+   Start at  08:08:54
+   Duration  2.54s (transform 273ms, setup 0ms, collect 675ms, tests 4.94s, environment 1ms, prepare 343ms)
+
