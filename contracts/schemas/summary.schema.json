@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/summary.schema.json",
+  "title": "redAI summary",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8000
+    },
+    "completed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "pending": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "active_task_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/UUID"
+      },
+      "minItems": 0,
+      "maxItems": 32
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/UUID"
+      },
+      "minItems": 0,
+      "maxItems": 200
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "owner_corrections": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "source_message_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/UUID"
+      },
+      "minItems": 1,
+      "maxItems": 500
+    }
+  },
+  "required": [
+    "schema_version",
+    "objective",
+    "completed",
+    "pending",
+    "active_task_ids",
+    "evidence_ids",
+    "uncertainties",
+    "owner_corrections",
+    "source_message_ids"
+  ],
+  "additionalProperties": false
+}

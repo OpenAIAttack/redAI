@@ -1,0 +1,26 @@
+node_modules
+dist
+**/*.tsbuildinfo
+pnpm-lock.yaml
+coverage
+
+# Go worker (gofmt owns formatting there)
+worker
+
+# Frozen spec provenance package
+specs
+assets
+release-evidence
+
+# Spec-derived canonical inputs (kept in their delivered formatting)
+docs
+implementation
+adr
+catalogs
+prompts
+contracts
+db
+AGENTS.md
+SPEC_LOCK.json
+LICENSE
+*.md

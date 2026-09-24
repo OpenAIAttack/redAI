@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "printf",
+    "fixture-ok\\n"
+  ],
+  "cwd": "/workspace",
+  "timeout_seconds": 10,
+  "network_profile": "offline"
+}

@@ -1,0 +1,18 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/domain" },
+    { "path": "packages/contracts" },
+    { "path": "packages/policy" },
+    { "path": "packages/db" },
+    { "path": "packages/storage" },
+    { "path": "packages/observability" },
+    { "path": "packages/llm" },
+    { "path": "packages/application" },
+    { "path": "packages/ui" },
+    { "path": "apps/api" },
+    { "path": "apps/runtime" },
+    { "path": "apps/web" },
+    { "path": "tests" }
+  ]
+}

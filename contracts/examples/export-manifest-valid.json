@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "bundle_id": "10000000-0000-4000-8000-000000000043",
+  "project_source_id": "10000000-0000-4000-8000-000000000002",
+  "created_at": "2026-09-24T03:00:00Z",
+  "contains_secrets": false,
+  "activate_authorization": false,
+  "files": [
+    {
+      "path": "metadata/project.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "byte_size": "3",
+      "artifact_source_id": null
+    }
+  ],
+  "metadata_paths": [
+    "metadata/project.json"
+  ]
+}

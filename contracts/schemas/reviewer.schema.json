@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/reviewer.schema.json",
+  "title": "redAI reviewer",
+  "type": "object",
+  "properties": {
+    "proposed_verdict": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "rejected",
+        "inconclusive"
+      ]
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 12000
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/UUID"
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "missing_information": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      },
+      "minItems": 0,
+      "maxItems": 50
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    }
+  },
+  "required": [
+    "proposed_verdict",
+    "rationale",
+    "evidence_ids",
+    "missing_information",
+    "confidence"
+  ],
+  "additionalProperties": false
+}

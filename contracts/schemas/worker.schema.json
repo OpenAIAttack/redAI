@@ -1,0 +1,1130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/worker.schema.json",
+  "title": "redAI worker",
+  "$defs": {
+    "EnrollmentRequest": {
+      "type": "object",
+      "properties": {
+        "enrollment_token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "worker_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "os": {
+          "const": "linux"
+        },
+        "arch": {
+          "type": "string",
+          "enum": [
+            "amd64",
+            "arm64"
+          ]
+        },
+        "agent_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "manifest_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        }
+      },
+      "required": [
+        "enrollment_token",
+        "worker_id",
+        "display_name",
+        "os",
+        "arch",
+        "agent_version",
+        "manifest_sha256",
+        "capacity"
+      ],
+      "additionalProperties": false
+    },
+    "EnrollmentResponse": {
+      "type": "object",
+      "properties": {
+        "worker_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "worker_credential": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "credential_expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "installation_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "trusted_signing_keys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "algorithm": {
+                "const": "EdDSA"
+              },
+              "public_key_base64url": {
+                "type": "string",
+                "minLength": 32,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "key_id",
+              "algorithm",
+              "public_key_base64url"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "worker_id",
+        "worker_credential",
+        "credential_expires_at",
+        "installation_id",
+        "trusted_signing_keys"
+      ],
+      "additionalProperties": false
+    },
+    "OpenSessionRequest": {
+      "type": "object",
+      "properties": {
+        "worker_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "boot_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "agent_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "manifest_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        }
+      },
+      "required": [
+        "worker_id",
+        "boot_id",
+        "agent_version",
+        "manifest_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "OpenSessionResponse": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "generation": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "server_time": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "heartbeat_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "required": [
+        "session_id",
+        "generation",
+        "server_time",
+        "heartbeat_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "HeartbeatRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "free_slots": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "disk_free_bytes": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "clock_offset_ms": {
+          "type": "integer"
+        },
+        "runtime_ready": {
+          "type": "boolean"
+        },
+        "guard_ready": {
+          "type": "boolean"
+        },
+        "active_attempt_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "session_id",
+        "free_slots",
+        "disk_free_bytes",
+        "clock_offset_ms",
+        "runtime_ready",
+        "guard_ready",
+        "active_attempt_ids"
+      ],
+      "additionalProperties": false
+    },
+    "Directive": {
+      "type": "object",
+      "properties": {
+        "attempt_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "continue",
+            "cancel",
+            "reconcile"
+          ]
+        },
+        "reason_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "attempt_id",
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    "HeartbeatResponse": {
+      "type": "object",
+      "properties": {
+        "server_time": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "draining": {
+          "type": "boolean"
+        },
+        "directives": {
+          "type": "array",
+          "items": {
+            "$ref": "worker.schema.json#/$defs/Directive"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "server_time",
+        "draining",
+        "directives"
+      ],
+      "additionalProperties": false
+    },
+    "ClaimRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "wait_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "manifest_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        }
+      },
+      "required": [
+        "session_id",
+        "wait_seconds",
+        "manifest_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "LeaseClaims": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "installation_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "run_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "tool_call_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "attempt_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "attempt_no": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "worker_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "worker_session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "tool_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "input_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "scope_version_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "grant_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policy_epoch": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "image_digest": {
+          "type": "string",
+          "minLength": 71,
+          "maxLength": 71,
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "network_profile": {
+          "$ref": "common.schema.json#/$defs/NetworkProfile"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "issued_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "scope_policy_sha256": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/SHA256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tool_manifest_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "resource_limits": {
+          "type": "object",
+          "properties": {
+            "cpu_millis": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 4000
+            },
+            "memory_bytes": {
+              "type": "integer",
+              "minimum": 134217728,
+              "maximum": 8589934592
+            },
+            "pids": {
+              "type": "integer",
+              "minimum": 16,
+              "maximum": 512
+            },
+            "output_bytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 26214400
+            }
+          },
+          "required": [
+            "cpu_millis",
+            "memory_bytes",
+            "pids",
+            "output_bytes"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "installation_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "tool_call_id",
+        "attempt_id",
+        "attempt_no",
+        "fencing_token",
+        "worker_id",
+        "worker_session_id",
+        "tool_name",
+        "input_sha256",
+        "scope_version_id",
+        "grant_id",
+        "policy_epoch",
+        "image_digest",
+        "network_profile",
+        "timeout_seconds",
+        "issued_at",
+        "expires_at",
+        "scope_policy_sha256",
+        "tool_manifest_sha256",
+        "resource_limits"
+      ],
+      "additionalProperties": false
+    },
+    "TaskEnvelope": {
+      "type": "object",
+      "properties": {
+        "claims": {
+          "$ref": "worker.schema.json#/$defs/LeaseClaims"
+        },
+        "lease_jws": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 32768
+        },
+        "input": {
+          "type": "object",
+          "maxProperties": 40
+        },
+        "policy_snapshot": {
+          "anyOf": [
+            {
+              "$ref": "scope.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "claims",
+        "lease_jws",
+        "input",
+        "policy_snapshot",
+        "input_artifact_ids"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "claims": {
+                "properties": {
+                  "network_profile": {
+                    "const": "scoped_web"
+                  }
+                },
+                "required": [
+                  "network_profile"
+                ]
+              }
+            },
+            "required": [
+              "claims"
+            ]
+          },
+          "then": {
+            "properties": {
+              "claims": {
+                "properties": {
+                  "scope_version_id": {
+                    "$ref": "common.schema.json#/$defs/UUID"
+                  },
+                  "grant_id": {
+                    "$ref": "common.schema.json#/$defs/UUID"
+                  },
+                  "scope_policy_sha256": {
+                    "$ref": "common.schema.json#/$defs/SHA256"
+                  }
+                }
+              },
+              "policy_snapshot": {
+                "$ref": "scope.schema.json"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "AttemptIdentity": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        }
+      },
+      "required": [
+        "session_id",
+        "fencing_token"
+      ],
+      "additionalProperties": false
+    },
+    "AckRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "started"
+          ]
+        },
+        "journal_seq": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "container_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "session_id",
+        "fencing_token",
+        "phase",
+        "journal_seq",
+        "container_ref"
+      ],
+      "additionalProperties": false
+    },
+    "RenewRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "journal_seq": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "observed_state": {
+          "$ref": "common.schema.json#/$defs/AttemptState"
+        }
+      },
+      "required": [
+        "session_id",
+        "fencing_token",
+        "journal_seq",
+        "observed_state"
+      ],
+      "additionalProperties": false
+    },
+    "RenewResponse": {
+      "type": "object",
+      "properties": {
+        "directive": {
+          "type": "string",
+          "enum": [
+            "continue",
+            "cancel",
+            "reconcile"
+          ]
+        },
+        "server_time": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "lease_jws": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 32768
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "directive",
+        "server_time",
+        "lease_jws",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "OutputChunk": {
+      "type": "object",
+      "properties": {
+        "seq": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "stream": {
+          "type": "string",
+          "enum": [
+            "stdout",
+            "stderr",
+            "status"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 16384
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "seq",
+        "stream",
+        "text",
+        "truncated"
+      ],
+      "additionalProperties": false
+    },
+    "EventsRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "$ref": "worker.schema.json#/$defs/OutputChunk"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "session_id",
+        "fencing_token",
+        "chunks"
+      ],
+      "additionalProperties": false
+    },
+    "WorkerResult": {
+      "type": "object",
+      "properties": {
+        "attempt_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "worker_session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "succeeded",
+            "failed",
+            "canceled",
+            "unknown"
+          ]
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finished_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 64
+        },
+        "structured_result": {
+          "type": "object",
+          "maxProperties": 64
+        },
+        "output_truncated": {
+          "type": "boolean"
+        },
+        "observed_quiescent": {
+          "type": "boolean"
+        },
+        "effect_observation": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "completed",
+            "unknown"
+          ]
+        },
+        "result_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        }
+      },
+      "required": [
+        "attempt_id",
+        "fencing_token",
+        "worker_session_id",
+        "status",
+        "started_at",
+        "finished_at",
+        "exit_code",
+        "summary",
+        "artifact_ids",
+        "structured_result",
+        "output_truncated",
+        "observed_quiescent",
+        "effect_observation",
+        "result_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "ResultAck": {
+      "type": "object",
+      "properties": {
+        "accepted": {
+          "type": "boolean"
+        },
+        "duplicate": {
+          "type": "boolean"
+        },
+        "authoritative": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "accepted",
+        "duplicate",
+        "authoritative"
+      ],
+      "additionalProperties": false
+    },
+    "ReconcileRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "journal_state": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "container_state": {
+          "type": "string",
+          "enum": [
+            "absent",
+            "created",
+            "running",
+            "exited",
+            "unknown"
+          ]
+        },
+        "observed_quiescent": {
+          "type": "boolean"
+        },
+        "effect_observation": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "completed",
+            "unknown"
+          ]
+        },
+        "result_sha256": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/SHA256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "session_id",
+        "fencing_token",
+        "journal_state",
+        "container_state",
+        "observed_quiescent",
+        "effect_observation",
+        "result_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "ReconcileResponse": {
+      "type": "object",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "resume_same_attempt",
+            "accept_result",
+            "quarantine",
+            "cancel",
+            "needs_owner"
+          ]
+        },
+        "lease_jws": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 32768
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "decision",
+        "lease_jws",
+        "reason_code"
+      ],
+      "additionalProperties": false
+    },
+    "WorkerArtifactCreate": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "attempt_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 26214400
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "log",
+            "http_exchange",
+            "screenshot",
+            "dom",
+            "file",
+            "structured_result"
+          ]
+        },
+        "classification": {
+          "$ref": "common.schema.json#/$defs/Classification"
+        }
+      },
+      "required": [
+        "session_id",
+        "attempt_id",
+        "fencing_token",
+        "filename",
+        "media_type",
+        "byte_size",
+        "sha256",
+        "kind",
+        "classification"
+      ],
+      "additionalProperties": false
+    },
+    "CredentialCapabilityRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "attempt_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "credential_ref": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "origin_rule_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id",
+        "attempt_id",
+        "fencing_token",
+        "credential_ref",
+        "origin_rule_id"
+      ],
+      "additionalProperties": false
+    },
+    "CredentialCapabilityResponse": {
+      "type": "object",
+      "properties": {
+        "capability_token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 2048
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "allowed_origin": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "capability_token",
+        "expires_at",
+        "allowed_origin"
+      ],
+      "additionalProperties": false
+    },
+    "RotateCredentialRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        }
+      },
+      "required": [
+        "session_id"
+      ],
+      "additionalProperties": false
+    },
+    "RotateCredentialResponse": {
+      "type": "object",
+      "properties": {
+        "worker_credential": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "old_credential_valid_until": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "worker_credential",
+        "expires_at",
+        "old_credential_valid_until"
+      ],
+      "additionalProperties": false
+    },
+    "ResolveCapabilityRequest": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "attempt_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fencing_token": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "capability_token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "session_id",
+        "attempt_id",
+        "fencing_token",
+        "capability_token"
+      ],
+      "additionalProperties": false
+    },
+    "ResolvedCredential": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "http_headers",
+            "browser_form"
+          ]
+        },
+        "allowed_origin": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "fields": {
+          "type": "object",
+          "maxProperties": 16,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 8192
+          }
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "kind",
+        "allowed_origin",
+        "fields",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

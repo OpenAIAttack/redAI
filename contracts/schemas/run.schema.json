@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/run.schema.json",
+  "title": "redAI run",
+  "$defs": {
+    "Limits": {
+      "type": "object",
+      "properties": {
+        "max_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "active_timeout_seconds": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 7200
+        },
+        "absolute_timeout_seconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        },
+        "budget_micro_usd": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "max_children": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "max_tool_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "max_parallel_tools": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        }
+      },
+      "required": [
+        "max_steps",
+        "active_timeout_seconds",
+        "absolute_timeout_seconds",
+        "budget_micro_usd",
+        "max_children",
+        "max_tool_timeout_seconds",
+        "max_parallel_tools"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "common.schema.json#/$defs/UUID"
+    },
+    "workspace_id": {
+      "$ref": "common.schema.json#/$defs/UUID"
+    },
+    "project_id": {
+      "$ref": "common.schema.json#/$defs/UUID"
+    },
+    "chat_id": {
+      "$ref": "common.schema.json#/$defs/UUID"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "ask",
+        "agent"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "retest"
+      ]
+    },
+    "state": {
+      "$ref": "common.schema.json#/$defs/RunState"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "none",
+        "complete",
+        "partial",
+        "blocked"
+      ]
+    },
+    "approval_mode": {
+      "$ref": "common.schema.json#/$defs/ApprovalMode"
+    },
+    "scope_version_id": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "grant_id": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "provider_config_id": {
+      "$ref": "common.schema.json#/$defs/UUID"
+    },
+    "worker_id": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "data_mode": {
+      "$ref": "common.schema.json#/$defs/DataMode"
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "max_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "active_timeout_seconds": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 7200
+        },
+        "absolute_timeout_seconds": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400
+        },
+        "budget_micro_usd": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "max_children": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "max_tool_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "max_parallel_tools": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        }
+      },
+      "required": [
+        "max_steps",
+        "active_timeout_seconds",
+        "absolute_timeout_seconds",
+        "budget_micro_usd",
+        "max_children",
+        "max_tool_timeout_seconds",
+        "max_parallel_tools"
+      ],
+      "additionalProperties": false
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "updated_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "expires_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "resumes_run_id": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stop_reason": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 65536
+    },
+    "plan_revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "completed",
+              "failed",
+              "skipped"
+            ]
+          },
+          "tool_call_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "minItems": 0,
+            "maxItems": 64
+          }
+        },
+        "required": [
+          "step_id",
+          "description",
+          "state",
+          "tool_call_ids"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 200
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "observed_micro_usd": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "reserved_micro_usd": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "unknown_reservation_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "observed_micro_usd",
+        "reserved_micro_usd",
+        "unknown_reservation_count"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "workspace_id",
+    "project_id",
+    "chat_id",
+    "mode",
+    "kind",
+    "state",
+    "outcome",
+    "approval_mode",
+    "scope_version_id",
+    "grant_id",
+    "provider_config_id",
+    "worker_id",
+    "data_mode",
+    "limits",
+    "revision",
+    "created_at",
+    "updated_at",
+    "expires_at",
+    "resumes_run_id",
+    "stop_reason",
+    "objective",
+    "plan_revision",
+    "plan",
+    "usage"
+  ],
+  "additionalProperties": false
+}

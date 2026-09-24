@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "objective": "Phân tích file offline.",
+  "completed": [
+    "Đã đọc file fixture."
+  ],
+  "pending": [
+    "Kiểm tra tính đầy đủ của mô tả endpoint."
+  ],
+  "active_task_ids": [],
+  "evidence_ids": [
+    "10000000-0000-4000-8000-000000000041"
+  ],
+  "uncertainties": [
+    "Chưa kiểm thử môi trường thực."
+  ],
+  "owner_corrections": [
+    "Chỉ dùng tài liệu đã cung cấp."
+  ],
+  "source_message_ids": [
+    "10000000-0000-4000-8000-000000000042"
+  ],
+  "grant_id": "10000000-0000-4000-8000-000000000099"
+}

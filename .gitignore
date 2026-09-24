@@ -141,3 +141,13 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# redAI local dev
+.env
+.env.local
+/.pgdata/
+/.tmp-pg/
+worker/redai-worker
+worker/bin/
+release-evidence/**/local-*
+*.tsbuildinfo

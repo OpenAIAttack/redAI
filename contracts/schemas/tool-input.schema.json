@@ -1,0 +1,413 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/tool-input.schema.json",
+  "title": "redAI tool-input",
+  "$defs": {
+    "FileList": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "FileRead": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        }
+      },
+      "required": [
+        "path",
+        "max_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "FileWrite": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "content": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1048576
+        },
+        "expected_sha256": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/SHA256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "content"
+      ],
+      "additionalProperties": false
+    },
+    "TerminalExecute": {
+      "type": "object",
+      "properties": {
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "stdin_artifact_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "network_profile": {
+          "const": "offline"
+        }
+      },
+      "required": [
+        "argv",
+        "cwd",
+        "timeout_seconds",
+        "network_profile"
+      ],
+      "additionalProperties": false
+    },
+    "OpenAPIParse": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "resolve_external_refs": {
+          "const": false
+        }
+      },
+      "required": [
+        "artifact_id",
+        "resolve_external_refs"
+      ],
+      "additionalProperties": false
+    },
+    "HttpRequest": {
+      "type": "object",
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "enum": [
+            "http",
+            "https"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^/"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "HEAD",
+            "OPTIONS",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE"
+          ]
+        },
+        "headers": {
+          "type": "object",
+          "maxProperties": 40,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 4096
+          }
+        },
+        "body_artifact_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "credential_ref": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "follow_redirects": {
+          "type": "boolean"
+        },
+        "max_redirects": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "max_response_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 26214400
+        }
+      },
+      "required": [
+        "scheme",
+        "host",
+        "port",
+        "path",
+        "method",
+        "follow_redirects",
+        "max_redirects",
+        "max_response_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "BrowserNavigate": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scheme": {
+          "type": "string",
+          "enum": [
+            "http",
+            "https"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^/"
+        },
+        "wait_until": {
+          "type": "string",
+          "enum": [
+            "domcontentloaded",
+            "load"
+          ]
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        }
+      },
+      "required": [
+        "scheme",
+        "host",
+        "port",
+        "path",
+        "wait_until",
+        "timeout_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "BrowserSnapshot": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "include_dom": {
+          "type": "boolean"
+        },
+        "screenshot": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "session_id",
+        "include_dom",
+        "screenshot"
+      ],
+      "additionalProperties": false
+    },
+    "BrowserAction": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "click",
+            "fill",
+            "select",
+            "submit",
+            "scroll",
+            "wait"
+          ]
+        },
+        "selector": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "value": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 8192
+        },
+        "credential_ref": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        }
+      },
+      "required": [
+        "session_id",
+        "action",
+        "timeout_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "Delegate": {
+      "type": "object",
+      "properties": {
+        "objective": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "context_artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        },
+        "allowed_tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "max_steps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "acceptance_description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "objective",
+        "context_artifact_ids",
+        "allowed_tools",
+        "max_steps",
+        "acceptance_description"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
