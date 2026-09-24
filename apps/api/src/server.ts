@@ -16,6 +16,7 @@ import { buildAuthConfig, createDbAuthService, registerAuth } from './auth/index
 import { createOwnerGuard } from './auth/ownerGuard.js';
 import type { AuthHttpConfig } from './auth/plugin.js';
 import { createDbProjectsService, registerProjects } from './projects/index.js';
+import { createDbArtifactsService, registerArtifacts } from './artifacts/index.js';
 import { registerSettings } from './settings/index.js';
 import { registerWorkerIdentity } from './worker/index.js';
 import { generateInstallationSigningKey } from './installation/signingKey.js';
@@ -87,6 +88,17 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
       authenticate: (req) => ownerGuard.authenticate(req),
       authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
     });
+
+    // Artifacts (owner-authenticated staged upload → finalize, download, safe preview).
+    // Only mounted once the local ObjectStore root is configured; its absence is an
+    // honest "unconfigured" state, not a crash (D03).
+    if (env.objectStoreRoot) {
+      registerArtifacts(app, {
+        service: createDbArtifactsService(pool, env.objectStoreRoot),
+        authenticate: (req) => ownerGuard.authenticate(req),
+        authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
+      });
+    }
 
     // Worker enrollment & identity (owner plane + /worker/v1 bearer plane).
     const installationKey = generateInstallationSigningKey();

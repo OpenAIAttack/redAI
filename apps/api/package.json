@@ -21,6 +21,7 @@
     "@redai/db": "workspace:*",
     "@redai/domain": "workspace:*",
     "@redai/observability": "workspace:*",
+    "@redai/storage": "workspace:*",
     "ajv": "^8.17.1",
     "fastify": "^5.2.0"
   },

@@ -50,6 +50,9 @@ importers:
       '@redai/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      '@redai/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       ajv:
         specifier: ^8.17.1
         version: 8.20.0

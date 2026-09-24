@@ -1,0 +1,24 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/storage/src/objectStore.test.ts (14 tests) 93ms
+ ✓ packages/application/src/artifacts/service.test.ts (11 tests) 69ms
+ ✓ apps/api/src/artifacts/plugin.test.ts (10 tests) 196ms
+ ✓ packages/storage/src/preview.test.ts (11 tests) 8ms
+ ✓ tests/integration/db/artifacts.test.ts (9 tests) 3382ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > reaches ready only with verified bytes, and stores the observed digest 473ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > leaves the row pending on a hash mismatch (no partial ready) 378ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > is idempotent on duplicate finalize and the finalized payload is immutable 365ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > quarantines a media-type/bytes mismatch instead of publishing ready 365ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > crash between rename and DB commit: no public orphan, retry recovers 357ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > reconcile sweeps a rowless orphan object (finalized file, purged row) 371ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > surfaces a disk-full/IO publish failure as StorageIo and stays pending 347ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > cross-project isolation: an artifact is invisible under a foreign project id 367ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > lists artifacts newest-first within a project only 357ms
+
+ Test Files  5 passed (5)
+      Tests  55 passed (55)
+   Start at  10:02:58
+   Duration  4.45s (transform 660ms, setup 0ms, collect 1.14s, tests 3.75s, environment 1ms, prepare 335ms)
+

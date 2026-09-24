@@ -10,6 +10,7 @@
     { "path": "../../packages/observability" },
     { "path": "../../packages/application" },
     { "path": "../../packages/contracts" },
-    { "path": "../../packages/db" }
+    { "path": "../../packages/db" },
+    { "path": "../../packages/storage" }
   ]
 }

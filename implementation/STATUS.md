@@ -1,13 +1,13 @@
 # Trạng thái triển khai ứng dụng
 
-Cập nhật: **2026-09-24**. **M0 hoàn tất; M1 wave D04 (T05,T06,T15) tích hợp xong** trên cây nguồn đã
+Cập nhật: **2026-09-24**. **M0 + M1 (T00–T07) HOÀN TẤT** (T15 xong sớm) trên cây nguồn đã
 tích hợp. Baseline: nhánh `claude/fervent-archimedes-fnkoam`. DONE chỉ đặt sau
 review + integration checks trên cây nguồn đã tích hợp; "PASS" do coder tự báo
 chưa đủ để đóng task.
 
 Integrated M0 evidence: `pnpm run check` xanh (52 test luôn chạy) + 14 DB
 integration test xanh trên PostgreSQL 16.13 (chạy với DATABASE_URL trực tiếp).
-Tiếp theo: cổng **G0** (docs/18-release-acceptance.md) trước khi sang M1 (T04–T07).
+Tiếp theo: xác nhận cổng **G1** (M1) rồi sang **M2** (T08 provider, T09 Ask, T10 UI, T11 SSE).
 
 Lệnh kiểm tra chung: `pnpm run check` (env → typecheck → lint → format → test →
 build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATUS bên dưới.
@@ -21,7 +21,7 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T04 — Bootstrap owner và sessions | DONE (API) | (M1) | `pnpm run check` xanh (82 test); 23 DB integration test xanh trên PG16 (EXIT=0); auth inject tests (Origin/CSRF/rate-limit/worker-token isolation), bootstrap race, expiry, reset-revoke; `release-evidence/T04/` | Login UI hoãn tới T10 (D06) |
 | T05 — Secret vault và model/settings configs | DONE | (D04) | AES-256-GCM vault, credential refs, versioned settings; 53 tests (7 live-PG); wired into API | — |
 | T06 — Project, Chat metadata, notes và bindings | DONE | (D04) | CRUD/archive, Inbox, notes context, bindings; cross-project isolation; 35 tests (10 live-PG); wired | — |
-| T07 — Local ObjectStore và upload an toàn | NOT_STARTED | — | — | — |
+| T07 — Local ObjectStore và upload an toàn | DONE | (M1) | Staged upload→hash/size verify→atomic finalize, authenticated download, safe preview/quarantine, orphan reconcile; 55 tests (9 live-PG); wired | — |
 | T08 — Mock model và compatible provider adapter | NOT_STARTED | — | — | — |
 | T09 — Durable Ask và Chat persistence | NOT_STARTED | — | — | — |
 | T10 — Giao diện chat-first và Workbench shell | NOT_STARTED | — | — | apps/web placeholder (D02) tới T10 |

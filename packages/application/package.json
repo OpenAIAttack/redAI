@@ -21,6 +21,10 @@
     "./workerIdentity": {
       "types": "./dist/workerIdentity/index.d.ts",
       "default": "./dist/workerIdentity/index.js"
+    },
+    "./artifacts": {
+      "types": "./dist/artifacts/index.d.ts",
+      "default": "./dist/artifacts/index.js"
     }
   },
   "scripts": {
