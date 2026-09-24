@@ -29,6 +29,10 @@
     "./messages": {
       "types": "./dist/messages/index.d.ts",
       "default": "./dist/messages/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "default": "./dist/events/index.js"
     }
   },
   "scripts": {

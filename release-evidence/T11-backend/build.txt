@@ -1,0 +1,9 @@
+# T11-backend verification — 2026-09-24T11:15:09Z
+
+## scoped builds
+> @redai/application@0.0.0 build /home/user/redAI/packages/application
+> tsc -b
+
+> @redai/api@0.0.0 build /home/user/redAI/apps/api
+> tsc -b
+

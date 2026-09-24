@@ -1,0 +1,62 @@
+T11 backend — SSE event stream: wire contract for the web client (T10b)
+========================================================================
+
+Endpoint
+  GET /api/v1/events?after=<counter>&project_id=<uuid>&run_id=<uuid>
+  - Owner cookie-authenticated (same guard as the other /api/v1 routes). 401 when
+    no valid owner session.
+  - Response: 200 text/event-stream; charset=utf-8
+    Headers: Cache-Control: no-cache, no-transform | Connection: keep-alive |
+             X-Accel-Buffering: no
+  - First bytes: `retry: 3000` then a `: connected` comment (opens the stream / flushes
+    proxies). Heartbeat comments (`: heartbeat`) every 15s in production.
+
+Cursor (per-workspace, decimal string == events.event_id)
+  - Precedence: a VALID `Last-Event-ID` request header wins; else the `after` query
+    param; else 0 (from the beginning). A bare browser EventSource sends Last-Event-ID
+    automatically on auto-reconnect, so pass `after` only for the first navigation.
+  - A malformed `after` → 400 EVENT_CURSOR_INVALID (JSON envelope, before the stream).
+  - A cursor ahead of the workspace journal (future) → 400 EVENT_CURSOR_INVALID.
+
+Frames the client will see
+  1. Journal event:
+        id: <event_id>
+        event: <type>              e.g. run.state_changed, message.delta, message.committed
+        data: <full event.schema.json envelope, single-line JSON>
+     `id:` is set to event_id so the browser advances Last-Event-ID for replay/dedup.
+     The envelope's own `event_id` equals the SSE id. DEDUP BY event_id: an overlap on
+     reconnect (e.g. resuming from a cursor before the last id) may repeat ids; ids are
+     unique and strictly ascending, so drop any id <= the last one you have applied.
+
+  2. stream.cursor (control, when a project/run filter is set):
+        id: <cursor>
+        event: stream.cursor
+        data: {... "type":"stream.cursor", "data":{"cursor":"<cursor>"} ...}
+     Emitted when the cursor advanced past events your filter excluded (another
+     project's events are NEVER sent). Treat it as "advance my Last-Event-ID to
+     data.cursor" — no user-visible payload. It IS a validated contract envelope.
+
+  3. stream.resync (transport control — NOT a journal event, has NO id:):
+        event: stream.resync
+        data: {"reason":"cursor_expired"}    OR   {"reason":"slow_consumer"}
+     - cursor_expired: your cursor points before what retention still holds (events
+       purged; 30-day retention). The server sends this ONE frame and ENDS the stream.
+       Action: discard local stream state, fetch a fresh snapshot (which yields a
+       snapshot_cursor), then open a NEW EventStream/connection with ?after=<snapshot_cursor>.
+       Because stream.resync carries no id:, Last-Event-ID is unchanged — with a bare
+       EventSource you MUST close it and construct a new EventSource (a fresh object has
+       no lastEventId) rather than relying on auto-reconnect (which would loop).
+     - slow_consumer: you fell too far behind the 1 MiB outbound bound and the server
+       dropped the connection (best-effort frame; may not arrive before the socket
+       closes). Reconnect; consider snapshot+resync if you were far behind.
+
+Delivery guarantees (verified live PG16)
+  - Commit-ordered, no skip: event N is never delivered before N-1, even if N's
+    transaction commits first — the reader stops at the first gap and waits for the
+    lower id (the event_counters row lock serialises allocation to commit order).
+  - Reconnect with Last-Event-ID resumes with no loss and no duplicate.
+  - Wakeups use Postgres LISTEN/NOTIFY with a poll fallback, so a lost NOTIFY never
+    loses an event (max added latency ~ poll interval, default 1s).
+
+Assume nothing about ordering ACROSS a resync: after cursor_expired the snapshot is the
+source of truth for state up to snapshot_cursor; the stream only carries what follows.

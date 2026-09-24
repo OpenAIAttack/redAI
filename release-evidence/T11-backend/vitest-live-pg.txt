@@ -1,0 +1,18 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ apps/api/src/events/sse.test.ts (4 tests) 4ms
+ ✓ packages/application/src/events/service.test.ts (9 tests) 99ms
+ ✓ tests/integration/events/sse-stream.test.ts (9 tests) 3312ms
+   ✓ SSE event stream (T11) > delivers committed events in commit order via the real LISTEN/NOTIFY path 401ms
+   ✓ SSE event stream (T11) > commit inversion: a lower id committing later is never skipped 553ms
+   ✓ SSE event stream (T11) > expired/too-old cursor yields a resync signal, not a silent skip 306ms
+   ✓ SSE event stream (T11) > NOTIFY-miss: the poll fallback still delivers an event with no notify 416ms
+   ✓ SSE event stream (T11) > backpressure: a stalled consumer past the bound is dropped, not buffered forever 555ms
+
+ Test Files  3 passed (3)
+      Tests  22 passed (22)
+   Start at  11:15:17
+   Duration  4.16s (transform 625ms, setup 0ms, collect 1.04s, tests 3.41s, environment 2ms, prepare 218ms)
+

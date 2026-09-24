@@ -18,6 +18,7 @@ import type { AuthHttpConfig } from './auth/plugin.js';
 import { createDbProjectsService, registerProjects } from './projects/index.js';
 import { createDbArtifactsService, registerArtifacts } from './artifacts/index.js';
 import { createDbRunsService, registerRuns } from './runs/index.js';
+import { createDbEventStream, createEventNotifySource, registerEvents } from './events/index.js';
 import { registerSettings } from './settings/index.js';
 import { registerWorkerIdentity } from './worker/index.js';
 import { generateInstallationSigningKey } from './installation/signingKey.js';
@@ -97,6 +98,16 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
       service: createDbRunsService(pool),
       authenticate: (req) => ownerGuard.authenticate(req),
       authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
+    });
+
+    // Workspace SSE event stream (owner-authenticated, workspace-scoped, optional
+    // project/run filter). Commit-ordered delivery over the durable journal with
+    // Last-Event-ID replay/dedup, NOTIFY wakeups + poll fallback, and bounded
+    // backpressure. Its onClose releases the LISTEN connection before the pool ends.
+    registerEvents(app, {
+      stream: createDbEventStream(pool),
+      notifications: createEventNotifySource(pool),
+      authenticate: (req) => ownerGuard.authenticate(req),
     });
 
     // Artifacts (owner-authenticated staged upload → finalize, download, safe preview).
