@@ -34,12 +34,18 @@ DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres" pnpm exec vitest run 
 - Enums/defaults must match `SPEC_LOCK.json`.
 
 ## Next steps
-1. Confirm milestone gate **G0** (release doc §18): reproducible from clean
-   checkout — toolchain pin, migration apply, contract drift check, builds.
-2. Start **M1 (T04–T07)**. Wave D03: **T04 owner/session** (bootstrap one-owner
-   CLI, sessions, CSRF/Origin, rate limit) — depends on T02 + T03 (both DONE).
-   Then D04: T05 vault + T06 project/chat + T15 worker identity.
-3. Wire `pingDatabase` (from `@redai/db`) into API readiness deep-probe (D03)
-   when T04 brings a live pool into the API process.
+1. **T07 — Local ObjectStore & safe upload** completes M1 (staging → size/type/
+   hash check → atomic finalize; authenticated download; orphan handling). Depends
+   on T06 (DONE).
+2. Then M2 wave: T08 provider adapters, T09 durable Ask, T10 Chat/Workbench UI
+   (+ the login/`/setup` UI deferred from T04 per D06), T11 SSE.
+3. Wire `pingDatabase` into API readiness deep-probe (D03) and the worker daemon
+   enrollment loop into `worker/cmd/redai-worker/main.go` (deferred to T16).
+
+## D04 integration status (DONE)
+- T05/T06/T15 wired into `apps/api/src/server.ts` via a shared owner-auth guard
+  (`apps/api/src/auth/ownerGuard.ts`), `@redai/application` subpath exports (D08),
+  and a boot-time installation signing key (D07). Full `pnpm run check` green;
+  **219/219 tests pass on live PostgreSQL 16**.
 
 Do not trust prior "done" claims without re-verifying source + tests.

@@ -13,7 +13,7 @@ import {
   ProjectsService,
   type Clock,
   type RandomSource,
-} from '../../../../packages/application/src/projects/index.js';
+} from '@redai/application/projects';
 import { registerProjects, type OwnerContext } from './plugin.js';
 
 const WS = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';

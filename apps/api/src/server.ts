@@ -1,17 +1,32 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import { AuthService, systemClock, type Clock } from '@redai/application';
+import {
+  SettingsService,
+  createDbSettingsRepository,
+  createFileMasterKeyProvider,
+} from '@redai/application/settings';
+import {
+  WorkerIdentityService,
+  createDbWorkerIdentityRepository,
+} from '@redai/application/workerIdentity';
 import { createPool, type Pool } from '@redai/db';
 import { loadApiEnv, type ApiEnv } from './env.js';
 import { readinessFromEnv } from './health.js';
 import { buildAuthConfig, createDbAuthService, registerAuth } from './auth/index.js';
+import { createOwnerGuard } from './auth/ownerGuard.js';
 import type { AuthHttpConfig } from './auth/plugin.js';
+import { createDbProjectsService, registerProjects } from './projects/index.js';
+import { registerSettings } from './settings/index.js';
+import { registerWorkerIdentity } from './worker/index.js';
+import { generateInstallationSigningKey } from './installation/signingKey.js';
 
 export interface BuildServerOptions {
   env?: ApiEnv;
   /**
    * Inject an auth service (tests use an in-memory-backed one). When omitted and a
    * `DATABASE_URL` is configured, a DB-backed service is composed from a pool that
-   * the server owns and closes on shutdown.
+   * the server owns and closes on shutdown, and the full owner + worker API surface
+   * (settings, projects, worker identity) is mounted.
    */
   auth?: {
     service: AuthService;
@@ -61,13 +76,46 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
     app.addHook('onClose', async () => {
       await pool.end();
     });
-    registerAuth(app, {
-      auth: createDbAuthService(pool),
-      clock: systemClock,
-      config: defaultConfig,
+
+    const authService = createDbAuthService(pool);
+    registerAuth(app, { auth: authService, clock: systemClock, config: defaultConfig });
+    const ownerGuard = createOwnerGuard(authService, defaultConfig);
+
+    // Projects / Chats / Notes (owner-authenticated).
+    registerProjects(app, {
+      service: createDbProjectsService(pool),
+      authenticate: (req) => ownerGuard.authenticate(req),
+      authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
     });
+
+    // Worker enrollment & identity (owner plane + /worker/v1 bearer plane).
+    const installationKey = generateInstallationSigningKey();
+    registerWorkerIdentity(app, {
+      service: new WorkerIdentityService({ repo: createDbWorkerIdentityRepository(pool) }),
+      resolveOwner: (req) => ownerGuard.authenticate(req),
+      config: {
+        allowedOrigins: env.allowedOrigins,
+        trustedSigningKeys: [installationKey.trusted],
+      },
+    });
+
+    // Secret vault + settings: only mounted once a master key file is configured,
+    // because the vault cannot be unlocked without it. Absence is an honest
+    // "unconfigured" state, not a crash.
+    if ((process.env.REDAI_MASTER_KEY_FILE ?? '') !== '') {
+      registerSettings(app, {
+        service: new SettingsService({
+          repo: createDbSettingsRepository(pool),
+          masterKeys: createFileMasterKeyProvider(),
+        }),
+        ownerAuth: {
+          authenticate: (req) => ownerGuard.authenticate(req),
+          authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
+        },
+      });
+    }
   }
-  // Without a database and without an injected service, auth routes are not
+  // Without a database and without an injected service, the API surface is not
   // mounted (the install is unconfigured); health still reports that state.
 
   return app;

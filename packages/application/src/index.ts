@@ -1,6 +1,11 @@
 /**
  * @redai/application — use cases and transaction orchestration.
- * T04 adds owner authentication (bootstrap, sessions, password lifecycle).
+ *
+ * `auth` is exported flat from the package root. The T05/T06/T15 modules
+ * (settings, projects, workerIdentity) are exposed as SUBPATH entry points
+ * (`@redai/application/settings`, `/projects`, `/workerIdentity`) — see the
+ * package `exports` map — so their overlapping helper names (`systemClock`,
+ * `constantTimeEqual`, `Clock`, `RandomSource`) never collide at one barrel.
  */
 
 export const APPLICATION_PACKAGE = '@redai/application';

@@ -4,7 +4,7 @@ import {
   SettingsService,
   InMemorySettingsRepository,
   StaticMasterKeyProvider,
-} from '../../../../packages/application/src/settings/index.js';
+} from '@redai/application/settings';
 import { registerSettings, type OwnerAuthContext, type SettingsAuth } from './plugin.js';
 
 const WS = '11111111-1111-4111-8111-111111111111';

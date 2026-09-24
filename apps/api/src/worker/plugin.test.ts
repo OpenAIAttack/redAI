@@ -11,8 +11,8 @@ import Fastify, { type FastifyInstance, type FastifyRequest } from 'fastify';
 import { describe, expect, it, beforeEach } from 'vitest';
 // Application source imported by relative path (same pattern as tests/integration/db):
 // the package barrel does not yet re-export workerIdentity, and this avoids a build.
-import { WorkerIdentityService } from '../../../../packages/application/src/workerIdentity/service.js';
-import { InMemoryWorkerIdentityRepository } from '../../../../packages/application/src/workerIdentity/memoryRepository.js';
+import { WorkerIdentityService } from '@redai/application/workerIdentity';
+import { InMemoryWorkerIdentityRepository } from '@redai/application/workerIdentity';
 import { registerWorkerIdentity, type OwnerContext } from './plugin.js';
 
 const ORIGIN = 'http://localhost:3000';

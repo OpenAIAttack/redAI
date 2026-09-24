@@ -7,10 +7,7 @@
  * imported from the application projects source (the coordinator re-exports them via
  * the `@redai/application` barrel, which this task must not edit).
  */
-import {
-  ProjectsService,
-  createDbProjectsRepository,
-} from '../../../../packages/application/src/projects/index.js';
+import { ProjectsService, createDbProjectsRepository } from '@redai/application/projects';
 import type { Pool } from '@redai/db';
 
 export { registerProjects } from './plugin.js';

@@ -22,7 +22,7 @@ import type {
   NoteRecord,
   ProjectRecord,
   ProjectsService,
-} from '../../../../packages/application/src/projects/index.js';
+} from '@redai/application/projects';
 import { isProjectsError, sendError, sendProjectsError } from './errors.js';
 import {
   BodyValidationError,

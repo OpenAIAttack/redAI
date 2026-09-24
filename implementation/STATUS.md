@@ -1,6 +1,6 @@
 # Trạng thái triển khai ứng dụng
 
-Cập nhật: **2026-09-24**. **Milestone M0 (T00–T03) hoàn tất** trên cây nguồn đã
+Cập nhật: **2026-09-24**. **M0 hoàn tất; M1 wave D04 (T05,T06,T15) tích hợp xong** trên cây nguồn đã
 tích hợp. Baseline: nhánh `claude/fervent-archimedes-fnkoam`. DONE chỉ đặt sau
 review + integration checks trên cây nguồn đã tích hợp; "PASS" do coder tự báo
 chưa đủ để đóng task.
@@ -19,8 +19,8 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T02 — Migration PostgreSQL và invariants DB | DONE | 23d8870 | 14 integration tests xanh trên PG16.13 (fresh+upgrade, cross-project FK, active-run, immutable rows, event counter); `release-evidence/T02/` | PG18 verify hoãn (D04) |
 | T03 — Sinh type và kiểm tra API contracts | DONE | (M0 integ) | 43 TS contract tests + drift guard; Go parity tests; `release-evidence/T03/` | — |
 | T04 — Bootstrap owner và sessions | DONE (API) | (M1) | `pnpm run check` xanh (82 test); 23 DB integration test xanh trên PG16 (EXIT=0); auth inject tests (Origin/CSRF/rate-limit/worker-token isolation), bootstrap race, expiry, reset-revoke; `release-evidence/T04/` | Login UI hoãn tới T10 (D06) |
-| T05 — Secret vault và model/settings configs | NOT_STARTED | — | — | — |
-| T06 — Project, Chat metadata, notes và bindings | NOT_STARTED | — | — | — |
+| T05 — Secret vault và model/settings configs | DONE | (D04) | AES-256-GCM vault, credential refs, versioned settings; 53 tests (7 live-PG); wired into API | — |
+| T06 — Project, Chat metadata, notes và bindings | DONE | (D04) | CRUD/archive, Inbox, notes context, bindings; cross-project isolation; 35 tests (10 live-PG); wired | — |
 | T07 — Local ObjectStore và upload an toàn | NOT_STARTED | — | — | — |
 | T08 — Mock model và compatible provider adapter | NOT_STARTED | — | — | — |
 | T09 — Durable Ask và Chat persistence | NOT_STARTED | — | — | — |
@@ -29,7 +29,7 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T12 — DNS proof, scope policy và grant lifecycle | NOT_STARTED | — | — | — |
 | T13 — Durable Agent loop và checkpoints | NOT_STARTED | — | — | — |
 | T14 — Ngân sách và privacy pipeline | NOT_STARTED | — | — | — |
-| T15 — Worker enrollment và identity | NOT_STARTED | — | — | — |
+| T15 — Worker enrollment và identity | DONE | (D04) | Enrollment tokens, hashed credentials, dual-plane auth, Go client; 26 TS + 4 Go tests; wired (main.go loop deferred to T16) | — |
 | T16 — Worker journal, spool và supervisor | NOT_STARTED | — | — | — |
 | T17 — Task scheduler, signed leases và results | NOT_STARTED | — | — | — |
 | T18 — Offline sandbox runtime | NOT_STARTED | — | — | gVisor blocker |

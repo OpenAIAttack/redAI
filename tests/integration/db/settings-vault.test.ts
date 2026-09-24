@@ -11,11 +11,13 @@ import {
   HAS_DB,
   type Fixtures,
   type TestDatabase,
-} from '../../../../tests/integration/db/support.js';
-import { createDbSettingsRepository } from './settingsRepository.js';
-import { SettingsService } from './service.js';
-import { StaticMasterKeyProvider } from './masterKey.js';
-import { RevisionConflictError } from './errors.js';
+} from './support.js';
+import {
+  createDbSettingsRepository,
+  SettingsService,
+  StaticMasterKeyProvider,
+  RevisionConflictError,
+} from '../../../packages/application/src/settings/index.js';
 
 const MASTER_KEY = Buffer.alloc(32, 77);
 

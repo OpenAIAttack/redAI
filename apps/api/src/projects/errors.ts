@@ -8,10 +8,7 @@ import type { FastifyReply } from 'fastify';
 // Type-only import from the application projects source. The coordinator re-exports
 // these through the `@redai/application` barrel; this task must not edit that barrel,
 // and `import type` is erased at runtime so nothing here depends on the wiring order.
-import type {
-  ProjectsError,
-  ProjectsErrorCode,
-} from '../../../../packages/application/src/projects/index.js';
+import type { ProjectsError, ProjectsErrorCode } from '@redai/application/projects';
 
 /**
  * The full set of use-case error codes. Used to structurally recognise a thrown
