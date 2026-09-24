@@ -18,7 +18,7 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T01 — Khởi tạo monorepo và quality commands | DONE | (M0 baseline) | `pnpm run check` xanh (9 vitest, tsc -b, eslint, prettier, go vet/build/test); import-boundary test | — |
 | T02 — Migration PostgreSQL và invariants DB | DONE | 23d8870 | 14 integration tests xanh trên PG16.13 (fresh+upgrade, cross-project FK, active-run, immutable rows, event counter); `release-evidence/T02/` | PG18 verify hoãn (D04) |
 | T03 — Sinh type và kiểm tra API contracts | DONE | (M0 integ) | 43 TS contract tests + drift guard; Go parity tests; `release-evidence/T03/` | — |
-| T04 — Bootstrap owner và sessions | NOT_STARTED | — | — | — |
+| T04 — Bootstrap owner và sessions | DONE (API) | (M1) | `pnpm run check` xanh (82 test); 23 DB integration test xanh trên PG16 (EXIT=0); auth inject tests (Origin/CSRF/rate-limit/worker-token isolation), bootstrap race, expiry, reset-revoke; `release-evidence/T04/` | Login UI hoãn tới T10 (D06) |
 | T05 — Secret vault và model/settings configs | NOT_STARTED | — | — | — |
 | T06 — Project, Chat metadata, notes và bindings | NOT_STARTED | — | — | — |
 | T07 — Local ObjectStore và upload an toàn | NOT_STARTED | — | — | — |

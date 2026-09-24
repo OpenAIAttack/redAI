@@ -29,6 +29,47 @@ export class OwnerRepository {
     );
     return result.rows[0] ?? null;
   }
+
+  async getByUsername(username: string): Promise<OwnerRow | null> {
+    const result = await this.exec.query<OwnerRow>('SELECT * FROM owners WHERE username = $1', [
+      username,
+    ]);
+    return result.rows[0] ?? null;
+  }
+
+  async getById(id: string): Promise<OwnerRow | null> {
+    const result = await this.exec.query<OwnerRow>('SELECT * FROM owners WHERE id = $1', [id]);
+    return result.rows[0] ?? null;
+  }
+
+  /** The single owner if the install is bootstrapped (there is at most one row). */
+  async getSingleton(): Promise<OwnerRow | null> {
+    const result = await this.exec.query<OwnerRow>('SELECT * FROM owners LIMIT 1');
+    return result.rows[0] ?? null;
+  }
+
+  async count(): Promise<number> {
+    const result = await this.exec.query<{ n: string }>('SELECT count(*)::text AS n FROM owners');
+    return Number(result.rows[0]?.n ?? '0');
+  }
+
+  /** Set a new password hash and stamp `password_changed_at`. Caller revokes sessions. */
+  async updatePassword(id: string, passwordHash: string, passwordChangedAt: Date): Promise<void> {
+    await this.exec.query(
+      `UPDATE owners
+       SET password_hash = $2, password_changed_at = $3, updated_at = now()
+       WHERE id = $1`,
+      [id, passwordHash, passwordChangedAt],
+    );
+  }
+
+  /** Rotate the recovery code hash (recovery codes are single-use: a use replaces the hash). */
+  async updateRecoveryCode(id: string, recoveryCodeHash: Buffer): Promise<void> {
+    await this.exec.query(
+      'UPDATE owners SET recovery_code_hash = $2, updated_at = now() WHERE id = $1',
+      [id, recoveryCodeHash],
+    );
+  }
 }
 
 function required<T>(value: T | undefined, message: string): T {

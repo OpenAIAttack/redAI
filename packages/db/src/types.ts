@@ -84,6 +84,19 @@ export interface OwnerRow {
   updated_at: Date;
 }
 
+export interface SessionRow {
+  id: string;
+  workspace_id: string;
+  owner_id: string;
+  token_hash: Buffer;
+  csrf_hash: Buffer;
+  created_at: Date;
+  last_seen_at: Date;
+  expires_at: Date;
+  absolute_expires_at: Date;
+  revoked_at: Date | null;
+}
+
 export interface ProjectRow {
   id: string;
   workspace_id: string;

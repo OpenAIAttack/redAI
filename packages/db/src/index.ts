@@ -30,6 +30,8 @@ export { OwnerRepository } from './repositories/owners.js';
 export type { CreateOwnerInput } from './repositories/owners.js';
 export { ProjectRepository } from './repositories/projects.js';
 export type { CreateProjectInput } from './repositories/projects.js';
+export { SessionRepository } from './repositories/sessions.js';
+export type { CreateSessionInput } from './repositories/sessions.js';
 export { ChatRepository } from './repositories/chats.js';
 export type { CreateChatInput } from './repositories/chats.js';
 export { RunRepository } from './repositories/runs.js';

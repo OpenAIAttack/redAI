@@ -35,12 +35,24 @@ importers:
 
   apps/api:
     dependencies:
+      '@redai/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@redai/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@redai/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@redai/domain':
         specifier: workspace:*
         version: link:../../packages/domain
       '@redai/observability':
         specifier: workspace:*
         version: link:../../packages/observability
+      ajv:
+        specifier: ^8.17.1
+        version: 8.20.0
       fastify:
         specifier: ^5.2.0
         version: 5.12.5

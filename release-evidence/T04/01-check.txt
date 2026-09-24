@@ -1,0 +1,189 @@
+
+> redai@0.0.0 check /home/user/redAI
+> pnpm run env:check && pnpm run typecheck && pnpm run lint && pnpm run format && pnpm run test && pnpm run build && pnpm run go:check
+
+
+> redai@0.0.0 env:check /home/user/redAI
+> node scripts/check-env.mjs
+
+✓ Node.js: v22.22.2
+✓ pnpm: 10.33.0
+✓ Go: go version go1.24.7 linux/amd64
+✓ PostgreSQL client: psql (PostgreSQL) 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
+⚠ gVisor (runsc): not found — execution/sandbox lab (T18/T19/T29) blocked; scaffold/DB/mocks unaffected.
+
+Environment check passed.
+
+> redai@0.0.0 typecheck /home/user/redAI
+> tsc -b
+
+
+> redai@0.0.0 lint /home/user/redAI
+> eslint .
+
+
+> redai@0.0.0 format /home/user/redAI
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> redai@0.0.0 test /home/user/redAI
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/auth/service.test.ts (11 tests) 13ms
+stderr | tests/integration/db/auth-bootstrap.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ✓ apps/api/src/auth/plugin.test.ts (10 tests) 116ms
+ ↓ tests/integration/db/auth-bootstrap.test.ts (5 tests | 5 skipped)
+ ↓ tests/integration/db/immutability.test.ts (4 tests | 4 skipped)
+stderr | tests/integration/db/immutability.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/sessions.test.ts (4 tests | 4 skipped)
+stderr | tests/integration/db/sessions.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/event-counter.test.ts (2 tests | 2 skipped)
+stderr | tests/integration/db/event-counter.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/active-run.test.ts (3 tests | 3 skipped)
+stderr | tests/integration/db/active-run.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ✓ tests/contracts/contracts.test.ts (43 tests) 1286ms
+   ✓ codegen drift guard > committed generated output is not stale 1006ms
+ ↓ tests/integration/db/migrations.test.ts (3 tests | 3 skipped)
+stderr | tests/integration/db/migrations.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/composite-fk.test.ts (2 tests | 2 skipped)
+stderr | tests/integration/db/composite-fk.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ✓ tests/import-boundary/boundary.test.ts (2 tests) 5ms
+ ✓ apps/api/src/auth/bodySchemas.test.ts (3 tests) 4ms
+ ✓ packages/domain/src/health.test.ts (4 tests) 4ms
+ ✓ apps/api/src/server.test.ts (3 tests) 50ms
+ ✓ packages/application/src/auth/crypto.test.ts (6 tests) 764ms
+   ✓ scryptHasher > round-trips a password and rejects a wrong one 305ms
+   ✓ scryptHasher > produces a distinct salt (and therefore hash) each time 456ms
+
+ Test Files  8 passed | 7 skipped (15)
+      Tests  82 passed | 23 skipped (105)
+   Start at  08:55:46
+   Duration  3.14s (transform 894ms, setup 0ms, collect 2.34s, tests 2.24s, environment 3ms, prepare 994ms)
+
+
+> redai@0.0.0 build /home/user/redAI
+> tsc -b && pnpm -r --if-present run build
+
+Scope: 13 of 14 workspace projects
+apps/web build$ tsc -b
+packages/contracts build$ tsc -b
+packages/domain build$ tsc -b
+packages/observability build$ tsc -b
+apps/web build: Done
+packages/ui build$ tsc -b
+packages/observability build: Done
+packages/contracts build: Done
+packages/domain build: Done
+packages/ui build: Done
+packages/db build$ tsc -b
+packages/llm build$ tsc -b
+packages/policy build$ tsc -b
+packages/storage build$ tsc -b
+packages/policy build: Done
+tests build$ tsc -b
+packages/llm build: Done
+packages/storage build: Done
+packages/db build: Done
+tests build: Done
+packages/application build$ tsc -b
+packages/application build: Done
+apps/api build$ tsc -b
+apps/runtime build$ tsc -b
+apps/api build: Done
+apps/runtime build: Done
+
+> redai@0.0.0 go:check /home/user/redAI
+> cd worker && go vet ./... && go build ./... && go test ./...
+
+?   	github.com/openaiattack/redai/worker/cmd/redai-worker	[no test files]
+ok  	github.com/openaiattack/redai/worker/internal/api	(cached)
+?   	github.com/openaiattack/redai/worker/internal/artifacts	[no test files]
+ok  	github.com/openaiattack/redai/worker/internal/contracts	(cached)
+?   	github.com/openaiattack/redai/worker/internal/executor	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/journal	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/lease	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/proxy	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/sandbox	[no test files]

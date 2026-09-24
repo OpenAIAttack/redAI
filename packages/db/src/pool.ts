@@ -36,6 +36,13 @@ export interface CreatePoolOptions {
   connectionTimeoutMillis?: number;
   /** Optional application_name for pg_stat_activity visibility. */
   applicationName?: string;
+  /**
+   * Handler for asynchronous errors emitted by idle clients (e.g. the backend is
+   * terminated out from under the pool). Defaults to a no-op. pg REQUIRES a
+   * listener here: without one, an idle-client error is an unhandled `error`
+   * event that crashes the process. A real observability sink is wired in T32.
+   */
+  onError?: (err: Error) => void;
 }
 
 /** Create a `pg.Pool`. The caller owns its lifecycle and must `await pool.end()`. */
@@ -47,7 +54,12 @@ export function createPool(options: CreatePoolOptions): Pool {
     connectionTimeoutMillis: options.connectionTimeoutMillis ?? 10_000,
     ...(options.applicationName ? { application_name: options.applicationName } : {}),
   };
-  return new PgPool(config);
+  const pool = new PgPool(config);
+  // Always attach an error listener so a dropped idle backend (e.g. a test
+  // dropping its database with FORCE) never becomes an unhandled process error.
+  const onError = options.onError ?? (() => {});
+  pool.on('error', onError);
+  return pool;
 }
 
 /** Liveness probe used by the API health readiness check (D03). Returns true iff `SELECT 1` succeeds. */

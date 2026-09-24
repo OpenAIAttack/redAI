@@ -1,6 +1,8 @@
 /**
  * @redai/application — use cases and transaction orchestration.
- * Skeleton placeholder created in T01. Implemented in T04+.
+ * T04 adds owner authentication (bootstrap, sessions, password lifecycle).
  */
 
 export const APPLICATION_PACKAGE = '@redai/application';
+
+export * from './auth/index.js';

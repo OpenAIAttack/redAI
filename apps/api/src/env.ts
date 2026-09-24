@@ -17,6 +17,10 @@ export interface ApiEnv {
   readonly objectStoreRoot: string | undefined;
   /** True once at least one model provider credential is configured (T05/T08). */
   readonly modelProviderConfigured: boolean;
+  /** Serve `Secure` + `__Host-` session cookies (HTTPS). Defaults true in production. */
+  readonly cookieSecure: boolean;
+  /** Exact origins permitted for state-changing owner requests, on top of same-origin. */
+  readonly allowedOrigins: string[];
 }
 
 function parsePort(raw: string | undefined, fallback: number): number {
@@ -33,6 +37,16 @@ export function loadApiEnv(source: NodeJS.ProcessEnv = process.env): ApiEnv {
   if (nodeEnvRaw !== 'development' && nodeEnvRaw !== 'test' && nodeEnvRaw !== 'production') {
     throw new Error(`Invalid NODE_ENV: ${nodeEnvRaw}`);
   }
+  const cookieSecureRaw = source.API_COOKIE_SECURE;
+  const cookieSecure =
+    cookieSecureRaw !== undefined && cookieSecureRaw !== ''
+      ? cookieSecureRaw === 'true'
+      : nodeEnvRaw === 'production';
+  const allowedOrigins = (source.API_ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter((o) => o.length > 0);
+
   return {
     nodeEnv: nodeEnvRaw,
     host: source.API_HOST ?? '127.0.0.1',
@@ -40,5 +54,7 @@ export function loadApiEnv(source: NodeJS.ProcessEnv = process.env): ApiEnv {
     databaseUrl: source.DATABASE_URL || undefined,
     objectStoreRoot: source.OBJECT_STORE_ROOT || undefined,
     modelProviderConfigured: (source.MODEL_PROVIDER_CONFIGURED ?? 'false') === 'true',
+    cookieSecure,
+    allowedOrigins,
   };
 }
