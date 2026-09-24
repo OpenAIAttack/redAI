@@ -1,0 +1,21 @@
+# T14 — full @redai/llm suite (barrel export unchanged behavior)
+$ pnpm exec vitest run packages/llm
+
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/llm/src/context/manifest.test.ts (8 tests) 5ms
+ ✓ packages/llm/src/mock/provider.test.ts (12 tests) 153ms
+ ✓ packages/llm/src/context/canary.test.ts (5 tests) 11ms
+ ✓ packages/llm/src/openai/adapter.test.ts (16 tests) 227ms
+ ✓ packages/llm/src/routing.test.ts (6 tests) 7ms
+ ✓ packages/llm/src/context/redact.test.ts (7 tests) 5ms
+ ✓ packages/llm/src/probe.test.ts (3 tests) 5ms
+ ✓ packages/llm/src/assemble.test.ts (6 tests) 4ms
+ ✓ packages/llm/src/toolValidation.test.ts (3 tests) 5ms
+
+ Test Files  9 passed (9)
+      Tests  66 passed (66)
+   Start at  20:57:04
+   Duration  1.27s (transform 414ms, setup 0ms, collect 718ms, tests 424ms, environment 2ms, prepare 505ms)
+

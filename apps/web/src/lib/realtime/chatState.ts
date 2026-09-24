@@ -54,7 +54,13 @@ export interface ChatState {
   seenEventIds: Set<string>;
   activeRunId: string | null;
   runState: RunState | null;
-  budget: { observed: string; reserved: string; limit: string } | null;
+  budget: {
+    observed: string;
+    reserved: string;
+    limit: string;
+    /** Reservations held as unknown usage (never shown as $0). Undefined when unreported. */
+    unknownReservationCount?: number;
+  } | null;
   plan: { revision: number; stepCount: number } | null;
   activity: ActivityEntry[];
   /** Set when the store needs the caller to reload the snapshot (history + run). */
@@ -266,6 +272,10 @@ function applyEvent(state: ChatState, env: EventEnvelope): ChatState {
           observed: env.data.observed_micro_usd,
           reserved: env.data.reserved_micro_usd,
           limit: env.data.limit_micro_usd,
+          // Only carried when the backend reports it — kept honest (no fabricated 0).
+          ...(typeof env.data.unknown_reservation_count === 'number'
+            ? { unknownReservationCount: env.data.unknown_reservation_count }
+            : {}),
         },
       };
       break;

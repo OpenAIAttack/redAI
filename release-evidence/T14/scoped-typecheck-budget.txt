@@ -1,0 +1,6 @@
+# T14 — isolated typecheck of packages/application/src/budget/** including *.test.ts
+#   (proves T14 code + tests are tsc-clean; the whole-package tsc -b build is only
+#    blocked by T17's untracked execution/service.ts:467 TS2304 'Crypto', not by T14)
+$ tsc --noEmit -p <scratch tsconfig: budget/**/*.ts>
+
+  -> exit 0 (no output above = clean)

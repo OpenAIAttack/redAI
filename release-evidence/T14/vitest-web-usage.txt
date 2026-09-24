@@ -1,0 +1,15 @@
+# T14 — web Usage panel (measured/estimated/unknown, never a fake 0) + i18n parity
+$ pnpm exec vitest run apps/web/src/components/Workbench.test.ts apps/web/src/i18n/catalog.test.ts apps/web/src/lib/realtime/useChatRun.test.ts
+
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ apps/web/src/i18n/catalog.test.ts (2 tests) 12ms
+ ✓ apps/web/src/lib/realtime/useChatRun.test.ts (2 tests) 138ms
+ ✓ apps/web/src/components/Workbench.test.ts (7 tests) 139ms
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  20:57:19
+   Duration  1.03s (transform 199ms, setup 0ms, collect 409ms, tests 288ms, environment 856ms, prepare 183ms)
+

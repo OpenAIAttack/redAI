@@ -221,6 +221,12 @@ export interface BudgetUpdatedEvent extends EventEnvelopeBase {
     observed_micro_usd: string;
     reserved_micro_usd: string;
     limit_micro_usd: string;
+    /**
+     * Count of reservations HELD as unknown (provider usage never arrived). Optional:
+     * present only when the backend reports it. Rendered distinctly so unknown usage
+     * is never shown as a $0 spend (T14 / docs/11 §7).
+     */
+    unknown_reservation_count?: number;
   };
 }
 

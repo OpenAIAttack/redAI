@@ -1,0 +1,13 @@
+# T14 — budget service unit tests (in-memory fake)
+$ pnpm exec vitest run packages/application/src/budget/service.test.ts
+
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/budget/service.test.ts (12 tests) 9ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  20:58:51
+   Duration  355ms (transform 99ms, setup 0ms, collect 103ms, tests 9ms, environment 0ms, prepare 49ms)
+

@@ -1,0 +1,15 @@
+# T14 — LLM context + redaction + canary suite
+$ pnpm exec vitest run packages/llm/src/context
+
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/llm/src/context/redact.test.ts (7 tests) 6ms
+ ✓ packages/llm/src/context/manifest.test.ts (8 tests) 7ms
+ ✓ packages/llm/src/context/canary.test.ts (5 tests) 14ms
+
+ Test Files  3 passed (3)
+      Tests  20 passed (20)
+   Start at  20:57:03
+   Duration  501ms (transform 275ms, setup 0ms, collect 396ms, tests 26ms, environment 0ms, prepare 173ms)
+

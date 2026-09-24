@@ -1,0 +1,15 @@
+# T14 — budget DB integration on LIVE PostgreSQL 16
+# cluster: initdb -D .tmp-pg/t14 -U redai --auth=trust ; pg_ctl -o '-p 55469 -k /tmp'
+# DATABASE_URL=postgres://redai@127.0.0.1:55469/postgres  (PG 16.13)
+$ pnpm exec vitest run packages/application/src/budget/dbRepository.test.ts
+
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/budget/dbRepository.test.ts (7 tests) 316ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  20:57:18
+   Duration  784ms (transform 186ms, setup 0ms, collect 221ms, tests 316ms, environment 0ms, prepare 47ms)
+

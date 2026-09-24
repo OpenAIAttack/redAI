@@ -23,7 +23,13 @@ type Tab = 'plan' | 'activity' | 'files' | 'findings' | 'usage';
 
 export interface WorkbenchProps {
   runState?: RunState | null;
-  budget?: { observed: string; reserved: string; limit: string } | null;
+  budget?: {
+    observed: string;
+    reserved: string;
+    limit: string;
+    /** Reservations held as unknown usage; rendered distinctly, never as $0. */
+    unknownReservationCount?: number;
+  } | null;
   plan?: { revision: number; stepCount: number } | null;
   activity?: ActivityEntry[];
 }
@@ -113,15 +119,25 @@ export function Workbench(props: WorkbenchProps): JSX.Element {
               ) : null}
               {budget ? (
                 <>
+                  {/* Measured = reconciled cost. Held = estimates reserved before a
+                      request. Unknown usage stays HELD and is flagged distinctly — it
+                      is never collapsed into a fabricated $0 (docs/11 §7). */}
                   <span>
                     {t.chat.usageObserved}: {microUsd(budget.observed)}
                   </span>
                   <span>
                     {t.chat.usageReserved}: {microUsd(budget.reserved)}
                   </span>
+                  {budget.unknownReservationCount !== undefined &&
+                  budget.unknownReservationCount > 0 ? (
+                    <span title={t.chat.usageUnknownNote}>
+                      {t.chat.usageUnknown}: {budget.unknownReservationCount}
+                    </span>
+                  ) : null}
                   <span>
                     {t.chat.usageLimit}: {microUsd(budget.limit)}
                   </span>
+                  <span className="faint">{t.chat.usageBasisNote}</span>
                 </>
               ) : (
                 <span className="faint">{t.chat.usageEmpty}</span>

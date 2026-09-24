@@ -58,6 +58,26 @@ describe('Workbench', () => {
     expect(screen.getByText(/\$5\.0000/)).toBeTruthy();
   });
 
+  it('shows unknown usage distinctly and never as a fabricated $0', () => {
+    renderWorkbench({
+      // Provider usage never arrived: observed 0, but 300 µUSD is still HELD as unknown.
+      budget: { observed: '0', reserved: '300000', limit: '5000000', unknownReservationCount: 1 },
+    });
+    fireEvent.click(screen.getByRole('tab', { name: 'Sử dụng' }));
+    // The unknown reservation is surfaced as a count, not as a $0 measured cost.
+    expect(screen.getByText(/Mức dùng chưa rõ/)).toBeTruthy();
+    // The held estimate is shown at its real amount, not collapsed to zero.
+    expect(screen.getByText(/\$0\.3000/)).toBeTruthy();
+  });
+
+  it('omits the unknown line when no reservations are unknown', () => {
+    renderWorkbench({
+      budget: { observed: '1000000', reserved: '0', limit: '5000000', unknownReservationCount: 0 },
+    });
+    fireEvent.click(screen.getByRole('tab', { name: 'Sử dụng' }));
+    expect(screen.queryByText(/Mức dùng chưa rõ/)).toBeNull();
+  });
+
   it('switches the selected tab on click', () => {
     renderWorkbench();
     const plan = screen.getByRole('tab', { name: 'Kế hoạch' });

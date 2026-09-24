@@ -95,3 +95,30 @@ export type { CapabilityProbeResult, ProbeOptions } from './probe.js';
 // Tool-input validation against @redai/contracts.
 export { validateToolCall, isToolArgsValid } from './toolValidation.js';
 export type { ToolValidation } from './toolValidation.js';
+
+// Context manifest + redaction pipeline (T14 — docs/11 §4–§5).
+export {
+  buildContextManifest,
+  estimateTokens,
+  Redactor,
+  redactText,
+  REDACTION_TRANSFORM_ID,
+  makeCanary,
+  scanForSecret,
+  assertNoSecretLeak,
+  CANARY_PREFIX,
+} from './context/index.js';
+export type {
+  RedactorOptions,
+  EgressSurfaces,
+  SourceClassification,
+  ContextLayer,
+  ContextSource,
+  TokenCaps,
+  SecretRefInput,
+  RedactionOptions,
+  InclusionReason,
+  ManifestEntry,
+  RedactionCounts,
+  ContextManifest,
+} from './context/index.js';

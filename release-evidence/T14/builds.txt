@@ -1,0 +1,20 @@
+# T14 — scoped builds / typechecks (repo-wide check avoided: T17 mid-edit in apps/api + packages/application/src/execution)
+
+$ pnpm --filter @redai/llm run build
+> @redai/llm@0.0.0 build /home/user/redAI/packages/llm
+> tsc -b
+  -> exit 0 (clean)
+
+$ pnpm --filter @redai/web run typecheck
+> @redai/web@0.0.0 typecheck /home/user/redAI/apps/web
+> tsc --noEmit -p tsconfig.json
+  -> exit 0 (clean)
+
+$ pnpm --filter @redai/web run build  (Next.js production build)
+  -> exit 0 (all 8 routes built; /p/[projectId]/c/[chatId] compiled)
+
+## NOTE on @redai/application whole-package tsc -b:
+  `pnpm --filter @redai/application run build` currently FAILS, but ONLY in T17's
+  untracked file packages/application/src/execution/service.ts:467 — TS2304 Cannot find name 'Crypto'.
+  That file is owned by the concurrent T17 agent (not T14). The T14 budget module itself
+  typechecks CLEAN in isolation (see scoped tsc below).

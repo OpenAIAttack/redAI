@@ -1,0 +1,20 @@
+# T14 — budget DB suite SKIPS LOUDLY without DATABASE_URL
+$ env -u DATABASE_URL pnpm exec vitest run packages/application/src/budget/dbRepository.test.ts
+
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ↓ packages/application/src/budget/dbRepository.test.ts (7 tests | 7 skipped)
+stderr | packages/application/src/budget/dbRepository.test.ts
+
+[T14] DATABASE_URL is not set — the budget DB suite is SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, then re-run:
+        pnpm exec vitest run packages/application/src/budget/dbRepository.test.ts
+
+
+
+ Test Files  1 skipped (1)
+      Tests  7 skipped (7)
+   Start at  20:57:07
+   Duration  465ms (transform 164ms, setup 0ms, collect 218ms, tests 0ms, environment 0ms, prepare 40ms)
+

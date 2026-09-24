@@ -1,0 +1,6 @@
+# T14 — eslint on owned non-web files
+$ pnpm exec eslint packages/llm/src/context packages/application/src/budget
+
+  -> exit 0 (clean)
+
+# prettier --check on all owned files: All matched files use Prettier code style!
