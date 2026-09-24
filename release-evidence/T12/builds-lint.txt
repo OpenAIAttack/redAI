@@ -1,0 +1,27 @@
+# T12 scoped builds + lint/format
+# date: 2026-09-24T15:56:59Z
+
+## pnpm --filter @redai/policy run build
+
+> @redai/policy@0.0.0 build /home/user/redAI/packages/policy
+> tsc -b
+
+
+## pnpm --filter @redai/application run build
+
+> @redai/application@0.0.0 build /home/user/redAI/packages/application
+> tsc -b
+
+
+## pnpm --filter @redai/api run build
+
+> @redai/api@0.0.0 build /home/user/redAI/apps/api
+> tsc -b
+
+
+## eslint (policy, app/scope, api/scope) — no output = clean
+eslint exit: 0
+
+## prettier --check
+Checking formatting...
+All matched files use Prettier code style!

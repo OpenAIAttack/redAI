@@ -26,7 +26,7 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T09 — Durable Ask và Chat persistence | DONE | (M2) | Atomic idempotent Run+message, durable step, generation-id recovery, empty toolset; 33 tests (live-PG) | — |
 | T10 — Giao diện chat-first và Workbench shell | DONE | (M2) | Next.js app: login/setup/projects/settings (T10a) + chat composer/SSE client/live Workbench (T10b); 55 web tests + Playwright smoke | — |
 | T11 — SSE commit-ordered và reconnect | DONE | (M2) | Commit-ordered journal SSE, Last-Event-ID replay, NOTIFY+poll, backpressure; 22 tests (9 live-PG) | — |
-| T12 — DNS proof, scope policy và grant lifecycle | NOT_STARTED | — | — | — |
+| T12 — DNS proof, scope policy và grant lifecycle | DONE | (M3) | Pure policy engine (normalize/deceptive-suffix/IPv6/SSRF, exclusions-before-includes, mode matrix — automatic never overrides deny); DNS-proof grant lifecycle, revoke-epoch live read, immutable scope, cross-project isolation; 92 tests (5 live-PG); wired into server.ts w/ node:dns resolver | — |
 | T13 — Durable Agent loop và checkpoints | NOT_STARTED | — | — | — |
 | T14 — Ngân sách và privacy pipeline | NOT_STARTED | — | — | — |
 | T15 — Worker enrollment và identity | DONE | (D04) | Enrollment tokens, hashed credentials, dual-plane auth, Go client; 26 TS + 4 Go tests; wired (main.go loop deferred to T16) | — |

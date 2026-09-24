@@ -9,7 +9,9 @@ import {
   WorkerIdentityService,
   createDbWorkerIdentityRepository,
 } from '@redai/application/workerIdentity';
+import { createDbScopeService } from '@redai/application/scope';
 import { createPool, type Pool } from '@redai/db';
+import { resolveTxt as dnsResolveTxt } from 'node:dns/promises';
 import { loadApiEnv, type ApiEnv } from './env.js';
 import { readinessFromEnv } from './health.js';
 import { buildAuthConfig, createDbAuthService, registerAuth } from './auth/index.js';
@@ -20,6 +22,7 @@ import { createDbArtifactsService, registerArtifacts } from './artifacts/index.j
 import { createDbRunsService, registerRuns } from './runs/index.js';
 import { createDbEventStream, createEventNotifySource, registerEvents } from './events/index.js';
 import { registerSettings } from './settings/index.js';
+import { registerScope } from './scope/index.js';
 import { registerWorkerIdentity } from './worker/index.js';
 import { generateInstallationSigningKey } from './installation/signingKey.js';
 
@@ -120,6 +123,20 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
         authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
       });
     }
+
+    // Scope: DNS-proof challenge, scope versions & authorization grants
+    // (owner-authenticated). Verification uses a trusted resolver (the control
+    // plane's own DNS), NEVER the target's HTTP. TXT chunks are joined per record.
+    registerScope(app, {
+      service: createDbScopeService(pool),
+      authenticate: (req) => ownerGuard.authenticate(req),
+      authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
+      resolver: {
+        id: 'node-dns/promises',
+        resolveTxt: async (name: string): Promise<string[]> =>
+          (await dnsResolveTxt(name)).map((chunks) => chunks.join('')),
+      },
+    });
 
     // Worker enrollment & identity (owner plane + /worker/v1 bearer plane).
     const installationKey = generateInstallationSigningKey();

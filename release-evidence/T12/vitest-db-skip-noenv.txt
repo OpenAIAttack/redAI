@@ -1,0 +1,25 @@
+# T12 DB suite SKIP-LOUDLY check (no DATABASE_URL)
+# date: 2026-09-24T15:57:09Z
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ↓ packages/application/src/scope/dbRepository.test.ts (5 tests | 5 skipped)
+stderr | packages/application/src/scope/dbRepository.test.ts
+
+[T12] DATABASE_URL is not set — the live-PostgreSQL scope suite is SKIPPED.
+      Start a throwaway PG16 cluster and export DATABASE_URL, e.g.:
+        runuser -u postgres -- /usr/lib/postgresql/16/bin/initdb -D "$PWD/.tmp-pg/t12" -U redai --auth=trust
+        runuser -u postgres -- /usr/lib/postgresql/16/bin/pg_ctl -D "$PWD/.tmp-pg/t12" \
+          -o "-p 55467 -k /tmp -c listen_addresses=127.0.0.1" -w start
+        export DATABASE_URL="postgres://redai@127.0.0.1:55467/postgres"
+      then re-run: pnpm exec vitest run packages/application/src/scope
+
+
+
+ Test Files  1 skipped (1)
+      Tests  5 skipped (5)
+   Start at  15:57:09
+   Duration  846ms (transform 363ms, setup 0ms, collect 566ms, tests 0ms, environment 0ms, prepare 52ms)
+

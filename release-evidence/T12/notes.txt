@@ -1,0 +1,116 @@
+T12 — DNS proof, scope policy & grant lifecycle — implementation notes
+======================================================================
+Date: 2026-09-24  Branch: claude/fervent-archimedes-fnkoam  (uncommitted)
+
+FILES ADDED (owned by T12)
+--------------------------
+packages/policy/src/normalize.ts        host/address/path canonicalization, IPv4/IPv6,
+                                        mapped-IPv4 unwrap, CIDR classes, public-suffix guard
+packages/policy/src/match.ts            deceptive-suffix-safe rule matching + CIDR containment
+packages/policy/src/decision.ts         evaluateAuthorization (docs/10 §4 order) + §5 mode matrix
+packages/policy/src/cases.ts            decidePolicyCase — canonical evaluator for shared vectors
+packages/policy/src/index.ts            barrel (was the T01 placeholder — replaced)
+packages/policy/src/decision.test.ts    57 tests: all 32 shared vectors + focused cases
+packages/application/src/scope/ports.ts         repository/collaborator ports + records
+packages/application/src/scope/errors.ts        typed ScopeError set
+packages/application/src/scope/service.ts       ScopeService (challenge/verify/author/grant/revoke)
+packages/application/src/scope/dbRepository.ts   DB adapter over @redai/db
+packages/application/src/scope/memoryRepository.ts  in-memory fake + StaticDnsResolver
+packages/application/src/scope/index.ts         ./scope module barrel + createDbScopeService(pool)
+packages/application/src/scope/service.test.ts  15 tests (in-memory)
+packages/application/src/scope/dbRepository.test.ts  5 tests (live PG16, skips loudly)
+apps/api/src/scope/bodySchemas.ts       Ajv envelope validators + parseScope for the scope body
+apps/api/src/scope/errors.ts            envelope + structural isScopeError
+apps/api/src/scope/plugin.ts            registerScope(app, deps) owner-auth Fastify plugin
+apps/api/src/scope/index.ts             barrel (registerScope + views + isScopeError)
+apps/api/src/scope/plugin.test.ts       13 inject tests
+tests/policy-cases.json                 COPIED verbatim from specs/tests/policy-cases.json
+
+COORDINATOR WIRING (must be done outside T12's owned files)
+-----------------------------------------------------------
+1) packages/application/package.json — add a "./scope" subpath to "exports":
+
+     "./scope": {
+       "types": "./dist/scope/index.d.ts",
+       "default": "./dist/scope/index.js"
+     }
+
+2) apps/api/src/server.ts — mount the plugin. createDbScopeService lives in the
+   application ./scope module (NOT in apps/api) so the api package builds WITHOUT
+   importing the not-yet-wired subpath (see DEVIATION D-T12-1 below):
+
+     import { createDbScopeService } from '@redai/application/scope';
+     import { registerScope } from './scope/index.js';
+     import { promises as dns } from 'node:dns';
+     // ... after pool + authenticate + authorizeMutation are built:
+     const scopeService = createDbScopeService(pool);
+     const trustedResolver = {
+       id: 'system-resolver',
+       async resolveTxt(name: string): Promise<string[]> {
+         const records = await dns.resolveTxt(name);   // trusted recursive resolver
+         return records.map((chunks) => chunks.join('')); // NOT the target's HTTP
+       },
+     };
+     registerScope(app, {
+       service: scopeService,
+       authenticate,          // same owner guard the projects plugin uses
+       authorizeMutation,     // same Origin/CSRF check
+       resolver: trustedResolver,
+     });
+
+   Routes mounted (all owner-authenticated, under /api/v1):
+     POST   /projects/:projectId/dns-challenges                 issue challenge
+     GET    /projects/:projectId/dns-challenges                 list
+     POST   /projects/:projectId/dns-challenges/:proofId/verify verify (trusted resolver)
+     POST   /projects/:projectId/scope-versions                 author immutable scope version
+     POST   /projects/:projectId/grants                         create grant
+     GET    /projects/:projectId/grants                         list
+     POST   /projects/:projectId/grants/:grantId/revoke         revoke (epoch bump)
+
+DEVIATIONS / DECISIONS
+----------------------
+D-T12-1  createDbScopeService(pool) is exported from @redai/application/scope (the
+         ./scope module) instead of apps/api/src/scope/index.ts as the projects task
+         did. Reason: apps/api may not import @redai/application/scope until the
+         coordinator adds the exports entry, and T12 must not edit
+         packages/application/package.json. Putting the factory in the application
+         module keeps `pnpm --filter @redai/api run build` green pre-wiring; the api
+         plugin takes the service INJECTED (structural ScopePluginService), exactly as
+         registerProjects takes ProjectsService. No behavior change.
+
+D-T12-2  @redai/policy imports NOTHING external (not even @redai/contracts, which is
+         not symlinked into packages/policy and would need a package.json/deps change +
+         install). The engine defines its own ScopePolicy/OriginRule structural types;
+         the contracts `Scope` type is structurally assignable to ScopePolicy. Keeps
+         the pure package's import-boundary test green with no new dependency.
+
+SPEC AMBIGUITIES (for docs/implementation-decisions.md — not edited by T12 to avoid a
+concurrent-edit conflict with T16; recorded here for the coordinator to fold in)
+--------------------------------------------------------------------------------
+A-T12-1  docs/10 §3 says the DNS challenge binds installation_id, workspace_id,
+         project_id, root_ascii, requested_version, expires_at. The migrated
+         dns_proofs table (db/001, must not change) has no installation_id or
+         requested_version columns. Implemented binding = the columns that exist
+         (workspace_id, project_id, root_ascii, expires_at) + challenge_hash UNIQUE.
+         installation_id is derivable from workspace_id (1 workspace in v1). Suggest a
+         later migration add requested_version if per-version challenges are needed.
+
+A-T12-2  Public-suffix rule (docs/10 §2) is enforced with a SMALL built-in denylist
+         (packages/policy PUBLIC_SUFFIXES), not the full PSL. It covers the fixtures
+         and common personal-use roots and fails closed on a bare suffix; a full PSL
+         table can replace the set later without an API change.
+
+A-T12-3  policy_sha256 uses a deterministic sorted-key JSON serialization (not full
+         RFC 8785 JCS). Sufficient for a stable content digest of the authored scope;
+         if cross-impl JCS parity with the Go side is later required, swap the
+         canonicalStringify for a shared JCS util.
+
+A-T12-4  "Lab rule" is detected as a rule that declares non-empty lab_ip_ranges. This
+         is what distinguishes a private-zone lab origin (lab_attestation, no DNS)
+         from a public origin (requires a verified DNS proof) in createGrant.
+
+WEB SCOPE UI: DEFERRED (task says apps/web project-settings scope UI is out of scope
+for T12). Backend + contract are complete for it to build against.
+
+NOT DONE / OUT OF SCOPE: web UI; wiring server.ts + application exports (coordinator);
+STATUS.md left to the coordinator (shared file, concurrent with T16).
