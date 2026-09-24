@@ -3,7 +3,7 @@
 **Updated:** 2026-09-24 · **Branch:** `claude/fervent-archimedes-fnkoam`
 
 ## Where we are
-- **Milestone M0 (T00–T03) COMPLETE and integrated** on `claude/fervent-archimedes-fnkoam`.
+- **Milestones M0 + M1 + M2 (T00–T11, +T15) COMPLETE and integrated** on `claude/fervent-archimedes-fnkoam`. 12 of 37 tasks done.
 - Canonical spec sources imported to repo root (decision D01); `specs/` frozen.
 - `pnpm run check` passes end-to-end: env check, `tsc -b`, ESLint, Prettier,
   Vitest (**52 always-on tests**: domain readiness, api health, import-boundary,
@@ -49,3 +49,21 @@ DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres" pnpm exec vitest run 
   **219/219 tests pass on live PostgreSQL 16**.
 
 Do not trust prior "done" claims without re-verifying source + tests.
+
+## M2 status (DONE) — first developer alpha
+- Provider adapters (T08, mock + OpenAI-compatible), durable Ask (T09), Next.js
+  app (T10a shell + T10b chat/SSE client), SSE backend (T11). Full `pnpm run check`
+  green; **414/414 tests on live PostgreSQL 16**; real offline `next build`.
+- End-to-end (labeled mock provider): bootstrap → login → Project → Ask → streamed
+  provisional→final answer; reconnect never creates a run or wipes history.
+- Follow-ups recorded: D10 (small API gaps: bootstrap-state, worker list, browser
+  password-change) and D11 (authenticated browser↔API SSE e2e).
+
+## Next: M3 (worker execution) — T12–T19
+- T12 DNS proof + scope/grant lifecycle; T13 durable Agent loop + checkpoints (adds
+  the always-on runtime loop + lease renewal, reusing T09's createProviderResolver);
+  T14 budget + privacy pipeline (uses T08's payload canary); T16 worker journal/
+  supervisor; T17 scheduler/leases/results; T18 offline sandbox (BLOCKED: gVisor
+  absent — see dependency-baseline); T19 offline tools/artifacts.
+- T15 (worker identity) already DONE. Wire the worker daemon enroll loop into
+  worker/cmd/redai-worker/main.go with T16.

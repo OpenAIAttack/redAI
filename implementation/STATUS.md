@@ -1,6 +1,6 @@
 # Trạng thái triển khai ứng dụng
 
-Cập nhật: **2026-09-24**. **M0 + M1 (T00–T07) HOÀN TẤT** (T15 xong sớm) trên cây nguồn đã
+Cập nhật: **2026-09-24**. **M0 + M1 + M2 (T00–T11) HOÀN TẤT** (T15 xong sớm) trên cây nguồn đã
 tích hợp. Baseline: nhánh `claude/fervent-archimedes-fnkoam`. DONE chỉ đặt sau
 review + integration checks trên cây nguồn đã tích hợp; "PASS" do coder tự báo
 chưa đủ để đóng task.
@@ -22,10 +22,10 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T05 — Secret vault và model/settings configs | DONE | (D04) | AES-256-GCM vault, credential refs, versioned settings; 53 tests (7 live-PG); wired into API | — |
 | T06 — Project, Chat metadata, notes và bindings | DONE | (D04) | CRUD/archive, Inbox, notes context, bindings; cross-project isolation; 35 tests (10 live-PG); wired | — |
 | T07 — Local ObjectStore và upload an toàn | DONE | (M1) | Staged upload→hash/size verify→atomic finalize, authenticated download, safe preview/quarantine, orphan reconcile; 55 tests (9 live-PG); wired | — |
-| T08 — Mock model và compatible provider adapter | NOT_STARTED | — | — | — |
-| T09 — Durable Ask và Chat persistence | NOT_STARTED | — | — | — |
-| T10 — Giao diện chat-first và Workbench shell | NOT_STARTED | — | — | apps/web placeholder (D02) tới T10 |
-| T11 — SSE commit-ordered và reconnect | NOT_STARTED | — | — | — |
+| T08 — Mock model và compatible provider adapter | DONE | (M2) | @redai/llm: mock + OpenAI-compatible (text/tools/stream/cancel/usage), probe, no cloud fallback local_only; 46 tests, no key | — |
+| T09 — Durable Ask và Chat persistence | DONE | (M2) | Atomic idempotent Run+message, durable step, generation-id recovery, empty toolset; 33 tests (live-PG) | — |
+| T10 — Giao diện chat-first và Workbench shell | DONE | (M2) | Next.js app: login/setup/projects/settings (T10a) + chat composer/SSE client/live Workbench (T10b); 55 web tests + Playwright smoke | — |
+| T11 — SSE commit-ordered và reconnect | DONE | (M2) | Commit-ordered journal SSE, Last-Event-ID replay, NOTIFY+poll, backpressure; 22 tests (9 live-PG) | — |
 | T12 — DNS proof, scope policy và grant lifecycle | NOT_STARTED | — | — | — |
 | T13 — Durable Agent loop và checkpoints | NOT_STARTED | — | — | — |
 | T14 — Ngân sách và privacy pipeline | NOT_STARTED | — | — | — |
