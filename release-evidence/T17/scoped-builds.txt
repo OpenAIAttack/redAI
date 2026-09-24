@@ -1,0 +1,15 @@
+# T17 — scoped package builds (full tsc -b)
+# date: 2026-09-24T21:11:55Z
+
+$ pnpm --filter @redai/application run build
+
+> @redai/application@0.0.0 build /home/user/redAI/packages/application
+> tsc -b
+
+
+$ pnpm --filter @redai/api run build
+
+> @redai/api@0.0.0 build /home/user/redAI/apps/api
+> tsc -b
+
+(both builds succeeded)

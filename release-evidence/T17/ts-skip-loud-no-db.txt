@@ -1,0 +1,21 @@
+# T17 — DB suite SKIPS LOUDLY without DATABASE_URL (D09)
+# date: 2026-09-24T21:11:06Z
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ↓ packages/application/src/execution/dbRepository.test.ts (7 tests | 7 skipped)
+stderr | packages/application/src/execution/dbRepository.test.ts
+
+[T17] DATABASE_URL is not set — the scheduler DB suite is SKIPPED.
+      Start a throwaway PostgreSQL cluster and export DATABASE_URL, then re-run:
+        pnpm exec vitest run packages/application/src/execution/dbRepository.test.ts
+
+
+
+ Test Files  1 skipped (1)
+      Tests  7 skipped (7)
+   Start at  21:11:07
+   Duration  610ms (transform 233ms, setup 0ms, collect 301ms, tests 0ms, environment 0ms, prepare 65ms)
+

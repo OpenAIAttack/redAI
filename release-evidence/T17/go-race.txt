@@ -1,0 +1,26 @@
+# T17 — Go worker: gofmt, vet, build, race tests (stdlib-only; go.sum absent)
+# date: 2026-09-24T21:11:07Z
+
+$ ls worker/go.sum
+ls: cannot access 'go.sum': No such file or directory
+
+$ gofmt -l .
+
+$ go vet ./...
+
+$ go build ./...
+(build ok)
+
+$ go test -race ./...
+?   	github.com/openaiattack/redai/worker/cmd/redai-worker	[no test files]
+ok  	github.com/openaiattack/redai/worker/internal/api	(cached)
+?   	github.com/openaiattack/redai/worker/internal/artifacts	[no test files]
+ok  	github.com/openaiattack/redai/worker/internal/contracts	(cached)
+ok  	github.com/openaiattack/redai/worker/internal/enrollment	(cached)
+ok  	github.com/openaiattack/redai/worker/internal/executor	(cached)
+ok  	github.com/openaiattack/redai/worker/internal/journal	(cached)
+ok  	github.com/openaiattack/redai/worker/internal/lease	(cached)
+?   	github.com/openaiattack/redai/worker/internal/proxy	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/sandbox	[no test files]
+ok  	github.com/openaiattack/redai/worker/internal/spool	(cached)
+ok  	github.com/openaiattack/redai/worker/internal/supervisor	(cached)

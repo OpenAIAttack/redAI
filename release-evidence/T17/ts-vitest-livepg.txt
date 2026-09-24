@@ -1,0 +1,17 @@
+# T17 — TS vitest (execution service + DB repo on live PG16, worker-tasks plugin)
+# DATABASE_URL=postgres://postgres@127.0.0.1:55470/postgres (throwaway PG16, port 55470)
+# date: 2026-09-24T21:10:56Z
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/execution/service.test.ts (13 tests) 21ms
+ ✓ apps/api/src/worker-tasks/plugin.test.ts (11 tests) 151ms
+ ✓ packages/application/src/execution/dbRepository.test.ts (7 tests) 570ms
+
+ Test Files  3 passed (3)
+      Tests  31 passed (31)
+   Start at  21:10:56
+   Duration  1.25s (transform 646ms, setup 0ms, collect 1.15s, tests 742ms, environment 0ms, prepare 180ms)
+

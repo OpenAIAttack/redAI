@@ -1,0 +1,10 @@
+# T17 — scoped TS typecheck (my files only; package-wide tsc -b is blocked by T14's in-flight packages/application/src/budget/*)
+# date: 2026-09-24T21:11:21Z
+
+$ tsc --noEmit -p packages/application/tsconfig.json  | grep src/execution
+(no errors in src/execution)
+
+$ tsc --noEmit -p apps/api/tsconfig.json  | grep worker-tasks
+(no errors in worker-tasks)
+
+# For reference, the ONLY errors from the application package build are T14's budget files:

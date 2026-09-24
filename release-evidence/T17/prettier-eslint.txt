@@ -1,0 +1,9 @@
+# T17 — prettier + eslint on owned TS files
+# date: 2026-09-24T21:11:26Z
+
+$ prettier --check
+Checking formatting...
+All matched files use Prettier code style!
+
+$ eslint
+(eslint clean — no findings)
