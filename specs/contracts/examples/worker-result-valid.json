@@ -1,0 +1,16 @@
+{
+  "attempt_id": "10000000-0000-4000-8000-000000000062",
+  "fencing_token": "1",
+  "worker_session_id": "10000000-0000-4000-8000-000000000063",
+  "status": "succeeded",
+  "started_at": "2026-09-24T03:00:01Z",
+  "finished_at": "2026-09-24T03:00:02Z",
+  "exit_code": 0,
+  "summary": "fixture-ok",
+  "artifact_ids": [],
+  "structured_result": {},
+  "output_truncated": false,
+  "observed_quiescent": true,
+  "effect_observation": "completed",
+  "result_sha256": "fca4f4078bbb234c30b5c5513c7c687831394117693430ad614a7961adb84dd6"
+}

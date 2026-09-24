@@ -1,0 +1,1498 @@
+{
+  "spec_version": "1.0.0-draft.1",
+  "tasks": [
+    {
+      "id": "T00",
+      "title": "Khóa dependency và môi trường",
+      "depends_on": [],
+      "milestone": "M0",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/04-architecture-repository.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "docs/dependency-baseline.md",
+        "ops/",
+        "package.json",
+        "worker/go.mod"
+      ],
+      "implementation_steps": [
+        "Kiểm tra toolchain hiện có; chọn các version stable đang được hỗ trợ theo docs chính thức, ghi version và ngày kiểm tra.",
+        "Pin Node/pnpm/Go/PostgreSQL và framework, không dùng floating latest trong release.",
+        "Lập license/provenance inventory và xác nhận không vendor code/asset/prompt HackerAI."
+      ],
+      "tests": [
+        "Version check chạy được trên máy dev và CI.",
+        "Danh sách dependency có license và nguồn; không chứa production key."
+      ],
+      "acceptance_criteria": [
+        "Baseline có version cụ thể và lockfile strategy.",
+        "Thiếu Linux/gVisor chỉ ghi blocker cho execution suite, không chặn scaffold/DB/mocks."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T01",
+      "title": "Khởi tạo monorepo và quality commands",
+      "depends_on": [
+        "T00"
+      ],
+      "milestone": "M0",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/04-architecture-repository.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/web",
+        "apps/api",
+        "apps/runtime",
+        "packages/domain",
+        "worker/",
+        "implementation/STATUS.md"
+      ],
+      "implementation_steps": [
+        "Tạo pnpm workspace và Go module theo architecture, dependency graph không cyclic.",
+        "Thiết lập lint/format/typecheck/test/build commands và environment validation.",
+        "Tạo health stub phân biệt chưa cấu hình với ready; cấu hình test profile có nhãn mock."
+      ],
+      "tests": [
+        "Clean install từ lockfile và build skeleton.",
+        "Import boundary test: domain không import web/Docker/provider SDK."
+      ],
+      "acceptance_criteria": [
+        "Một lệnh checks cho TS và Go có exit status đúng.",
+        "README hướng dẫn chạy dev không cần model key thật."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T02",
+      "title": "Migration PostgreSQL và invariants DB",
+      "depends_on": [
+        "T01"
+      ],
+      "milestone": "M0",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/05-data-model.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/db",
+        "db/001_reference_schema.sql",
+        "tests/integration/db"
+      ],
+      "implementation_steps": [
+        "Chuyển reference DDL thành migration versioned; apply trên PostgreSQL thật bản đã pin.",
+        "Thêm typed repositories/transaction wrapper và fixture seed owner/project.",
+        "Thực thi index/constraint/immutable trigger/counter helper; ghi các invariant bắt buộc ở application."
+      ],
+      "tests": [
+        "Fresh migration và upgrade smoke.",
+        "Composite FK cross-project negative; active-run unique; immutable artifacts/versions.",
+        "Event counter concurrent commit-order test."
+      ],
+      "acceptance_criteria": [
+        "DDL apply không lỗi thực tế, không chỉ parse.",
+        "Backup/rollback strategy cho schema được ghi; app không auto synchronize/drop tables."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T03",
+      "title": "Sinh type và kiểm tra API contracts",
+      "depends_on": [
+        "T01"
+      ],
+      "milestone": "M0",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/06-api-realtime.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/contracts",
+        "contracts/",
+        "tests/contracts"
+      ],
+      "implementation_steps": [
+        "Copy canonical schemas vào implementation source-of-truth, sinh TS/Go types bằng tooling đã pin.",
+        "Tích hợp JSON Schema validation strict và format/unknown-field checks.",
+        "Sinh OpenAPI clients/stubs nhưng domain handler chưa có phải báo not implemented ở dev, không fake success."
+      ],
+      "tests": [
+        "Tất cả positive/negative fixtures trong tests/contract-cases.json.",
+        "TS/Go parse cùng payload và từ chối cùng malformed fields.",
+        "Contract drift check chạy trong CI."
+      ],
+      "acceptance_criteria": [
+        "Không dùng TypeScript cast như runtime validation.",
+        "Enums/defaults khớp SPEC_LOCK và schemas."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T04",
+      "title": "Bootstrap owner và sessions",
+      "depends_on": [
+        "T02",
+        "T03"
+      ],
+      "milestone": "M1",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/13-identity-settings.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/api/auth",
+        "packages/application/auth",
+        "ops/bootstrap",
+        "apps/web/login"
+      ],
+      "implementation_steps": [
+        "Viết CLI bootstrap qua stdin, singleton owner/Workspace/Inbox, recovery code.",
+        "Session opaque hashed, cookie/CSRF/Origin, rate limit, logout/password reset/revoke.",
+        "Tạo login UI và session renewal/error states."
+      ],
+      "tests": [
+        "Bootstrap race, invalid password, CSRF foreign origin, idle/absolute expiry.",
+        "Worker token không gọi owner endpoint; reset revokes sessions."
+      ],
+      "acceptance_criteria": [
+        "Không public signup hoặc default credentials.",
+        "Không password/token trong logs hoặc command args."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T05",
+      "title": "Secret vault và model/settings configs",
+      "depends_on": [
+        "T04"
+      ],
+      "milestone": "M1",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/11-llm-context-privacy.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/application/secrets",
+        "packages/llm/config",
+        "apps/web/settings"
+      ],
+      "implementation_steps": [
+        "AEAD secret storage với master key file, key_id/AAD, metadata-only API.",
+        "Provider config version, data modes/prices/endpoint allowlist và explicit fallback config.",
+        "Settings If-Match/revision, locked-key/placeholder rejection, session/password UI."
+      ],
+      "tests": [
+        "Ciphertext khác mỗi nonce, wrong AAD/key fail; restart missing key không tự tạo key mới.",
+        "Cross-project secret/ref denial; config revisions conflict."
+      ],
+      "acceptance_criteria": [
+        "Owner nhập key qua UI, không hard-code; runtime đọc qua credential_ref.",
+        "local_only và cloud route hiển thị đúng, chưa probe không tuyên bố ready."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T06",
+      "title": "Project, Chat metadata, notes và bindings",
+      "depends_on": [
+        "T04",
+        "T03"
+      ],
+      "milestone": "M1",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/02-prd-use-cases.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/application/projects",
+        "apps/api/projects",
+        "apps/web/projects"
+      ],
+      "implementation_steps": [
+        "CRUD/archive Project, Inbox logic, Chat metadata, notes selected_for_context.",
+        "Mọi repository use case bind Workspace/Project; versioned settings và pagination.",
+        "Binding worker API chỉ owner điều khiển; phần worker cụ thể hoàn thiện sau T15."
+      ],
+      "tests": [
+        "Project A không truy cập note/chat Project B qua đổi UUID.",
+        "Revision conflict, archive không delete data, pending delete active run."
+      ],
+      "acceptance_criteria": [
+        "Empty/error/loading khác nhau.",
+        "Project scope không chỉ là text trong chat."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T07",
+      "title": "Local ObjectStore và upload an toàn",
+      "depends_on": [
+        "T06"
+      ],
+      "milestone": "M1",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/12-findings-evidence-reports.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/storage",
+        "apps/api/artifacts",
+        "tests/integration/storage"
+      ],
+      "implementation_steps": [
+        "Implement staged upload, server hash/size verification, atomic rename và metadata finalize.",
+        "Logical storage keys, authenticated download, redacted preview, quarantine.",
+        "Document parsing text/Markdown/JSON/YAML/CSV/PNG/JPEG bounded; không fetch external refs."
+      ],
+      "tests": [
+        "Hash mismatch, interrupted upload, finalize duplicate, disk full.",
+        "Traversal/symlink/media mismatch/unsafe HTML preview."
+      ],
+      "acceptance_criteria": [
+        "Artifact ready chỉ khi bytes có và verified.",
+        "Crash giữa rename/DB commit có reconciliation path, không public orphan."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T08",
+      "title": "Mock model và compatible provider adapter",
+      "depends_on": [
+        "T05",
+        "T03"
+      ],
+      "milestone": "M2",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/11-llm-context-privacy.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/llm",
+        "tests/fixtures/models"
+      ],
+      "implementation_steps": [
+        "Tạo scripted mock adapter, compatible adapter text/tools/stream/cancel/usage.",
+        "Capability probe bằng synthetic data, endpoint routing owner-only.",
+        "Map errors, disable hidden unbounded SDK retries, record unknown usage."
+      ],
+      "tests": [
+        "Malformed tool JSON, stream interrupt, duplicate indices, provider429/timeouts.",
+        "Mock payload capture canary; no cloud fallback local_only."
+      ],
+      "acceptance_criteria": [
+        "CI không cần trả phí hoặc key.",
+        "Provider không hỗ trợ tools không được chạy Agent bằng text parsing."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T09",
+      "title": "Durable Ask và Chat persistence",
+      "depends_on": [
+        "T06",
+        "T07",
+        "T08"
+      ],
+      "milestone": "M2",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/07-agent-runtime.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/runtime/ask",
+        "packages/application/messages",
+        "apps/api/runs"
+      ],
+      "implementation_steps": [
+        "Atomic create Run/message, checkpoint, persist partial/final message với generation ID.",
+        "Ask toolset rỗng, context chỉ notes/files được chọn và current Project.",
+        "Pagination lịch sử, append notes không tạo run duplicate."
+      ],
+      "tests": [
+        "Double-click/cùng Idempotency-Key; API crash sau commit.",
+        "Close browser/restart API vẫn đọc Chat, Ask không tạo worker task."
+      ],
+      "acceptance_criteria": [
+        "Chat hoạt động end-to-end qua DB/provider thật hoặc mock được gắn nhãn.",
+        "Tool failure/output không bị tạo trong Ask."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T10",
+      "title": "Giao diện chat-first và Workbench shell",
+      "depends_on": [
+        "T06",
+        "T09"
+      ],
+      "milestone": "M2",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/03-ux-ui-spec.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/web",
+        "packages/ui"
+      ],
+      "implementation_steps": [
+        "Xây sidebar Project/Chat, composer modes, attachment, theme/i18n/responsive.",
+        "Workbench Plan/Activity/Files/Findings/Usage gắn state API, chưa có data hiển thị empty không fake.",
+        "Keyboard/IME/focus/Markdown sanitize/long text handling."
+      ],
+      "tests": [
+        "Browser tests1440/1024/390px, dark/light, keyboard, IME enter.",
+        "Long transcript/composer rerender/unsafe Markdown."
+      ],
+      "acceptance_criteria": [
+        "Không chỉ screenshot mock; components nối API thật.",
+        "Local worker vs local model wording không nhầm."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T11",
+      "title": "SSE commit-ordered và reconnect",
+      "depends_on": [
+        "T02",
+        "T09",
+        "T10"
+      ],
+      "milestone": "M2",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/06-api-realtime.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/api/events",
+        "packages/application/events",
+        "apps/web/realtime"
+      ],
+      "implementation_steps": [
+        "Event counter row lock cùng business transaction, durable event journal, NOTIFY wake-up.",
+        "Snapshot cursor, Last-Event-ID replay/dedup, filtering/cursor advancement.",
+        "Proxy buffering off, slow consumer backpressure, cursor expiry recovery."
+      ],
+      "tests": [
+        "Commit inversion A delayed/B concurrent không skip.",
+        "Disconnect after frame, duplicate IDs, expired cursor, buffer overflow."
+      ],
+      "acceptance_criteria": [
+        "UI không tạo run mới hoặc xóa history khi reconnect.",
+        "Message provisional/final được phân biệt."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T12",
+      "title": "DNS proof, scope policy và grant lifecycle",
+      "depends_on": [
+        "T06",
+        "T03"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/10-authorization-scope.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/policy",
+        "apps/api/scope",
+        "apps/web/project-settings"
+      ],
+      "implementation_steps": [
+        "Implement domain normalization/rules/exclusions/lab zones và shared test vectors.",
+        "One-time Project DNS challenge/proof, owner attestation/grant version/revoke epoch.",
+        "Policy reason codes/mode matrix; no model endpoint mutation."
+      ],
+      "tests": [
+        "Toàn tests/policy-cases.json, deceptive suffix, IPv6, exclusions, shared IP.",
+        "Second Chat không verify lại; revoke active grant không giữ permission."
+      ],
+      "acceptance_criteria": [
+        "Automatic không override deny; dependency explicit_only.",
+        "Scope immutable, broadening chỉ Run mới."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T13",
+      "title": "Durable Agent loop và checkpoints",
+      "depends_on": [
+        "T09",
+        "T11",
+        "T12"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/07-agent-runtime.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/runtime/agent",
+        "packages/domain/runs"
+      ],
+      "implementation_steps": [
+        "Claim run lease/fence, step boundaries, parsed plan, stable logical tool IDs.",
+        "Checkpoint source manifests/pending tools/notes and CAS commits.",
+        "Loop detection, time/step limits, finalization gate chưa dispatch network thật."
+      ],
+      "tests": [
+        "Restart mỗi boundary bằng mock tool transport.",
+        "Hai runtimes stale-fence commits, model response invalid không tool dispatch."
+      ],
+      "acceptance_criteria": [
+        "Không agent loop trong web request.",
+        "No duplicate logical call sau retry/restart."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T14",
+      "title": "Ngân sách và privacy pipeline",
+      "depends_on": [
+        "T13",
+        "T05"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/11-llm-context-privacy.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/llm/context",
+        "packages/application/budget",
+        "apps/web/usage"
+      ],
+      "implementation_steps": [
+        "Context manifest/redaction/token caps/summary selection; secret refs không values.",
+        "Budget reservations trước request, shared ledger, pricing version, unknown held.",
+        "Owner budget increase audit và usage UI measured/estimated/unknown."
+      ],
+      "tests": [
+        "Parallel reserve race; missing usage; child requests cạnh tranh budget.",
+        "Canary trong headers/body/HTML/errors/logs/payload capture."
+      ],
+      "acceptance_criteria": [
+        "Không số0 giả khi usage unknown.",
+        "Không bật full-cloud hoặc provider khác tự động."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T15",
+      "title": "Worker enrollment và identity",
+      "depends_on": [
+        "T04",
+        "T03"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/08-worker-protocol.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "worker/cmd/redai-worker",
+        "apps/api/worker-auth",
+        "apps/web/workers"
+      ],
+      "implementation_steps": [
+        "Enrollment token one-use, idempotent encrypted retransmission, worker credential rotation.",
+        "Stable UUID/local permissions, session generation, heartbeat/doctor metadata.",
+        "Worker list/bind/drain/revoke và no public token reveal."
+      ],
+      "tests": [
+        "Token replay/new identity denial, lost-response retry same intent.",
+        "Two daemons cloned identity, expired/revoked token, path permissions."
+      ],
+      "acceptance_criteria": [
+        "Worker giữ danh tính sau restart nhưng session mới được reconcile.",
+        "Credential chỉ được phép worker API/binding."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T16",
+      "title": "Worker journal, spool và supervisor",
+      "depends_on": [
+        "T15"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/08-worker-protocol.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "worker/internal/journal",
+        "worker/internal/executor",
+        "worker/internal/lease"
+      ],
+      "implementation_steps": [
+        "Persistent atomic manifests/fsync records, single-instance lock và bounded output spool.",
+        "Container labels/start_intent/state inspection và orphan reaper.",
+        "Watchdog độc lập execution goroutine, monotonic deadline/cancel process tree."
+      ],
+      "tests": [
+        "Crash windows received/create/start/result trước ACK.",
+        "Spool full, corrupted tail record, worker daemon restart, zombie child."
+      ],
+      "acceptance_criteria": [
+        "Không start container mới khi attempt container đã tồn tại.",
+        "Outcome không biết được giữ unknown, không replay."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T17",
+      "title": "Task scheduler, signed leases và results",
+      "depends_on": [
+        "T12",
+        "T13",
+        "T15",
+        "T16"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/08-worker-protocol.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/api/worker-tasks",
+        "packages/application/execution",
+        "worker/internal/api"
+      ],
+      "implementation_steps": [
+        "Task claim txn, worker capacity/binding, Ed25519 JWS/JCS input hash, renewal live grant.",
+        "ACK started/result dedup/conflicting digest/quarantine, fence current attempt.",
+        "Input artifact download và credential capability ràng buộc attempt."
+      ],
+      "tests": [
+        "Signature tamper, session superseded, policy epoch stale, lease expiry.",
+        "Concurrent claim, duplicate ACK/result, mismatched result digest, slot accounting."
+      ],
+      "acceptance_criteria": [
+        "Fencing không được tuyên bố exactly-once external effect.",
+        "Không reassign lost external operation sang worker khác."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T18",
+      "title": "Offline sandbox runtime",
+      "depends_on": [
+        "T16",
+        "T17"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/09-sandbox-tool-execution.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "worker/internal/sandbox",
+        "tools/images",
+        "ops/worker-doctor"
+      ],
+      "implementation_steps": [
+        "Docker/runsc profile, non-root/cap-drop/read-only roots/no mounts, resource caps.",
+        "Offline network none, logical paths và isolated agent workspace.",
+        "Doctor kiểm tra runtime/image/guard; không downgrade."
+      ],
+      "tests": [
+        "Host filesystem/socket/metadata inaccessible; memory/PID/time caps.",
+        "Missing runsc/image mismatch fail closed; process tree cancel."
+      ],
+      "acceptance_criteria": [
+        "Linux lab thật có evidence, không chỉ mocks.",
+        "Sandbox không nhận DB/model/worker token."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T19",
+      "title": "Offline tools và artifacts",
+      "depends_on": [
+        "T18",
+        "T07"
+      ],
+      "milestone": "M3",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/09-sandbox-tool-execution.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "worker/internal/tools",
+        "catalogs/tools.json"
+      ],
+      "implementation_steps": [
+        "file list/read/write, terminal offline, parse OpenAPI external refs disabled.",
+        "Typed input/output, effect from registry, version manifest và safe previews.",
+        "Artifact upload/finalize nối provenance đúng call/attempt."
+      ],
+      "tests": [
+        "Path traversal/symlink export, invalid args, timeout, tool binary unavailable.",
+        "Two homogeneous workers cùng fixtures, hashes bằng nhau ở pure tools."
+      ],
+      "acceptance_criteria": [
+        "Offline vertical slice Agent→tool→artifact→summary chạy thật.",
+        "Không command thực thi trên host hoặc tự tải package."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T20",
+      "title": "HTTP typed adapter",
+      "depends_on": [
+        "T17",
+        "T19"
+      ],
+      "milestone": "M4",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/09-sandbox-tool-execution.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "worker/internal/http",
+        "packages/policy"
+      ],
+      "implementation_steps": [
+        "Normalize target components, resolver pinning, TLS verify, redirect từng hop.",
+        "Secret injection đúng origin/capability, request/body/response limits.",
+        "Evidence HTTP redacted/raw classification, method effect classification server-owned."
+      ],
+      "tests": [
+        "DNS change, redirects foreign origin, Host/SNI mismatch, IPv6, private lab.",
+        "Harmless POST counter không duplicate khi result ACK mất."
+      ],
+      "acceptance_criteria": [
+        "Không blind external network qua shell.",
+        "HTTP lỗi không được kết luận target an toàn."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T21",
+      "title": "Browser automation và scoped inspecting proxy",
+      "depends_on": [
+        "T20"
+      ],
+      "milestone": "M4",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/09-sandbox-tool-execution.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "worker/internal/proxy",
+        "worker/internal/browser",
+        "tools/browser-image"
+      ],
+      "implementation_steps": [
+        "Run-local TLS CA/inspecting proxy, authority/path checks từng request, upstream verify.",
+        "Browser firewall only proxy, deny UDP/direct/DNS paths; Playwright action schema.",
+        "Session affinity, pinning unsupported states, screenshot/DOM evidence, lease revoke."
+      ],
+      "tests": [
+        "Hai vhost cùng IP; JS subresource/redirect/WS/WebRTC attempts ngoài grant.",
+        "Proxy crash/lease expire grant revoke chặn request mới.",
+        "Actual runsc+Chromium compatibility và no --no-sandbox shortcut."
+      ],
+      "acceptance_criteria": [
+        "CONNECT passthrough đơn thuần không đạt task.",
+        "Browser state/cookies không vào logs/default export."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T22",
+      "title": "Approval UI và exact-action decisions",
+      "depends_on": [
+        "T12",
+        "T13",
+        "T17",
+        "T10"
+      ],
+      "milestone": "M4",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/10-authorization-scope.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/application/approvals",
+        "apps/web/approval-card"
+      ],
+      "implementation_steps": [
+        "Bốn mode snapshot, exact fingerprint/TTL, owner approve/reject one-shot.",
+        "Card đủ tool/target/worker/risk/time, stale/canceled visual states.",
+        "Transaction approve→attempt chỉ một lần, no reusable model grants."
+      ],
+      "tests": [
+        "Hai tab approve; scope/secret/worker thay đổi; approve sau cancel/revoke/expiry.",
+        "Automatic routine không popup, Reject no execution but Ask works."
+      ],
+      "acceptance_criteria": [
+        "Policy deny không được owner card chuyển allow.",
+        "Nút success phản ánh committed result."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T23",
+      "title": "Pause/cancel/reconcile từ UI tới worker",
+      "depends_on": [
+        "T17",
+        "T19",
+        "T22"
+      ],
+      "milestone": "M4",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/07-agent-runtime.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/application/run-control",
+        "worker/internal/lease",
+        "apps/web/run-controls"
+      ],
+      "implementation_steps": [
+        "Cooperative pause boundary, notes consumption, terminal resume tạo Run mới.",
+        "Cancel fan-out child/tasks, revoke proxy lease, track quiescence.",
+        "Owner reconciliation modal có evidence/reason, không blind retry ambiguous effects."
+      ],
+      "tests": [
+        "Cancel vs result race, lost worker, child active, approval pending.",
+        "Healthy ack target và partition unknown state, no false canceled."
+      ],
+      "acceptance_criteria": [
+        "Stop button không chỉ ngắt streaming UI.",
+        "Emergency stop và revoked grant deny renewals."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T24",
+      "title": "Bounded subagents và context compaction",
+      "depends_on": [
+        "T14",
+        "T23"
+      ],
+      "milestone": "M4",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/07-agent-runtime.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/runtime/subagents",
+        "packages/llm/summary",
+        "prompts/"
+      ],
+      "implementation_steps": [
+        "Coordinator delegation depth1/max2 children, allowed tools subset, shared budget.",
+        "Child workspace riêng và evidence handoff, parent finalization verification.",
+        "Schema-valid summary, retained tail, fallback không mất context cũ."
+      ],
+      "tests": [
+        "Child tries recursive delegation/budget escape; parent finalizes too early.",
+        "Summary omits active task, malformed/empty output, incomplete tool pair."
+      ],
+      "acceptance_criteria": [
+        "Không tạo worker role chuyên biệt.",
+        "Summary không thay live domain/authorization state."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T25",
+      "title": "Finding workflow và evidence verification",
+      "depends_on": [
+        "T19",
+        "T20",
+        "T07"
+      ],
+      "milestone": "M5",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/12-findings-evidence-reports.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/application/findings",
+        "apps/web/findings"
+      ],
+      "implementation_steps": [
+        "Candidate/versions/status/severity/confidence, source provenance và evidence gates.",
+        "Owner review/high-critical confirmation, manual external source label.",
+        "Dedup suggestions không destructive merge, history giữ nguyên."
+      ],
+      "tests": [
+        "Verified no evidence, wrong Project artifact, stale/fake result source.",
+        "Edit text không sửa artifact hash, confidence không đổi severity."
+      ],
+      "acceptance_criteria": [
+        "Mọi verified finding có evidence ready traceable.",
+        "Không model text tự gán status vượt verification gate."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T26",
+      "title": "Report snapshot và retest",
+      "depends_on": [
+        "T25",
+        "T23"
+      ],
+      "milestone": "M5",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/12-findings-evidence-reports.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/application/reports",
+        "apps/web/reports",
+        "prompts/report-template.md"
+      ],
+      "implementation_steps": [
+        "Snapshot finding versions/coverage/source scopes trước render Markdown/JSON/HTML.",
+        "Offline HTML escaped, artifact index/hash, report status thật.",
+        "Retest Run mới, current grants, observed_fixed/still_present/inconclusive."
+      ],
+      "tests": [
+        "Report cũ không đổi khi finding sửa, target HTML scripts escaped.",
+        "Retest unavailable/credentials missing không fixed."
+      ],
+      "acceptance_criteria": [
+        "Không hứa full pentest khi coverage partial.",
+        "Report bytes download được và hashes khớp."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T27",
+      "title": "Search và Project export/import",
+      "depends_on": [
+        "T26",
+        "T07"
+      ],
+      "milestone": "M5",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/12-findings-evidence-reports.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/application/export",
+        "packages/db/search",
+        "apps/web/search"
+      ],
+      "implementation_steps": [
+        "Project-bound full-text metadata/redacted chunks, pagination.",
+        "ZIP manifest/hash, no credentials/sessions/live grants, UUID remap on import.",
+        "Archive size/path validation và staging commit/partial import explicit."
+      ],
+      "tests": [
+        "Search cross-project, secret canary indexing.",
+        "Zip traversal/symlink/bomb/hash mismatch; imported grants inactive."
+      ],
+      "acceptance_criteria": [
+        "Export/import roundtrip giữ nội dung và provenance external_source_id.",
+        "Không auto execute bất cứ file/task nhập vào."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T28",
+      "title": "Deployment scripts và doctor",
+      "depends_on": [
+        "T19",
+        "T05"
+      ],
+      "milestone": "M6",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/14-deployment-operations.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "ops/compose",
+        "ops/systemd",
+        "ops/scripts",
+        "README.md"
+      ],
+      "implementation_steps": [
+        "Compose control-plane/volumes/proxy và Linux worker service, migration startup order.",
+        "Bootstrap/doctor/key checks, private HTTPS, no exposed DB, pinned digests.",
+        "Upgrade/drain/rollback/emergency-stop commands có exit codes thật."
+      ],
+      "tests": [
+        "Fresh install từ máy sạch, missing config/key, read-only storage.",
+        "Restart services/worker identity persistent, no orphan auto-restart."
+      ],
+      "acceptance_criteria": [
+        "Không runnable compose tham chiếu image chưa build/push mà không hướng dẫn.",
+        "Debug/mock profile không bị hiểu là personal production."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T29",
+      "title": "Security integration lab",
+      "depends_on": [
+        "T20",
+        "T21",
+        "T22",
+        "T23",
+        "T28"
+      ],
+      "milestone": "M6",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/16-threat-model.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "tests/security",
+        "tests/lab",
+        "release-evidence/G3"
+      ],
+      "implementation_steps": [
+        "Tạo lab domains/resolver/vhosts/counters/storage fixtures, không external targets.",
+        "Chạy toàn threat/policy/canary/isolation cases và thu evidence.",
+        "Review secrets, network boundary, signatures và dependency supply chain."
+      ],
+      "tests": [
+        "Zero scope bypass, zero secret canary leaks, zero unverified claims auto verified.",
+        "Proxy fail-closed, session-clone, stale lease/fence and command injection inputs."
+      ],
+      "acceptance_criteria": [
+        "G3/G4 có Linux-runtime evidence thật.",
+        "Critical/high security bugs không defer qua release."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T30",
+      "title": "Chaos, performance và UX regression",
+      "depends_on": [
+        "T24",
+        "T27",
+        "T29",
+        "T11"
+      ],
+      "milestone": "M6",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/15-testing-evaluation.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "tests/chaos",
+        "tests/e2e",
+        "release-evidence/G6"
+      ],
+      "implementation_steps": [
+        "Fault injection tất cả recovery windows và concurrency race bằng deterministic fixtures.",
+        "Đo API/event/UI/history/capacity trên hardware ghi rõ, không giả LLM latency.",
+        "Long transcript/IME/mobile/theme/accessibility và source component screenshot."
+      ],
+      "tests": [
+        "Recovery matrix, result dedup, counter commit order, cancel vs complete.",
+        "Target latency and long history; ghi số đo/skips/hardware."
+      ],
+      "acceptance_criteria": [
+        "Không automatic replay unsafe side effect.",
+        "Targets không đạt phải có measured gap/ADR, không sửa report giả."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T31",
+      "title": "Backup/verify/restore và key recovery",
+      "depends_on": [
+        "T28",
+        "T27",
+        "T23"
+      ],
+      "milestone": "M6",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/14-deployment-operations.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "ops/backup",
+        "ops/restore",
+        "tests/restore",
+        "release-evidence/G7"
+      ],
+      "implementation_steps": [
+        "Quiescent snapshot DB+ObjectStore inventory+encrypted key recovery material.",
+        "Verify archive/hash/decryption, recovery locks/sessions/worker tokens revoked.",
+        "Fresh-machine restore, consistency checker, explicit execution re-enable."
+      ],
+      "tests": [
+        "Missing/corrupt key, missing artifact, interrupted backup, hash mismatch.",
+        "Active Run restore không replay, re-enroll worker + new lab task."
+      ],
+      "acceptance_criteria": [
+        "Backup created khác verified; fail exit nonzero.",
+        "Restore drill có log/version/hash và measured time, không chỉ script exists."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T32",
+      "title": "Observability và diagnostic export",
+      "depends_on": [
+        "T13",
+        "T17",
+        "T25"
+      ],
+      "milestone": "M6",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/17-observability-errors.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "packages/observability",
+        "apps/web/operations",
+        "apps/api/diagnostics"
+      ],
+      "implementation_steps": [
+        "Structured safe logs/correlation/metrics, reason codes nhất quán UI/API.",
+        "Operations health/unknown effects/backup/key/disk banners.",
+        "Diagnostics bundle default excludes raw prompts/commands/evidence/secrets."
+      ],
+      "tests": [
+        "Log canary, high-cardinality labels, wrong request_id data, error schema.",
+        "Disconnected SSE vs run state, diagnostics download access control."
+      ],
+      "acceptance_criteria": [
+        "Không external telemetry mặc định.",
+        "Owner tìm được request→attempt→artifact bằng IDs mà không secret leak."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T33",
+      "title": "CI/release hardening và source provenance",
+      "depends_on": [
+        "T29",
+        "T30",
+        "T31",
+        "T32"
+      ],
+      "milestone": "M7",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/18-release-acceptance.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        ".github/workflows",
+        "ops/release",
+        "release-evidence",
+        "docs/licenses"
+      ],
+      "implementation_steps": [
+        "CI contracts/unit/integration/Go race/E2E/security runners, lockfiles và image digests.",
+        "SBOM/license inventory, release notes/known limits, migration compatibility.",
+        "Artifact build/checksum/signing process với keys không trong repo."
+      ],
+      "tests": [
+        "Fresh build từ lockfile, package/release smoke, dependency audit review.",
+        "No skipped critical gates, no mock provider fallback production."
+      ],
+      "acceptance_criteria": [
+        "G0–G7 matrix có trạng thái và file evidence.",
+        "Không tự push/deploy bên ngoài khi owner chưa yêu cầu."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T34",
+      "title": "Owner acceptance và polish luồng dùng thật",
+      "depends_on": [
+        "T33",
+        "T10",
+        "T26"
+      ],
+      "milestone": "M7",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/18-release-acceptance.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "apps/web",
+        "docs/user-guide",
+        "release-evidence/owner-acceptance"
+      ],
+      "implementation_steps": [
+        "Chạy owner script toàn chuỗi create→Ask→Agent→pause/cancel→finding→report→retest→restore.",
+        "Sửa friction onboarding/error/help states theo test thực, không thêm scope mới.",
+        "Ghi limitation và cách chạy job hằng ngày cho owner."
+      ],
+      "tests": [
+        "Hai Project tách biệt, worker1 offline không nhảy worker2.",
+        "App labels/data modes/cost unknown/human review đúng semantics."
+      ],
+      "acceptance_criteria": [
+        "Owner xác nhận workflow dùng được; unmet gates không che giấu.",
+        "No TODO trong critical happy/error path."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T35",
+      "title": "Live-model capability và quality eval tùy chọn",
+      "depends_on": [
+        "T24",
+        "T29",
+        "T25"
+      ],
+      "milestone": "M7",
+      "priority": "OPTIONAL",
+      "spec_refs": [
+        "docs/15-testing-evaluation.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "tests/evals",
+        "docs/model-baseline"
+      ],
+      "implementation_steps": [
+        "Chỉ khi owner đã cấu hình endpoint/key, chạy synthetic capability và lab20-case eval budget-capped.",
+        "Lưu model/version/config/prompt hashes, measured usage, numerator/denominator.",
+        "So sánh ground truth độc lập và ghi uncertainty/unsupported cases."
+      ],
+      "tests": [
+        "Không target ngoài lab hoặc dữ liệu bí mật.",
+        "Unknown cost được ghi nhận, provider capability không giả."
+      ],
+      "acceptance_criteria": [
+        "Task opt-in; thiếu key ghi NOT_RUN, không PASS.",
+        "Kết quả không dùng quảng cáo benchmark chung từ mẫu nhỏ."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    },
+    {
+      "id": "T36",
+      "title": "Bàn giao phiên bản cá nhân",
+      "depends_on": [
+        "T34"
+      ],
+      "milestone": "M7",
+      "priority": "MUST",
+      "spec_refs": [
+        "docs/18-release-acceptance.md",
+        "AGENTS.md"
+      ],
+      "target_modules": [
+        "README.md",
+        "CHANGELOG.md",
+        "implementation/STATUS.md",
+        "release-evidence"
+      ],
+      "implementation_steps": [
+        "Tổng hợp version/images/binary checksums, config/env, setup, upgrade, backup/recovery và known limits.",
+        "Đối chiếu requirements traceability; mọi MUST có implementation/test evidence.",
+        "Chuẩn bị repository/tag/release nội bộ; chỉ commit/push/deploy khi owner yêu cầu."
+      ],
+      "tests": [
+        "Cài từ hướng dẫn cuối cùng trên fresh machine/VM và chạy lab smoke.",
+        "Không link/file thiếu; package không chứa secrets hoặc private user data."
+      ],
+      "acceptance_criteria": [
+        "Ứng dụng và tài liệu nhất quán, owner tự vận hành/khôi phục được.",
+        "T35 có trạng thái riêng, không giả đã benchmark model nếu chưa chạy."
+      ],
+      "definition_of_done": [
+        "Code path thật, không mock success trong production.",
+        "Schema/docs/STATUS được cập nhật; test đã chạy và evidence đường dẫn rõ."
+      ],
+      "must_not": [
+        "Nới scope/secret/runtime security để vượt test.",
+        "Tự thêm SaaS/billing/cloud bắt buộc hoặc tự deploy bên ngoài."
+      ]
+    }
+  ]
+}

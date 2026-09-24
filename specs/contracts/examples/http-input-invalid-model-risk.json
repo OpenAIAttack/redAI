@@ -1,0 +1,16 @@
+{
+  "scheme": "https",
+  "host": "app.example.test",
+  "port": 443,
+  "path": "/api/health",
+  "method": "GET",
+  "headers": {
+    "Accept": "application/json"
+  },
+  "body_artifact_id": null,
+  "credential_ref": null,
+  "follow_redirects": false,
+  "max_redirects": 0,
+  "max_response_bytes": 1048576,
+  "risk": "routine"
+}

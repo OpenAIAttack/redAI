@@ -1,0 +1,4 @@
+# Versions used to validate this documentation bundle, not app runtime dependencies.
+PyYAML==6.0.3
+jsonschema==4.26.0
+cryptography==46.0.4

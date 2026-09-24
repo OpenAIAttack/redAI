@@ -1,0 +1,267 @@
+{
+  "status": "PASS_STATIC_BUNDLE_CHECKS",
+  "check_groups": {
+    "json_documents": 48,
+    "yaml_documents": 2,
+    "schema_metaschema": 11,
+    "references": 658,
+    "openapi_structure": 1022,
+    "openapi_embedded_schema": 469,
+    "fixture_expectations": 29,
+    "signature_vector": 7,
+    "cross_contract": 55,
+    "backlog": 296,
+    "behavior_vector_structure": 4,
+    "markdown_links": 45,
+    "ddl_structure": 479
+  },
+  "counts": {
+    "narrative_documents": 21,
+    "adrs": 7,
+    "json_schemas": 11,
+    "api_operations": {
+      "public.openapi.yaml": 82,
+      "worker.openapi.yaml": 16
+    },
+    "tables": 38,
+    "foreign_keys_linted": 88,
+    "tools": 10,
+    "tasks": 37,
+    "requirements": 36,
+    "fixture_cases": 29,
+    "fixture_expectations_matched": 29,
+    "behavior_vectors": {
+      "policy-cases.json": 32,
+      "recovery-cases.json": 18
+    }
+  },
+  "fixture_results": [
+    {
+      "id": "scope-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "scope-invalid-inheritance",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "scope-invalid-port",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "run-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "run-invalid-mode",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "run-invalid-money-number",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "run-invalid-state",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "run-invalid-timestamp",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "http-input-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "http-input-invalid-model-risk",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "terminal-input-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "terminal-input-invalid-network",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "finding-candidate-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "finding-invalid-verified-no-evidence",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "finding-verified-structurally-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "summary-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "summary-invalid-authorization",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "reviewer-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "reviewer-invalid-confidence",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "event-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "event-invalid-state",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "event-invalid-counter",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "export-manifest-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "export-invalid-activate-grants",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "worker-offline-envelope-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "worker-claims-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    },
+    {
+      "id": "worker-invalid-scoped-no-grant",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "worker-invalid-resource-limit",
+      "expected_valid": false,
+      "actual_valid": false,
+      "matched": true
+    },
+    {
+      "id": "worker-result-valid",
+      "expected_valid": true,
+      "actual_valid": true,
+      "matched": true
+    }
+  ],
+  "task_topological_order": [
+    "T00",
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T06",
+    "T15",
+    "T07",
+    "T08",
+    "T12",
+    "T16",
+    "T09",
+    "T10",
+    "T11",
+    "T13",
+    "T14",
+    "T17",
+    "T18",
+    "T22",
+    "T19",
+    "T20",
+    "T23",
+    "T28",
+    "T21",
+    "T24",
+    "T25",
+    "T26",
+    "T29",
+    "T32",
+    "T27",
+    "T35",
+    "T30",
+    "T31",
+    "T33",
+    "T34",
+    "T36"
+  ],
+  "issues": [],
+  "not_performed": [
+    "Full OpenAPI meta-schema validation/code generation with production client generators.",
+    "PostgreSQL grammar parsing, applying migrations, constraints/transactions on a live database.",
+    "Application implementation, unit/integration/E2E tests, browser UI verification.",
+    "Worker/lease/policy engine execution, live network requests, gVisor/proxy isolation tests.",
+    "Production model calls, real cost measurements, live pentesting, performance benchmarks.",
+    "Backup/restore drills, deployment, security audit, release gates G0-G7."
+  ],
+  "dependencies": {
+    "PyYAML": "6.0.3",
+    "jsonschema": "4.26.0",
+    "cryptography": "46.0.4"
+  }
+}

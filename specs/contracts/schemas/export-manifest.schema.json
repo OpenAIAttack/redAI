@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/export-manifest.schema.json",
+  "title": "redAI export-manifest",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "bundle_id": {
+      "$ref": "common.schema.json#/$defs/UUID"
+    },
+    "project_source_id": {
+      "$ref": "common.schema.json#/$defs/UUID"
+    },
+    "created_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "contains_secrets": {
+      "const": false
+    },
+    "activate_authorization": {
+      "const": false
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/SHA256"
+          },
+          "byte_size": {
+            "$ref": "common.schema.json#/$defs/Counter"
+          },
+          "artifact_source_id": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/UUID"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "byte_size",
+          "artifact_source_id"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 100000
+    },
+    "metadata_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "minItems": 1,
+      "maxItems": 32
+    }
+  },
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "project_source_id",
+    "created_at",
+    "contains_secrets",
+    "activate_authorization",
+    "files",
+    "metadata_paths"
+  ],
+  "additionalProperties": false
+}

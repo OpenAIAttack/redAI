@@ -1,0 +1,571 @@
+{
+  "status": "behavioral_vectors_not_executed_against_an_application",
+  "scope_fixture": "contracts/examples/scope-valid.json",
+  "cases": [
+    {
+      "id": "POL-001",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "allow",
+      "reason": "Explicit lab fixture allowlist; address range only valid in test profile."
+    },
+    {
+      "id": "POL-002",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "APP.EXAMPLE.TEST.",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "allow",
+      "reason": "Normalize case/trailing dot once, then exact match."
+    },
+    {
+      "id": "POL-003",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test.attacker.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "No string-suffix origin match."
+    },
+    {
+      "id": "POL-004",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "other.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Same parent domain is not this exact origin."
+    },
+    {
+      "id": "POL-005",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 8443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Port not granted."
+    },
+    {
+      "id": "POL-006",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 80,
+        "scheme": "http",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Protocol not granted."
+    },
+    {
+      "id": "POL-007",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api2/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Path prefix is boundary-aware."
+    },
+    {
+      "id": "POL-008",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "POST",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Method/action not granted; approval cannot expand scope."
+    },
+    {
+      "id": "POL-009",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "127.0.0.1"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Loopback blocked."
+    },
+    {
+      "id": "POL-010",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "169.254.169.254"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Metadata/link-local blocked."
+    },
+    {
+      "id": "POL-011",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10",
+          "127.0.0.1"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Validate every A/AAAA response."
+    },
+    {
+      "id": "POL-012",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "::ffff:127.0.0.1"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Normalize IPv4-mapped IPv6 before policy."
+    },
+    {
+      "id": "POL-013",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "10.2.0.5"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Private range not in explicit lab scope."
+    },
+    {
+      "id": "POL-014",
+      "category": "scope",
+      "context": {
+        "grant": "revoked",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Live revocation overrides run snapshot."
+    },
+    {
+      "id": "POL-015",
+      "category": "scope",
+      "context": {
+        "grant": "expired",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Grant validity enforced at execution."
+    },
+    {
+      "id": "POL-016",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "reject",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "deny",
+      "reason": "Reject means no tool execution."
+    },
+    {
+      "id": "POL-017",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "always_ask",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ]
+      },
+      "expected_decision": "ask_user",
+      "reason": "Inside scope still requires approval."
+    },
+    {
+      "id": "POL-018",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "ask_high_risk",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "risk_tier": "routine"
+      },
+      "expected_decision": "allow",
+      "reason": "Routine scoped request under review mode."
+    },
+    {
+      "id": "POL-019",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "ask_high_risk",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "risk_tier": "high"
+      },
+      "expected_decision": "ask_user",
+      "reason": "High-risk requires exact-action approval."
+    },
+    {
+      "id": "POL-020",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "worker_binding": "unbound"
+      },
+      "expected_decision": "deny",
+      "reason": "No silent worker fallback."
+    },
+    {
+      "id": "POL-021",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "exclusion_match": true
+      },
+      "expected_decision": "deny",
+      "reason": "Explicit deny has precedence."
+    },
+    {
+      "id": "POL-022",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "redirect_to": "https://external.test/path"
+      },
+      "expected_decision": "deny",
+      "reason": "Every redirect requires independent authorization."
+    },
+    {
+      "id": "POL-023",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "tls_valid": false
+      },
+      "expected_decision": "deny",
+      "reason": "No automatic TLS validation bypass."
+    },
+    {
+      "id": "POL-024",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/health",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "host_header": "other.example.test"
+      },
+      "expected_decision": "deny",
+      "reason": "Host/SNI/authority must agree."
+    },
+    {
+      "id": "POL-025",
+      "category": "scope",
+      "context": {
+        "grant": "active",
+        "mode": "automatic",
+        "host": "app.example.test",
+        "port": 443,
+        "scheme": "https",
+        "path": "/api/%2e%2e/private",
+        "method": "GET",
+        "zone": "lab",
+        "resolved_addresses": [
+          "192.0.2.10"
+        ],
+        "parser_disagreement": true
+      },
+      "expected_decision": "deny",
+      "reason": "Ambiguous path canonicalization fails closed."
+    },
+    {
+      "id": "POL-026",
+      "category": "inheritance",
+      "context": {
+        "discovery": "shared_cdn_ip",
+        "dns_proof_for": "example.test",
+        "requested_target": "provider infrastructure"
+      },
+      "expected_decision": "deny",
+      "reason": "Discovery is not authorization."
+    },
+    {
+      "id": "POL-027",
+      "category": "wildcard",
+      "context": {
+        "rule": {
+          "host": "example.test",
+          "match": "subdomains",
+          "include_apex": false
+        },
+        "target": "example.test"
+      },
+      "expected_decision": "deny",
+      "reason": "Wildcard descendants do not include apex by default."
+    },
+    {
+      "id": "POL-028",
+      "category": "wildcard",
+      "context": {
+        "rule": {
+          "host": "example.test",
+          "match": "subdomains",
+          "include_apex": false
+        },
+        "target": "a.example.test",
+        "grant": "explicit_active",
+        "remaining_checks": "pass"
+      },
+      "expected_decision": "allow",
+      "reason": "Explicit descendant rule; excludes and third-party checks still apply."
+    },
+    {
+      "id": "POL-029",
+      "category": "lease",
+      "context": {
+        "current_fence": "9",
+        "request_fence": "8"
+      },
+      "expected_decision": "deny",
+      "reason": "A stale worker cannot commit or start."
+    },
+    {
+      "id": "POL-030",
+      "category": "approval",
+      "context": {
+        "approval_input_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "current_input_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "expected_decision": "deny",
+      "reason": "Changing input invalidates approval."
+    },
+    {
+      "id": "POL-031",
+      "category": "browser",
+      "context": {
+        "transport": "blind_connect",
+        "network_profile": "scoped_web"
+      },
+      "expected_decision": "deny",
+      "reason": "Blind tunneling cannot enforce HTTP origin/path."
+    },
+    {
+      "id": "POL-032",
+      "category": "identity",
+      "context": {
+        "session_tenant": "A",
+        "resource_tenant": "B"
+      },
+      "expected_decision": "deny",
+      "reason": "Single-owner v1 does not remove ownership checks."
+    }
+  ]
+}

@@ -1,0 +1,387 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "requirement": "Một owner, không public signup",
+      "tasks": [
+        "T04"
+      ],
+      "gate": "G1",
+      "acceptance_test": "AUTH-singleton-race",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-002",
+      "requirement": "Chat–Project–Agent và UI thật",
+      "tasks": [
+        "T06",
+        "T09",
+        "T10"
+      ],
+      "gate": "G2",
+      "acceptance_test": "UI-real-backend",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-003",
+      "requirement": "Project ownership closure",
+      "tasks": [
+        "T02",
+        "T06"
+      ],
+      "gate": "G1",
+      "acceptance_test": "DATA-cross-project",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-004",
+      "requirement": "File integrity và immutable evidence",
+      "tasks": [
+        "T07",
+        "T25"
+      ],
+      "gate": "G5",
+      "acceptance_test": "FILE-hash-immutable",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-005",
+      "requirement": "Ask không execution tools",
+      "tasks": [
+        "T09"
+      ],
+      "gate": "G2",
+      "acceptance_test": "ASK-zero-task",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-006",
+      "requirement": "Durable Run độc lập browser",
+      "tasks": [
+        "T13",
+        "T11"
+      ],
+      "gate": "G2",
+      "acceptance_test": "RUN-reconnect",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-007",
+      "requirement": "Idempotent create/message/approval",
+      "tasks": [
+        "T09",
+        "T22"
+      ],
+      "gate": "G6",
+      "acceptance_test": "API-duplicate-requests",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-008",
+      "requirement": "Scope/DNS một lần Project",
+      "tasks": [
+        "T12"
+      ],
+      "gate": "G4",
+      "acceptance_test": "SCOPE-proof-reuse",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-009",
+      "requirement": "Bốn approval modes đúng semantics",
+      "tasks": [
+        "T22"
+      ],
+      "gate": "G4",
+      "acceptance_test": "POLICY-mode-matrix",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-010",
+      "requirement": "Không tự authorize dependency/shared IP",
+      "tasks": [
+        "T12",
+        "T20",
+        "T21"
+      ],
+      "gate": "G3",
+      "acceptance_test": "NET-shared-vhost",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-011",
+      "requirement": "Worker đồng nhất và stable identity",
+      "tasks": [
+        "T15",
+        "T19"
+      ],
+      "gate": "G3",
+      "acceptance_test": "WORKER-two-machines",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-012",
+      "requirement": "Signed lease/session/fencing",
+      "tasks": [
+        "T17"
+      ],
+      "gate": "G3",
+      "acceptance_test": "LEASE-tamper-stale",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-013",
+      "requirement": "Không host shell/mount/docker socket",
+      "tasks": [
+        "T18"
+      ],
+      "gate": "G3",
+      "acceptance_test": "SANDBOX-host-boundary",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-014",
+      "requirement": "Không unsafe effect replay",
+      "tasks": [
+        "T16",
+        "T17",
+        "T23"
+      ],
+      "gate": "G6",
+      "acceptance_test": "CHAOS-post-counter",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-015",
+      "requirement": "Cancel có quiescence acknowledgement",
+      "tasks": [
+        "T23"
+      ],
+      "gate": "G6",
+      "acceptance_test": "CANCEL-partition-race",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-016",
+      "requirement": "Pause boundary và notes",
+      "tasks": [
+        "T23"
+      ],
+      "gate": "G4",
+      "acceptance_test": "RUN-pause-note",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-017",
+      "requirement": "Budget shared và unknown held",
+      "tasks": [
+        "T14",
+        "T24"
+      ],
+      "gate": "G4",
+      "acceptance_test": "BUDGET-parallel-unknown",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-018",
+      "requirement": "Context summary không mất authority/state",
+      "tasks": [
+        "T24"
+      ],
+      "gate": "G4",
+      "acceptance_test": "SUMMARY-preserve-state",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-019",
+      "requirement": "Secret không vào model/log/report",
+      "tasks": [
+        "T05",
+        "T14",
+        "T26"
+      ],
+      "gate": "G3",
+      "acceptance_test": "PRIVACY-canary",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-020",
+      "requirement": "Provider local_only không cloud fallback",
+      "tasks": [
+        "T08",
+        "T14"
+      ],
+      "gate": "G4",
+      "acceptance_test": "MODEL-local-only",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-021",
+      "requirement": "Browser authority/path scope guard",
+      "tasks": [
+        "T21"
+      ],
+      "gate": "G3",
+      "acceptance_test": "BROWSER-inspected-proxy",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-022",
+      "requirement": "Typed HTTP/DNS/redirect checks",
+      "tasks": [
+        "T20"
+      ],
+      "gate": "G3",
+      "acceptance_test": "HTTP-dns-redirect",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-023",
+      "requirement": "Finding verified có bằng chứng",
+      "tasks": [
+        "T25"
+      ],
+      "gate": "G5",
+      "acceptance_test": "FINDING-no-evidence-deny",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-024",
+      "requirement": "Report snapshot và sanitize",
+      "tasks": [
+        "T26"
+      ],
+      "gate": "G5",
+      "acceptance_test": "REPORT-immutable-html",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-025",
+      "requirement": "Retest unavailable là inconclusive",
+      "tasks": [
+        "T26"
+      ],
+      "gate": "G5",
+      "acceptance_test": "RETEST-inconclusive",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-026",
+      "requirement": "Export/import không grant/secrets active",
+      "tasks": [
+        "T27"
+      ],
+      "gate": "G5",
+      "acceptance_test": "IMPORT-no-authority",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-027",
+      "requirement": "Backup DB+files+key và restore thật",
+      "tasks": [
+        "T31"
+      ],
+      "gate": "G7",
+      "acceptance_test": "RESTORE-fresh-machine",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-028",
+      "requirement": "SSE không mất vì commit ordering",
+      "tasks": [
+        "T11"
+      ],
+      "gate": "G6",
+      "acceptance_test": "EVENT-commit-inversion",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-029",
+      "requirement": "Version/schema contracts TS và Go",
+      "tasks": [
+        "T00",
+        "T03"
+      ],
+      "gate": "G0",
+      "acceptance_test": "CONTRACT-cross-language",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-030",
+      "requirement": "Ops/errors safe và observable",
+      "tasks": [
+        "T32"
+      ],
+      "gate": "G7",
+      "acceptance_test": "LOG-redaction",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-031",
+      "requirement": "Default không external telemetry",
+      "tasks": [
+        "T28",
+        "T32"
+      ],
+      "gate": "G7",
+      "acceptance_test": "OPS-no-telemetry",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-032",
+      "requirement": "Hardening không tự downgrade",
+      "tasks": [
+        "T18",
+        "T21",
+        "T29"
+      ],
+      "gate": "G3",
+      "acceptance_test": "GUARD-fail-closed",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-033",
+      "requirement": "UI keyboard/mobile/error states",
+      "tasks": [
+        "T10",
+        "T30"
+      ],
+      "gate": "G2",
+      "acceptance_test": "UI-responsive-ime",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-034",
+      "requirement": "Không copy source/assets HackerAI",
+      "tasks": [
+        "T00",
+        "T33"
+      ],
+      "gate": "G0",
+      "acceptance_test": "LICENSE-provenance",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-035",
+      "requirement": "Release gates không mock/skip giả",
+      "tasks": [
+        "T33",
+        "T34",
+        "T36"
+      ],
+      "gate": "G7",
+      "acceptance_test": "RELEASE-evidence",
+      "priority": "MUST"
+    },
+    {
+      "id": "REQ-036",
+      "requirement": "Đánh giá model có ground truth và uncertainty",
+      "tasks": [
+        "T35"
+      ],
+      "gate": "OPTIONAL",
+      "acceptance_test": "EVAL-20-cases",
+      "priority": "OPTIONAL"
+    }
+  ]
+}

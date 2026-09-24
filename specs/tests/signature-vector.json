@@ -1,0 +1,9 @@
+{
+  "description": "Test-only public key. No private key included. Freeze clock to issued_at when testing lease lifetime. Dummy image/catalog digests must never pass a real worker readiness check.",
+  "algorithm": "Ed25519",
+  "public_key_base64url": "144HCmTxu3PMsq5P7wh6869amR8XNsz4aOXHR4zRPSY",
+  "envelope_fixture": "contracts/examples/worker-offline-envelope-valid.json",
+  "input_canonical_utf8": "{\"argv\":[\"printf\",\"fixture-ok\\\\n\"],\"cwd\":\"/workspace\",\"network_profile\":\"offline\",\"timeout_seconds\":10}",
+  "claims_canonical_utf8": "{\"attempt_id\":\"10000000-0000-4000-8000-000000000062\",\"attempt_no\":1,\"expires_at\":\"2026-09-24T03:00:45Z\",\"fencing_token\":\"1\",\"grant_id\":null,\"image_digest\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"input_sha256\":\"28925b0c37137f2c8caefc34bd63203aef3ba13577571e237a523173d7a5a118\",\"installation_id\":\"10000000-0000-4000-8000-000000000060\",\"issued_at\":\"2026-09-24T03:00:00Z\",\"network_profile\":\"offline\",\"policy_epoch\":\"1\",\"project_id\":\"10000000-0000-4000-8000-000000000002\",\"resource_limits\":{\"cpu_millis\":1000,\"memory_bytes\":1073741824,\"output_bytes\":26214400,\"pids\":128},\"run_id\":\"10000000-0000-4000-8000-000000000004\",\"schema_version\":\"1.0\",\"scope_policy_sha256\":null,\"scope_version_id\":null,\"timeout_seconds\":10,\"tool_call_id\":\"10000000-0000-4000-8000-000000000061\",\"tool_manifest_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"tool_name\":\"terminal.execute\",\"worker_id\":\"10000000-0000-4000-8000-000000000006\",\"worker_session_id\":\"10000000-0000-4000-8000-000000000063\",\"workspace_id\":\"10000000-0000-4000-8000-000000000001\"}",
+  "expected_input_sha256": "28925b0c37137f2c8caefc34bd63203aef3ba13577571e237a523173d7a5a118"
+}

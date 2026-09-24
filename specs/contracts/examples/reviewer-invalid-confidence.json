@@ -1,0 +1,11 @@
+{
+  "proposed_verdict": "inconclusive",
+  "rationale": "Bằng chứng fixture chưa đủ kết luận.",
+  "evidence_ids": [
+    "10000000-0000-4000-8000-000000000041"
+  ],
+  "missing_information": [
+    "Cần quan sát có kiểm soát trong môi trường lab."
+  ],
+  "confidence": 0.95
+}

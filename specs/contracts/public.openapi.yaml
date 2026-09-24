@@ -1,0 +1,2716 @@
+openapi: 3.1.0
+info:
+  title: redAI Personal owner API
+  version: 1.0.0-draft.1
+  description: Normative interface specification, not an implemented service. Domain
+    authorization remains mandatory.
+servers:
+- url: /api/v1
+security:
+- OwnerSession: []
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      summary: login
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Session
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/LoginRequest
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: logout
+      responses:
+        '204':
+          description: No content
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: &id001
+          type: string
+          minLength: 32
+  /auth/session:
+    get:
+      operationId: getSession
+      summary: getSession
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Session
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+  /projects:
+    get:
+      operationId: listProjects
+      summary: listProjects
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ProjectPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createProject
+      summary: createProject
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Project
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: &id002
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ProjectCreate
+  /projects/{project_id}:
+    get:
+      operationId: getProject
+      summary: getProject
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Project
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateProject
+      summary: updateProject
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Project
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: &id003
+          type: string
+          pattern: ^"[0-9]+"$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ProjectUpdate
+    delete:
+      operationId: deleteProject
+      summary: deleteProject
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/MaintenanceJob
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /projects/{project_id}/notes:
+    get:
+      operationId: listNotes
+      summary: listNotes
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/NotePage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createNote
+      summary: createNote
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Note
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/NoteWrite
+  /projects/{project_id}/notes/{note_id}:
+    patch:
+      operationId: updateNote
+      summary: updateNote
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Note
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: note_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/NoteWrite
+    delete:
+      operationId: deleteNote
+      summary: deleteNote
+      responses:
+        '204':
+          description: No content
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: note_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+  /projects/{project_id}/workers:
+    get:
+      operationId: getWorkerBindings
+      summary: getWorkerBindings
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/WorkerBindings
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: setWorkerBindings
+      summary: setWorkerBindings
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/WorkerBindings
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/WorkerBindings
+  /projects/{project_id}/dns/challenges:
+    post:
+      operationId: createDnsChallenge
+      summary: createDnsChallenge
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/DNSChallenge
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/DNSChallengeCreate
+  /projects/{project_id}/dns/verify:
+    post:
+      operationId: verifyDnsChallenge
+      summary: verifyDnsChallenge
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/DNSProof
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/DNSVerify
+  /projects/{project_id}/scope-versions:
+    get:
+      operationId: listScopeVersions
+      summary: listScopeVersions
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ScopeVersionPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createScopeVersion
+      summary: createScopeVersion
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ScopeVersion
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ScopeVersionCreate
+  /projects/{project_id}/grants:
+    get:
+      operationId: listGrants
+      summary: listGrants
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/GrantPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createGrant
+      summary: createGrant
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Grant
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/GrantCreate
+  /projects/{project_id}/grants/{grant_id}/revoke:
+    post:
+      operationId: revokeGrant
+      summary: revokeGrant
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Grant
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: grant_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /projects/{project_id}/chats:
+    get:
+      operationId: listChats
+      summary: listChats
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ChatPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createChat
+      summary: createChat
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Chat
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ChatCreate
+  /chats/{chat_id}:
+    get:
+      operationId: getChat
+      summary: getChat
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Chat
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: chat_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateChat
+      summary: updateChat
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Chat
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: chat_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ChatUpdate
+  /chats/{chat_id}/messages:
+    get:
+      operationId: listMessages
+      summary: listMessages
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/MessagePage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: chat_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: appendMessageOrRunNote
+      summary: appendMessageOrRunNote
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Message
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: chat_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/MessageCreate
+  /runs:
+    post:
+      operationId: createRun
+      summary: createRun
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/run.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/RunCreate
+  /runs/{run_id}:
+    get:
+      operationId: getRun
+      summary: getRun
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/run.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /runs/{run_id}/snapshot:
+    get:
+      operationId: getRunSnapshot
+      summary: getRunSnapshot
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Snapshot
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /runs/{run_id}/pause:
+    post:
+      operationId: pauseRun
+      summary: pauseRun
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/run.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /runs/{run_id}/resume:
+    post:
+      operationId: resumeRun
+      summary: resumeRun
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/run.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /runs/{run_id}/cancel:
+    post:
+      operationId: cancelRun
+      summary: cancelRun
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/run.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /runs/{run_id}/budget:
+    post:
+      operationId: increaseRunBudget
+      summary: increaseRunBudget
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/run.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/BudgetIncrease
+  /runs/{run_id}/manual-tools:
+    post:
+      operationId: createManualToolCall
+      summary: createManualToolCall
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ToolCall
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ManualToolCreate
+  /approvals/{approval_id}:
+    get:
+      operationId: getApproval
+      summary: getApproval
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Approval
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: approval_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /approvals/{approval_id}/decision:
+    post:
+      operationId: decideApproval
+      summary: decideApproval
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Approval
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: approval_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ApprovalDecision
+  /projects/{project_id}/artifacts:
+    get:
+      operationId: listArtifacts
+      summary: listArtifacts
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ArtifactPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createArtifactUpload
+      summary: createArtifactUpload
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Artifact
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ArtifactCreate
+  /artifacts/{artifact_id}:
+    get:
+      operationId: getArtifact
+      summary: getArtifact
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Artifact
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /artifacts/{artifact_id}/content:
+    put:
+      operationId: uploadArtifactContent
+      summary: uploadArtifactContent
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: &id004
+                $ref: ./schemas/common.schema.json#/$defs/OK
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+    get:
+      operationId: downloadArtifactContent
+      summary: downloadArtifactContent
+      responses:
+        '200':
+          description: Authenticated artifact bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /artifacts/{artifact_id}/finalize:
+    post:
+      operationId: finalizeArtifact
+      summary: finalizeArtifact
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Artifact
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ArtifactFinalize
+  /projects/{project_id}/findings:
+    get:
+      operationId: listFindings
+      summary: listFindings
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/FindingPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createFinding
+      summary: createFinding
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/finding.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/FindingWrite
+  /findings/{finding_id}:
+    get:
+      operationId: getFinding
+      summary: getFinding
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/finding.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: finding_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateFindingVersion
+      summary: updateFindingVersion
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/finding.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: finding_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/FindingWrite
+  /findings/{finding_id}/retest:
+    post:
+      operationId: createRetest
+      summary: createRetest
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/run.schema.json
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: finding_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/RetestCreate
+  /projects/{project_id}/reports:
+    get:
+      operationId: listReports
+      summary: listReports
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ReportPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createReport
+      summary: createReport
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Report
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ReportCreate
+  /reports/{report_id}:
+    get:
+      operationId: getReport
+      summary: getReport
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Report
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: report_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /workers:
+    get:
+      operationId: listWorkers
+      summary: listWorkers
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/WorkerPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+  /workers/enrollment-tokens:
+    post:
+      operationId: createEnrollmentToken
+      summary: createEnrollmentToken
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/EnrollmentToken
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/EnrollmentTokenCreate
+  /workers/{worker_id}:
+    get:
+      operationId: getWorker
+      summary: getWorker
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Worker
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: worker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /workers/{worker_id}/drain:
+    post:
+      operationId: drainWorker
+      summary: drainWorker
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Worker
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: worker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /workers/{worker_id}/revoke:
+    post:
+      operationId: revokeWorker
+      summary: revokeWorker
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Worker
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: worker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /providers:
+    get:
+      operationId: listProviders
+      summary: listProviders
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ProviderPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+    post:
+      operationId: createProvider
+      summary: createProvider
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Provider
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ProviderWrite
+  /providers/{provider_id}:
+    patch:
+      operationId: updateProvider
+      summary: updateProvider
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Provider
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ProviderWrite
+  /providers/{provider_id}/probe:
+    post:
+      operationId: probeProvider
+      summary: probeProvider
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ProbeResult
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: provider_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+  /secrets:
+    post:
+      operationId: createSecret
+      summary: createSecret
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/SecretMetadata
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/SecretWrite
+  /secrets/{secret_id}:
+    delete:
+      operationId: revokeSecret
+      summary: revokeSecret
+      responses:
+        '204':
+          description: No content
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: secret_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /operations/health:
+    get:
+      operationId: getHealth
+      summary: getHealth
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Health
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+  /operations/backups:
+    post:
+      operationId: createBackup
+      summary: createBackup
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/MaintenanceJob
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/BackupCreate
+  /operations/jobs/{job_id}:
+    get:
+      operationId: getMaintenanceJob
+      summary: getMaintenanceJob
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/MaintenanceJob
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /operations/emergency-stop:
+    post:
+      operationId: emergencyStop
+      summary: emergencyStop
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema: *id004
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /projects/{project_id}/export:
+    post:
+      operationId: exportProject
+      summary: exportProject
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/MaintenanceJob
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ExportCreate
+  /imports:
+    post:
+      operationId: importProject
+      summary: importProject
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/MaintenanceJob
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ImportCreate
+  /projects/{project_id}/search:
+    get:
+      operationId: searchProject
+      summary: searchProject
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/SearchResultPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 500
+  /events:
+    get:
+      operationId: streamEvents
+      summary: streamEvents
+      responses:
+        '200':
+          description: SSE stream; JSON data validates event.schema.json. Persist
+            Last-Event-ID, dedup, replay on reconnect.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+        '410':
+          description: Cursor expired; fetch snapshot.
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: after
+        in: query
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+      - name: Last-Event-ID
+        in: header
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+  /auth/sessions:
+    get:
+      operationId: listOwnerSessions
+      summary: listOwnerSessions
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/SessionPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+  /auth/sessions/{session_id}/revoke:
+    post:
+      operationId: revokeOwnerSession
+      summary: revokeOwnerSession
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: *id004
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /auth/password:
+    post:
+      operationId: changeOwnerPassword
+      summary: changeOwnerPassword
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: *id004
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/PasswordChange
+  /settings:
+    get:
+      operationId: getSettings
+      summary: getSettings
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Settings
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+    patch:
+      operationId: updateSettings
+      summary: updateSettings
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Settings
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: If-Match
+        in: header
+        required: true
+        schema: *id003
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/SettingsUpdate
+  /snapshot:
+    get:
+      operationId: getWorkspaceSnapshot
+      summary: getWorkspaceSnapshot
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/WorkspaceSnapshot
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: project_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+  /runs/{run_id}/tool-calls:
+    get:
+      operationId: listRunToolCalls
+      summary: listRunToolCalls
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ToolCallPage
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: run_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 2048
+  /tool-calls/{tool_call_id}/reconcile:
+    post:
+      operationId: ownerReconcileToolCall
+      summary: ownerReconcileToolCall
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/ToolCall
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: tool_call_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/OwnerReconcile
+  /secrets/{secret_id}/replace:
+    post:
+      operationId: replaceSecretVersion
+      summary: replaceSecretVersion
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/SecretMetadata
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: secret_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/SecretReplace
+  /workers/{worker_id}/undrain:
+    post:
+      operationId: undrainWorker
+      summary: undrainWorker
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Worker
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: worker_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/Reason
+  /operations/resume-execution:
+    post:
+      operationId: resumeNewExecution
+      summary: resumeNewExecution
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: *id004
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ExecutionResume
+  /operations/diagnostics:
+    post:
+      operationId: createDiagnosticsExport
+      summary: createDiagnosticsExport
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/MaintenanceJob
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema: *id001
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id002
+components:
+  securitySchemes:
+    OwnerSession:
+      type: apiKey
+      in: cookie
+      name: __Host-redai_session

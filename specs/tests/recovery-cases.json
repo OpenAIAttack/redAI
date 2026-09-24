@@ -1,0 +1,192 @@
+{
+  "status": "fault_injection_specifications_not_application_test_results",
+  "cases": [
+    {
+      "id": "REC-001",
+      "inject": "Browser closes then reconnects",
+      "precondition": "Run executing",
+      "expected_state": "running",
+      "assertions": [
+        "Same run_id.",
+        "No new task attempt from reconnect.",
+        "SSE cursor/snapshot yields consistent state."
+      ]
+    },
+    {
+      "id": "REC-002",
+      "inject": "Runtime process crashes after committed tool call",
+      "precondition": "Outbox/job and tool call committed",
+      "expected_state": "running",
+      "assertions": [
+        "Replacement runtime claims after lease expiry.",
+        "Same logical tool call.",
+        "No duplicate external effect."
+      ]
+    },
+    {
+      "id": "REC-003",
+      "inject": "Worker crashes after durable START but before result",
+      "precondition": "External effect may have begun",
+      "expected_state": "needs_attention",
+      "assertions": [
+        "Attempt becomes unknown.",
+        "No blind replay on another worker.",
+        "Recover journal/evidence or owner reconcile."
+      ]
+    },
+    {
+      "id": "REC-004",
+      "inject": "Lease renew lost during child process execution",
+      "precondition": "Attempt started",
+      "expected_state": "cancellation_pending",
+      "assertions": [
+        "Watchdog closes egress and kills process group before lease window ends.",
+        "Server does not claim confirmed cancellation until quiescence established."
+      ]
+    },
+    {
+      "id": "REC-005",
+      "inject": "Result ACK lost",
+      "precondition": "Result uploaded and committed",
+      "expected_state": "completed",
+      "assertions": [
+        "Retransmit same result digest is idempotent.",
+        "No new execution."
+      ]
+    },
+    {
+      "id": "REC-006",
+      "inject": "Different result under same attempt key",
+      "precondition": "Prior result already committed",
+      "expected_state": "needs_attention",
+      "assertions": [
+        "Conflict recorded.",
+        "First immutable evidence not replaced."
+      ]
+    },
+    {
+      "id": "REC-007",
+      "inject": "Grant revoked during browser session",
+      "precondition": "Page has active background requests",
+      "expected_state": "cancel_requested",
+      "assertions": [
+        "Proxy blocks subsequent requests.",
+        "Session and child tasks stop.",
+        "Revoke epoch checked on renewal."
+      ]
+    },
+    {
+      "id": "REC-008",
+      "inject": "Owner cancels while tool result commits",
+      "precondition": "Concurrent transactions",
+      "expected_state": "canceled_or_completed_by_serialized_order",
+      "assertions": [
+        "Terminal state cannot be overwritten by stale transition.",
+        "Record canceled partial evidence when appropriate."
+      ]
+    },
+    {
+      "id": "REC-009",
+      "inject": "Network lost after model request sent",
+      "precondition": "Billing outcome unknown",
+      "expected_state": "needs_attention",
+      "assertions": [
+        "Keep reservation as unknown liability.",
+        "Do not refund to zero without evidence.",
+        "Provider fallback requires policy and additional reservation."
+      ]
+    },
+    {
+      "id": "REC-010",
+      "inject": "Two child agents reserve last remaining budget",
+      "precondition": "Serializable locked budget operation",
+      "expected_state": "one_reservation_rejected",
+      "assertions": [
+        "Total observed + reserved <= limit.",
+        "No check-then-write race."
+      ]
+    },
+    {
+      "id": "REC-011",
+      "inject": "Database disconnect during SSE",
+      "precondition": "Some deltas not persisted",
+      "expected_state": "reconnect_required",
+      "assertions": [
+        "Snapshot authoritative.",
+        "Provisional text may be replaced, never presented as stored evidence."
+      ]
+    },
+    {
+      "id": "REC-012",
+      "inject": "Artifact upload interrupted or disk full",
+      "precondition": "Temp object exists",
+      "expected_state": "failed_or_upload_pending",
+      "assertions": [
+        "Artifact not ready before hash/size confirmation.",
+        "No partial bytes exposed as verified evidence."
+      ]
+    },
+    {
+      "id": "REC-013",
+      "inject": "Backup restored onto another machine",
+      "precondition": "Old leases/sessions exist",
+      "expected_state": "paused",
+      "assertions": [
+        "New installation epoch.",
+        "Revoke credentials/sessions.",
+        "No automatic replay."
+      ]
+    },
+    {
+      "id": "REC-014",
+      "inject": "Approval submitted twice",
+      "precondition": "Same action, same decision",
+      "expected_state": "single_approval_effect",
+      "assertions": [
+        "Idempotent response.",
+        "No second dispatch."
+      ]
+    },
+    {
+      "id": "REC-015",
+      "inject": "Permission mode changed during active Run",
+      "precondition": "Run snapshot exists",
+      "expected_state": "current_run_keeps_snapshot",
+      "assertions": [
+        "New runs get new preference.",
+        "Grant revocation still applies immediately."
+      ]
+    },
+    {
+      "id": "REC-016",
+      "inject": "Event transaction allocates cursor then rolls back",
+      "precondition": "Next event concurrently pending",
+      "expected_state": "no_committed_event_gap_loss",
+      "assertions": [
+        "Counter lock and event insert share transaction.",
+        "Reconnect never skips later committed event due sequence race."
+      ]
+    },
+    {
+      "id": "REC-017",
+      "inject": "Secret rotation response lost",
+      "precondition": "Same authenticated idempotent intent within 10 minutes",
+      "expected_state": "same_credential_delivery",
+      "assertions": [
+        "Return encrypted cached response only for same identity/body.",
+        "No plaintext response cache or new secret issuance."
+      ]
+    },
+    {
+      "id": "REC-018",
+      "inject": "Owner pause with running tasks",
+      "precondition": "Safe dispatch pause requested",
+      "expected_state": "paused_after_quiescence",
+      "assertions": [
+        "No new tool dispatch.",
+        "Current tasks finish/stop according to documented pause policy.",
+        "Absolute expiry still advances."
+      ]
+    }
+  ]
+}

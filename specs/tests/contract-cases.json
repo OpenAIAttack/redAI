@@ -1,0 +1,208 @@
+{
+  "spec_version": "1.0.0-draft.1",
+  "cases": [
+    {
+      "id": "scope-valid",
+      "fixture": "contracts/examples/scope-valid.json",
+      "schema": "scope.schema.json",
+      "expected_valid": true,
+      "reason": "Chỉ là fixture mạng lab/documentation; không gọi mạng khi validate."
+    },
+    {
+      "id": "scope-invalid-inheritance",
+      "fixture": "contracts/examples/scope-invalid-inheritance.json",
+      "schema": "scope.schema.json",
+      "expected_valid": false,
+      "reason": "Không tự cấp quyền hạ tầng liên quan."
+    },
+    {
+      "id": "scope-invalid-port",
+      "fixture": "contracts/examples/scope-invalid-port.json",
+      "schema": "scope.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "run-valid",
+      "fixture": "contracts/examples/run-valid.json",
+      "schema": "run.schema.json",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "run-invalid-mode",
+      "fixture": "contracts/examples/run-invalid-mode.json",
+      "schema": "run.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "run-invalid-money-number",
+      "fixture": "contracts/examples/run-invalid-money-number.json",
+      "schema": "run.schema.json",
+      "expected_valid": false,
+      "reason": "Money là chuỗi integer microUSD; không dùng float."
+    },
+    {
+      "id": "run-invalid-state",
+      "fixture": "contracts/examples/run-invalid-state.json",
+      "schema": "run.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "run-invalid-timestamp",
+      "fixture": "contracts/examples/run-invalid-timestamp.json",
+      "schema": "run.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "http-input-valid",
+      "fixture": "contracts/examples/http-input-valid.json",
+      "schema": "tool-input.schema.json#/$defs/HttpRequest",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "http-input-invalid-model-risk",
+      "fixture": "contracts/examples/http-input-invalid-model-risk.json",
+      "schema": "tool-input.schema.json#/$defs/HttpRequest",
+      "expected_valid": false,
+      "reason": "Model không tự gán risk."
+    },
+    {
+      "id": "terminal-input-valid",
+      "fixture": "contracts/examples/terminal-input-valid.json",
+      "schema": "tool-input.schema.json#/$defs/TerminalExecute",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "terminal-input-invalid-network",
+      "fixture": "contracts/examples/terminal-input-invalid-network.json",
+      "schema": "tool-input.schema.json#/$defs/TerminalExecute",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "finding-candidate-valid",
+      "fixture": "contracts/examples/finding-candidate-valid.json",
+      "schema": "finding.schema.json",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "finding-invalid-verified-no-evidence",
+      "fixture": "contracts/examples/finding-invalid-verified-no-evidence.json",
+      "schema": "finding.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "finding-verified-structurally-valid",
+      "fixture": "contracts/examples/finding-verified-structurally-valid.json",
+      "schema": "finding.schema.json",
+      "expected_valid": true,
+      "reason": "Chỉ schema; runtime còn phải kiểm tra artifact tồn tại và evidence có giá trị."
+    },
+    {
+      "id": "summary-valid",
+      "fixture": "contracts/examples/summary-valid.json",
+      "schema": "summary.schema.json",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "summary-invalid-authorization",
+      "fixture": "contracts/examples/summary-invalid-authorization.json",
+      "schema": "summary.schema.json",
+      "expected_valid": false,
+      "reason": "Summary không tạo authorization."
+    },
+    {
+      "id": "reviewer-valid",
+      "fixture": "contracts/examples/reviewer-valid.json",
+      "schema": "reviewer.schema.json",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "reviewer-invalid-confidence",
+      "fixture": "contracts/examples/reviewer-invalid-confidence.json",
+      "schema": "reviewer.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "event-valid",
+      "fixture": "contracts/examples/event-valid.json",
+      "schema": "event.schema.json",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "event-invalid-state",
+      "fixture": "contracts/examples/event-invalid-state.json",
+      "schema": "event.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "event-invalid-counter",
+      "fixture": "contracts/examples/event-invalid-counter.json",
+      "schema": "event.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "export-manifest-valid",
+      "fixture": "contracts/examples/export-manifest-valid.json",
+      "schema": "export-manifest.schema.json",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "export-invalid-activate-grants",
+      "fixture": "contracts/examples/export-invalid-activate-grants.json",
+      "schema": "export-manifest.schema.json",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "worker-offline-envelope-valid",
+      "fixture": "contracts/examples/worker-offline-envelope-valid.json",
+      "schema": "worker.schema.json#/$defs/TaskEnvelope",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "worker-claims-valid",
+      "fixture": "contracts/examples/worker-claims-valid.json",
+      "schema": "worker.schema.json#/$defs/LeaseClaims",
+      "expected_valid": true,
+      "reason": ""
+    },
+    {
+      "id": "worker-invalid-scoped-no-grant",
+      "fixture": "contracts/examples/worker-invalid-scoped-no-grant.json",
+      "schema": "worker.schema.json#/$defs/TaskEnvelope",
+      "expected_valid": false,
+      "reason": "Thiếu grant, scope snapshot và digest."
+    },
+    {
+      "id": "worker-invalid-resource-limit",
+      "fixture": "contracts/examples/worker-invalid-resource-limit.json",
+      "schema": "worker.schema.json#/$defs/LeaseClaims",
+      "expected_valid": false,
+      "reason": ""
+    },
+    {
+      "id": "worker-result-valid",
+      "fixture": "contracts/examples/worker-result-valid.json",
+      "schema": "worker.schema.json#/$defs/WorkerResult",
+      "expected_valid": true,
+      "reason": ""
+    }
+  ]
+}

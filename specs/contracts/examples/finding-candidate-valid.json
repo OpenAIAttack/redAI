@@ -1,0 +1,32 @@
+{
+  "id": "10000000-0000-4000-8000-000000000040",
+  "workspace_id": "10000000-0000-4000-8000-000000000001",
+  "project_id": "10000000-0000-4000-8000-000000000002",
+  "version": 1,
+  "title": "Fixture: cấu hình header cần được xem xét",
+  "summary": "Tình huống tổng hợp phục vụ kiểm tra schema, không là kết quả kiểm thử thật.",
+  "affected_asset_id": null,
+  "affected_origin": "https://app.example.test",
+  "category": "configuration",
+  "cwe": null,
+  "severity": "info",
+  "severity_rationale": "Chưa xác định tác động trong fixture.",
+  "confidence": "low",
+  "verification_status": "candidate",
+  "remediation_status": "open",
+  "impact": "",
+  "observed_behavior": "Fixture phản hồi không chứa header cần xem xét.",
+  "expected_behavior": "Theo baseline riêng của dự án.",
+  "reproduction": "Đọc response fixture đã lưu.",
+  "remediation": "Xác minh yêu cầu trước khi thay đổi cấu hình.",
+  "evidence_ids": [
+    "10000000-0000-4000-8000-000000000041"
+  ],
+  "limitations": [
+    "Không thực hiện request mạng."
+  ],
+  "source_run_id": "10000000-0000-4000-8000-000000000004",
+  "owner_confirmed": false,
+  "created_at": "2026-09-24T03:00:00Z",
+  "updated_at": "2026-09-24T03:00:00Z"
+}
