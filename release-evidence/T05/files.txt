@@ -1,0 +1,24 @@
+T05 NEW files (all created; no shared/existing file edited):
+
+packages/application/src/settings/
+  ports.ts               - Clock/RandomSource/MasterKeyProvider ports, record shapes, SettingsRepository port
+  errors.ts              - typed SettingsError hierarchy + isSettingsError guard (stable codes, no secret in messages)
+  crypto.ts              - systemClock, nodeRandomSource, sha256Hex, constantTimeEqual
+  masterKey.ts           - FileMasterKeyProvider (REDAI_MASTER_KEY_FILE, 0600, derived key_id), StaticMasterKeyProvider (tests)
+  vault.ts               - SecretVault AES-256-GCM (12B nonce, 16B tag, AAD=workspace|kind|name|version)
+  service.ts             - SettingsService (secrets, provider configs, workspace settings, resolveCredential, views)
+  settingsRepository.ts  - DB adapter over @redai/db Executor/withTransaction (atomic config+secret)
+  memoryRepository.ts    - InMemorySettingsRepository (unit-test fake, mirrors optimistic concurrency)
+  index.ts               - module barrel (coordinator re-exports from packages/application/src/index.ts)
+  vault.test.ts          - AEAD round-trip / wrong key / wrong AAD / nonce / tamper (11)
+  masterKey.test.ts      - key parse, derived id, MISSING-FILE hard error (10)
+  service.test.ts        - metadata-only, versioning, cross-project denial, origin allowlist, 409 (13)
+  db.test.ts             - live-PG: schema CHECKs, atomic create, optimistic 409, revoke (7)
+
+apps/api/src/settings/
+  bodySchemas.ts         - Ajv JSON-Schema validators (create/update provider, update settings); api_key writeOnly
+  plugin.ts              - registerSettings(app, deps) with INJECTED SettingsAuth + structural SettingsServicePort
+  index.ts               - apps/api settings barrel
+  plugin.test.ts         - inject: 401 unauth, 403 no-CSRF, 409 stale, no-plaintext responses (12)
+
+release-evidence/T05/    - commands.txt, files.txt, vitest-scoped-live.txt, typecheck.txt, lint.txt

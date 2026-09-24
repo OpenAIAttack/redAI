@@ -1,0 +1,2 @@
+# T05 eslint — Thu Sep 24 09:17:32 UTC 2026
+eslint EXIT: 0

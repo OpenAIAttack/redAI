@@ -1,0 +1,28 @@
+T05 — Secret vault & model/settings configs — commands & results
+Branch: claude/fervent-archimedes-fnkoam  HEAD at start: 64a467d
+
+1) Scoped unit + boundary tests (no DB):
+   pnpm exec vitest run packages/application/src/settings apps/api/src/settings
+   => (without DATABASE_URL) db.test.ts skips loudly; 46 tests pass, 7 skipped.
+
+2) Live PostgreSQL 16 cluster (own datadir + unique port, no collision with siblings):
+   rm -rf .tmp-pg/t05
+   runuser -u postgres -- /usr/lib/postgresql/16/bin/initdb -D "$PWD/.tmp-pg/t05" -U redai --auth=trust
+   runuser -u postgres -- /usr/lib/postgresql/16/bin/pg_ctl -D "$PWD/.tmp-pg/t05" -o "-p 55461 -k /tmp" -l "$PWD/.tmp-pg/t05/log" start
+   export DATABASE_URL="postgres://redai@127.0.0.1:55461/postgres"
+   pnpm exec vitest run packages/application/src/settings apps/api/src/settings
+   => 5 files, 53 tests, ALL PASS (see vitest-scoped-live.txt). db.test.ts = 7 live-PG tests.
+   runuser -u postgres -- /usr/lib/postgresql/16/bin/pg_ctl -D "$PWD/.tmp-pg/t05" stop -m immediate
+   rm -rf .tmp-pg/t05
+
+3) Typecheck (scoped tsconfig, resolves workspace .d.ts): tsc EXIT 0  (typecheck.txt)
+4) ESLint on T05 files: EXIT 0  (lint.txt)
+5) Prettier --write on T05 files: clean.
+
+Test breakdown (live):
+  packages/application/src/settings/vault.test.ts       11
+  packages/application/src/settings/masterKey.test.ts   10
+  packages/application/src/settings/service.test.ts     13
+  packages/application/src/settings/db.test.ts           7 (live PG)
+  apps/api/src/settings/plugin.test.ts                  12
+  TOTAL                                                  53
