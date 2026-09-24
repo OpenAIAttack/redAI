@@ -1,0 +1,42 @@
+T10b — real next build
+Command: pnpm --filter @redai/web run build
+
+
+> @redai/web@0.0.0 build /home/user/redAI/apps/web
+> next build
+
+   ▲ Next.js 15.1.6
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/8) ...
+   Generating static pages (2/8) 
+   Generating static pages (4/8) 
+   Generating static pages (6/8) 
+ ✓ Generating static pages (8/8)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    1.48 kB         118 kB
+├ ○ /_not-found                          980 B           106 kB
+├ ○ /login                               1.15 kB         117 kB
+├ ƒ /p/[projectId]                       1.66 kB         118 kB
+├ ƒ /p/[projectId]/c/[chatId]            6.66 kB         123 kB
+├ ƒ /p/[projectId]/files                 1.59 kB         114 kB
+├ ƒ /p/[projectId]/settings              1.84 kB         114 kB
+├ ○ /settings                            3.23 kB         116 kB
+├ ○ /setup                               806 B           117 kB
+└ ○ /workers                             5.91 kB         111 kB
++ First Load JS shared by all            105 kB
+  ├ chunks/751-6a4a78fcd217232f.js       50.5 kB
+  ├ chunks/9b7cc809-d78d7b0150f956db.js  52.9 kB
+  └ other shared chunks (total)          1.9 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

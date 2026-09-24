@@ -1,0 +1,9 @@
+T10b — scoped web validation
+Date: 2026-09-24T11:12:35Z
+Branch: claude/fervent-archimedes-fnkoam  HEAD: d244dcd
+
+### pnpm --filter @redai/web run typecheck
+
+> @redai/web@0.0.0 typecheck /home/user/redAI/apps/web
+> tsc --noEmit -p tsconfig.json
+

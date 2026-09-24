@@ -1,0 +1,56 @@
+T10b — chat composer wiring + live Workbench + SSE client
+=========================================================
+
+Scope: apps/web only (+ release-evidence/T10b). No files under apps/api, packages/**,
+server.ts, root config, migrations, or SPEC_LOCK.json were touched.
+
+Deliverables
+------------
+SSE client (apps/web/src/lib/realtime/):
+  - connection.ts    Typed native-EventSource wrapper. Same-origin, withCredentials,
+                     scoped by project_id+run_id. Native EventSource auto-resends
+                     Last-Event-ID on reconnect (no manual header). A reconnect (2nd
+                     open), a `resync` frame/envelope, and a hard close all map to an
+                     onResync signal. Heartbeats (SSE comment lines) are ignored by EventSource.
+                     EventSource ctor is injected for tests.
+  - chatState.ts     Framework-free transcript reducer holding the hard invariants:
+                       * dedup by event_id (+ delta_seq guard on deltas)
+                       * message.delta accumulates into ONE provisional assistant bubble
+                         (keyed by generation_id); message.committed promotes that exact
+                         bubble to final exactly once (never a 2nd bubble). A commit with
+                         no provisional bubble requests a snapshot resync (durable text)
+                         instead of fabricating text.
+                       * applyHistory MERGES server messages over local ones — never
+                         wipes the transcript, never creates a run; object identity of
+                         untouched messages is preserved so a delta does not re-render
+                         O(n) bubbles.
+  - useChatRun.ts    React controller: loads history on open, reconnects to an active
+                     run's stream, and exposes send(). send() is the ONLY path that
+                     creates a run. resync => reload snapshot (history + run status),
+                     never createRun.
+  - mockEventSource.ts  Test-only EventSource stand-in.
+
+Composer (components/Composer.tsx): wired to live Ask. Fresh Idempotency-Key + fresh
+client_message_id (uuid) per send; optimistic user bubble; provider_config_id from the
+first enabled provider; Agent toggle stays disabled ("coming"); send disabled while a
+run is active (max_active_runs_chat=1), while sending, or with no provider. IME/keyboard/
+focus behaviour preserved (Enter sends, Shift+Enter newline, no submit mid-composition).
+
+Transcript (components/MessageList.tsx): React.memo bubbles keyed by stable key; assistant
+text via existing SafeMarkdown (unsafe HTML/links inert); user text plain.
+
+Workbench (components/Workbench.tsx): live panels from REAL events only — Plan (plan.updated),
+Activity (ordered real event log), Usage (budget.updated + run budget/state, micro-USD →
+USD), Files (unchanged from T10a), Findings (empty). Honest empty states until data arrives.
+
+endpoints.ts: createRun (POST, Idempotency-Key header, mode=ask), getRun, listMessages.
+types.ts: Message, RunStatus, CreateRunResponse, and the event envelope union.
+i18n: new chat keys added to both vi.ts and en.ts (catalog parity test stays green).
+
+Validation (scoped, backend untouched)
+--------------------------------------
+  pnpm --filter @redai/web run typecheck   -> clean (see typecheck.txt)
+  pnpm exec vitest run apps/web            -> 8 files, 39 tests passed (see vitest.txt)
+  pnpm --filter @redai/web run build       -> next build OK (see build.txt)
+  pnpm exec prettier --check apps/web/src  -> clean (see format.txt)
+  pnpm --filter @redai/web run test:e2e    -> 9 passed, no regression (see e2e.txt)

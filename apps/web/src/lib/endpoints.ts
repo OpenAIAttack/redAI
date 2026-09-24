@@ -7,10 +7,13 @@ import { apiRequest, setCsrfToken } from './api';
 import type {
   Artifact,
   Chat,
+  CreateRunResponse,
   ListResponse,
+  Message,
   Note,
   Project,
   ProviderConfig,
+  RunStatus,
   SecretMetadata,
   SessionProfile,
   WorkerBinding,
@@ -106,6 +109,59 @@ export function createChat(
 
 export function getChat(projectId: string, chatId: string): Promise<Chat> {
   return apiRequest<Chat>(`/api/v1/projects/${projectId}/chats/${chatId}`);
+}
+
+// --- runs & messages --------------------------------------------------------
+
+export interface CreateRunInput {
+  clientMessageId: string;
+  idempotencyKey: string;
+  providerConfigId: string;
+  text: string;
+  artifactIds?: string[];
+  dataMode?: string;
+}
+
+/**
+ * Create an Ask run for a chat. The `Idempotency-Key` header is REQUIRED (a fresh
+ * UUID per user send) so a double-submit dedupes to a single run (docs/06 §4). The
+ * body's `mode` is fixed to `ask`; Agent runs return 501 in this milestone.
+ */
+export function createRun(
+  projectId: string,
+  chatId: string,
+  input: CreateRunInput,
+): Promise<CreateRunResponse> {
+  return apiRequest<CreateRunResponse>(`/api/v1/projects/${projectId}/chats/${chatId}/runs`, {
+    method: 'POST',
+    headers: { 'idempotency-key': input.idempotencyKey },
+    body: {
+      chat_id: chatId,
+      client_message_id: input.clientMessageId,
+      text: input.text,
+      mode: 'ask',
+      provider_config_id: input.providerConfigId,
+      ...(input.artifactIds && input.artifactIds.length > 0
+        ? { artifact_ids: input.artifactIds }
+        : {}),
+      ...(input.dataMode ? { data_mode: input.dataMode } : {}),
+    },
+  });
+}
+
+export function getRun(projectId: string, runId: string): Promise<RunStatus> {
+  return apiRequest<RunStatus>(`/api/v1/projects/${projectId}/runs/${runId}`);
+}
+
+export function listMessages(
+  projectId: string,
+  chatId: string,
+  cursor?: string,
+): Promise<ListResponse<Message>> {
+  const q = cursor ? `?cursor=${encodeURIComponent(cursor)}` : '';
+  return apiRequest<ListResponse<Message>>(
+    `/api/v1/projects/${projectId}/chats/${chatId}/messages${q}`,
+  );
 }
 
 // --- notes ------------------------------------------------------------------

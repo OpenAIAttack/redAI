@@ -1,0 +1,21 @@
+T10b — vitest (default browserless suite), scoped to apps/web
+Command: pnpm exec vitest run apps/web
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ apps/web/src/lib/realtime/chatState.test.ts (9 tests) 17ms
+ ✓ apps/web/src/i18n/catalog.test.ts (2 tests) 27ms
+ ✓ apps/web/src/lib/api.test.ts (6 tests) 11ms
+ ✓ apps/web/src/lib/realtime/useChatRun.test.ts (2 tests) 137ms
+ ✓ apps/web/src/lib/realtime/connection.test.ts (6 tests) 8ms
+ ✓ apps/web/src/components/SafeMarkdown.test.ts (5 tests) 11ms
+ ✓ apps/web/src/components/MessageList.test.ts (4 tests) 51ms
+ ✓ apps/web/src/components/Workbench.test.ts (5 tests) 189ms
+
+ Test Files  8 passed (8)
+      Tests  39 passed (39)
+   Start at  11:12:43
+   Duration  2.26s (transform 479ms, setup 0ms, collect 1.09s, tests 450ms, environment 2.62s, prepare 541ms)
+

@@ -322,6 +322,31 @@ button {
   padding: 12px 16px;
   background: var(--bg);
 }
+/* Chat transcript bubbles (T10b). */
+.transcript-list {
+  gap: 16px;
+}
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.msg-role {
+  text-transform: capitalize;
+  font-size: 12px;
+}
+.msg-body {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+}
+.msg-user .msg-body {
+  background: var(--bg-inset);
+}
+.msg[data-provisional='true'] .msg-body {
+  border-style: dashed;
+}
 .workbench {
   display: flex;
   flex-direction: column;

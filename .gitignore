@@ -151,3 +151,9 @@ worker/redai-worker
 worker/bin/
 release-evidence/**/local-*
 *.tsbuildinfo
+
+# Playwright generated artifacts (web e2e)
+apps/web/e2e/results.json
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/.last-run.json

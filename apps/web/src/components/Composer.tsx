@@ -1,31 +1,51 @@
 'use client';
 
 /**
- * Composer shell (docs/03 §5). The live send path (streaming a turn to the Agent)
- * arrives in T10b, so Send is disabled and clearly labelled — never a fake send.
- * The keyboard / IME / focus behaviour IS implemented for real so T10b only has to
- * wire the transport:
+ * Chat composer (docs/03 §5), wired to the live Ask transport in T10b.
+ *
+ * Keyboard / IME / focus behaviour is real and unchanged from the T10a shell:
  *   - Enter submits, Shift+Enter inserts a newline.
  *   - While an IME composition is active, Enter does NOT submit (Vietnamese/CJK).
- *   - Send is disabled when the text (trimmed) and attachments are both empty.
- * The Ask/Agent toggle and the model-boundary chip reflect the intended UX; the
- * chip wording distinguishes an external (redacted) model from a local model.
+ *   - Send is disabled when the trimmed text is empty, while a run is active in the
+ *     chat (max_active_runs_chat = 1), while sending, or with no model provider.
+ *
+ * The Ask/Agent toggle keeps Ask selected; Agent stays disabled and clearly
+ * labelled ("coming") because Agent runs are 501 this milestone. Sending is done
+ * by the parent via `onSend`; the composer only owns its text + IME state.
  */
 import { useRef, useState } from 'react';
 import { useI18n } from '../i18n/index';
 
-export function Composer(): JSX.Element {
+export interface ComposerProps {
+  onSend: (text: string) => void;
+  /** A run is active in this chat, or no provider/other reason blocks sending. */
+  disabled: boolean;
+  /** A short reason shown near the Send button when disabled. */
+  disabledReason?: string;
+  /** A create-run request is in flight. */
+  busy?: boolean;
+  /** Model-boundary chip label (external-redacted vs local). */
+  modelLabel?: string;
+  /** An error from the last send attempt. */
+  error?: string | null;
+}
+
+export function Composer(props: ComposerProps): JSX.Element {
+  const { onSend, disabled, disabledReason, busy = false, modelLabel, error } = props;
   const { t } = useI18n();
   const [value, setValue] = useState('');
-  const [mode, setMode] = useState<'ask' | 'agent'>('ask');
   const composingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const canSend = value.trim().length > 0;
+  const hasText = value.trim().length > 0;
+  const canSend = hasText && !disabled && !busy;
 
-  // Send is intentionally inert until T10b wires the turn transport.
   const attemptSend = (): void => {
-    // no-op shell: the real submit is T10b.
+    if (!canSend) return;
+    onSend(value.trim());
+    setValue('');
+    // Keep focus in the composer for a fast back-and-forth.
+    textareaRef.current?.focus();
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
@@ -33,7 +53,7 @@ export function Composer(): JSX.Element {
       // Do not submit mid-IME-composition (e.key would be 'Process' / isComposing).
       if (composingRef.current || e.nativeEvent.isComposing) return;
       e.preventDefault();
-      if (canSend) attemptSend();
+      attemptSend();
     }
   };
 
@@ -41,33 +61,28 @@ export function Composer(): JSX.Element {
     <div className="composer">
       <div className="row" style={{ marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
         <div className="row" role="group" aria-label="Ask / Agent" style={{ gap: 4 }}>
-          <button
-            className={`btn${mode === 'ask' ? ' btn-primary' : ''}`}
-            aria-pressed={mode === 'ask'}
-            onClick={() => setMode('ask')}
-          >
+          <button className="btn btn-primary" aria-pressed={true} type="button">
             {t.chat.ask}
           </button>
           <button
-            className={`btn${mode === 'agent' ? ' btn-primary' : ''}`}
-            aria-pressed={mode === 'agent'}
-            onClick={() => setMode('agent')}
+            className="btn"
+            aria-pressed={false}
+            disabled
+            title={t.common.comingWithAgent}
+            type="button"
           >
             {t.chat.agent}
           </button>
         </div>
-        {/* Model-boundary chip: wording depends on the route/data mode, not worker
-            location. In this shell we show the external-redacted default; T10b sets
-            it from the resolved run config. */}
-        <span className="badge" title={t.chat.modelExternal}>
-          {t.chat.modelExternal}
+        <span className="badge" title={modelLabel ?? t.chat.modelExternal}>
+          {modelLabel ?? t.chat.modelExternal}
         </span>
       </div>
 
       <textarea
         ref={textareaRef}
         className="textarea"
-        placeholder={t.chat.composerPlaceholder}
+        placeholder={t.chat.composerPlaceholderLive}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={onKeyDown}
@@ -77,13 +92,25 @@ export function Composer(): JSX.Element {
         onCompositionEnd={() => {
           composingRef.current = false;
         }}
-        aria-label={t.chat.composerPlaceholder}
+        aria-label={t.chat.composerPlaceholderLive}
       />
 
+      {error ? (
+        <div className="banner banner-error" role="alert" style={{ marginTop: 8 }}>
+          {error}
+        </div>
+      ) : null}
+
       <div className="row" style={{ justifyContent: 'space-between', marginTop: 8 }}>
-        <span className="faint">{t.chat.composerDisabledNote}</span>
-        <button className="btn btn-primary" disabled title={t.common.comingWithAgent}>
-          {t.chat.send}
+        <span className="faint">{disabled && disabledReason ? disabledReason : ''}</span>
+        <button
+          className="btn btn-primary"
+          type="button"
+          onClick={attemptSend}
+          disabled={!canSend}
+          title={disabled ? disabledReason : undefined}
+        >
+          {busy ? t.common.saving : t.chat.send}
         </button>
       </div>
     </div>

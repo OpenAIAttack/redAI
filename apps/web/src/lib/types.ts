@@ -118,6 +118,132 @@ export interface SecretMetadata {
   updated_at: string;
 }
 
+// --- runs / chat messages ---------------------------------------------------
+
+export type MessageRole = 'user' | 'assistant' | 'system';
+export type MessageStatus = 'pending' | 'streaming' | 'completed' | 'interrupted';
+
+/** A durable chat message (matches the runs plugin `messageDto`). */
+export interface Message {
+  id: string;
+  chat_id: string;
+  run_id: string | null;
+  seq: number;
+  role: MessageRole;
+  text: string;
+  status: MessageStatus;
+  artifact_ids: string[];
+  created_at: string;
+}
+
+export type RunState =
+  | 'queued'
+  | 'running'
+  | 'waiting_approval'
+  | 'waiting_worker'
+  | 'paused'
+  | 'cancel_requested'
+  | 'cancellation_pending'
+  | 'needs_attention'
+  | 'completed'
+  | 'failed'
+  | 'canceled'
+  | 'expired';
+
+/** Run status (matches the runs plugin `runStatusDto`). */
+export interface RunStatus {
+  id: string;
+  workspace_id: string;
+  project_id: string;
+  chat_id: string;
+  mode: string;
+  kind: string;
+  state: RunState;
+  outcome: string | null;
+  provider_config_id: string;
+  step_count: number;
+  budget_limit_micro_usd: string;
+  stop_reason: string | null;
+  expires_at: string;
+  revision: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Response of `POST /projects/:p/chats/:c/runs`. */
+export interface CreateRunResponse {
+  run: RunStatus;
+  message: Message;
+}
+
+// --- realtime event envelopes (contracts/schemas/event.schema.json) ---------
+
+/** Fields every event envelope carries. `event_id` is a decimal-string counter. */
+export interface EventEnvelopeBase {
+  schema_version: string;
+  event_id: string;
+  workspace_id: string;
+  project_id: string | null;
+  run_id: string | null;
+  type: string;
+  created_at: string;
+}
+
+export interface RunCreatedEvent extends EventEnvelopeBase {
+  type: 'run.created';
+  data: { run_id: string; chat_id: string };
+}
+
+export interface RunStateChangedEvent extends EventEnvelopeBase {
+  type: 'run.state_changed';
+  data: { from: RunState; to: RunState; reason_code: string | null };
+}
+
+export interface MessageDeltaEvent extends EventEnvelopeBase {
+  type: 'message.delta';
+  data: {
+    message_id: string;
+    generation_id: string;
+    delta_seq: string;
+    text: string;
+    provisional: true;
+  };
+}
+
+export interface MessageCommittedEvent extends EventEnvelopeBase {
+  type: 'message.committed';
+  data: { message_id: string; sha256: string; status: 'completed' | 'interrupted' };
+}
+
+export interface BudgetUpdatedEvent extends EventEnvelopeBase {
+  type: 'budget.updated';
+  data: {
+    observed_micro_usd: string;
+    reserved_micro_usd: string;
+    limit_micro_usd: string;
+  };
+}
+
+export interface PlanUpdatedEvent extends EventEnvelopeBase {
+  type: 'plan.updated';
+  data: { plan_revision: number; step_count: number };
+}
+
+/**
+ * The envelope types the web client models. Other real types (tool.state_changed,
+ * approval.*, worker.*, etc.) still arrive over the wire and are handled honestly
+ * by the reducer's default branch (added to the activity log, never faked); they
+ * are simply not narrowed here. Keeping this union closed lets the reducer switch
+ * discriminate cleanly on `type`.
+ */
+export type EventEnvelope =
+  | RunCreatedEvent
+  | RunStateChangedEvent
+  | MessageDeltaEvent
+  | MessageCommittedEvent
+  | BudgetUpdatedEvent
+  | PlanUpdatedEvent;
+
 export interface ListResponse<T> {
   items: T[];
   next_cursor?: string | null;

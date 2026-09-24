@@ -32,7 +32,7 @@ describe('apiRequest', () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, { ok: true }));
     vi.stubGlobal('fetch', fetchMock);
     await apiRequest('/api/v1/thing');
-    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const init = fetchMock.mock.calls[0]![1] as RequestInit;
     expect(init.credentials).toBe('include');
     expect((init.headers as Record<string, string>)['x-csrf-token']).toBeUndefined();
     vi.unstubAllGlobals();
@@ -43,7 +43,7 @@ describe('apiRequest', () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(200, { ok: true }));
     vi.stubGlobal('fetch', fetchMock);
     await apiRequest('/api/v1/thing', { method: 'POST', body: { a: 1 } });
-    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const init = fetchMock.mock.calls[0]![1] as RequestInit;
     expect((init.headers as Record<string, string>)['x-csrf-token']).toBe('csrf-abc');
     expect((init.headers as Record<string, string>)['content-type']).toBe('application/json');
     expect(init.body).toBe(JSON.stringify({ a: 1 }));
@@ -56,7 +56,7 @@ describe('apiRequest', () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(204, null));
     vi.stubGlobal('fetch', fetchMock);
     await apiRequest('/api/v1/thing', { method: 'DELETE' });
-    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const init = fetchMock.mock.calls[0]![1] as RequestInit;
     expect((init.headers as Record<string, string>)['x-csrf-token']).toBe('cookie-token');
     vi.unstubAllGlobals();
   });

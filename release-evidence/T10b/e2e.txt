@@ -1,0 +1,8 @@
+T10b — e2e smoke (existing T10a suite, unauthenticated) re-run against the T10b build
+Command: pnpm --filter @redai/web run test:e2e
+Note: the authenticated chat/SSE flow needs a live API + the concurrent T11 events backend,
+so it is not exercised in Playwright here. The SSE client, reconnect/dedup and
+provisional-vs-final logic are covered by the mock-EventSource + mocked-fetch unit/
+component tests in the default (browserless) vitest suite. No new e2e tests were added.
+
+Result: 9 passed (login + setup + responsive breakpoints), no regression from T10b changes.

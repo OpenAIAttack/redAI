@@ -1,0 +1,3 @@
+T10b — prettier --check on apps/web/src
+Checking formatting...
+All matched files use Prettier code style!
