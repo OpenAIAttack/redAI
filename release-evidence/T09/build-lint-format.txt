@@ -1,0 +1,17 @@
+=== T09 scoped builds (tsc -b) ===
+> @redai/application@0.0.0 build /home/user/redAI/packages/application
+> tsc -b
+
+> @redai/api@0.0.0 build /home/user/redAI/apps/api
+> tsc -b
+
+> @redai/runtime@0.0.0 build /home/user/redAI/apps/runtime
+> tsc -b
+
+
+=== eslint (my files) ===
+eslint: clean (exit 0)
+
+=== prettier --check (my files) ===
+Checking formatting...
+All matched files use Prettier code style!

@@ -17,6 +17,7 @@ import { createOwnerGuard } from './auth/ownerGuard.js';
 import type { AuthHttpConfig } from './auth/plugin.js';
 import { createDbProjectsService, registerProjects } from './projects/index.js';
 import { createDbArtifactsService, registerArtifacts } from './artifacts/index.js';
+import { createDbRunsService, registerRuns } from './runs/index.js';
 import { registerSettings } from './settings/index.js';
 import { registerWorkerIdentity } from './worker/index.js';
 import { generateInstallationSigningKey } from './installation/signingKey.js';
@@ -85,6 +86,15 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
     // Projects / Chats / Notes (owner-authenticated).
     registerProjects(app, {
       service: createDbProjectsService(pool),
+      authenticate: (req) => ownerGuard.authenticate(req),
+      authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
+    });
+
+    // Runs (Ask) + chat message history (owner-authenticated). Create is
+    // Idempotency-Key protected; the durable Ask step runs in the separate runtime
+    // process (apps/runtime/src/ask), which composes the provider from resolveCredential.
+    registerRuns(app, {
+      service: createDbRunsService(pool),
       authenticate: (req) => ownerGuard.authenticate(req),
       authorizeMutation: (req, ctx) => ownerGuard.authorizeMutation(req, ctx),
     });

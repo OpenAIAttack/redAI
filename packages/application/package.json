@@ -25,6 +25,10 @@
     "./artifacts": {
       "types": "./dist/artifacts/index.d.ts",
       "default": "./dist/artifacts/index.js"
+    },
+    "./messages": {
+      "types": "./dist/messages/index.d.ts",
+      "default": "./dist/messages/index.js"
     }
   },
   "scripts": {

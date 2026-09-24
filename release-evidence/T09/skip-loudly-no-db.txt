@@ -1,0 +1,7 @@
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+ ↓ tests/integration/db/ask-runs.test.ts (7 tests | 7 skipped)
+ Test Files  1 skipped (1)
+      Tests  7 skipped (7)
+   Duration  978ms (transform 459ms, setup 0ms, collect 692ms, tests 0ms, environment 0ms, prepare 59ms)

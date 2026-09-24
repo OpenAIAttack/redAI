@@ -1,0 +1,14 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/messages/service.test.ts (9 tests) 16ms
+ ✓ apps/api/src/runs/plugin.test.ts (13 tests) 159ms
+ ✓ apps/runtime/src/ask/driver.test.ts (4 tests) 9ms
+ ✓ tests/integration/db/ask-runs.test.ts (7 tests) 1850ms
+
+ Test Files  4 passed (4)
+      Tests  33 passed (33)
+   Start at  10:53:30
+   Duration  2.92s (transform 896ms, setup 0ms, collect 2.20s, tests 2.03s, environment 1ms, prepare 290ms)
+
