@@ -30,7 +30,7 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T13 — Durable Agent loop và checkpoints | NOT_STARTED | — | — | — |
 | T14 — Ngân sách và privacy pipeline | NOT_STARTED | — | — | — |
 | T15 — Worker enrollment và identity | DONE | (D04) | Enrollment tokens, hashed credentials, dual-plane auth, Go client; 26 TS + 4 Go tests; wired (main.go loop deferred to T16) | — |
-| T16 — Worker journal, spool và supervisor | NOT_STARTED | — | — | — |
+| T16 — Worker journal, spool và supervisor | DONE | aa2da55 | Crash-safe append+fsync journal (len+CRC records, torn-tail recovery, single-instance flock, strict phase order → no double-run/double-settle); bounded content-addressed spool (64 MiB backpressure, path-traversal-safe, 0700/0600); supervisor daemon (identity → journal recovery → heartbeat + credential renew-before-expiry → graceful shutdown/kill-grace, doctor metadata); main.go wired (flags/env, signals, --version). 23 Go subtests, `go test -race ./...` green; go.sum still absent. Claim/lease/result seam left for T17 (Scheduler + SessionContext). Evidence: release-evidence/T16/ | T17 fills Scheduler |
 | T17 — Task scheduler, signed leases và results | NOT_STARTED | — | — | — |
 | T18 — Offline sandbox runtime | NOT_STARTED | — | — | gVisor blocker |
 | T19 — Offline tools và artifacts | NOT_STARTED | — | — | gVisor blocker |
