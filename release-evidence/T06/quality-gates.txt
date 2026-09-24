@@ -1,0 +1,14 @@
+# T06 quality gates — scoped to packages/application/src/projects and apps/api/src/projects
+# date: 2026-09-24T09:24:23Z
+
+== prettier --check ==
+Checking formatting...
+All matched files use Prettier code style!
+
+== eslint (exit code shown) ==
+eslint exit: 0
+
+== tsc --noEmit: errors under src/projects/ only (sibling T05 WIP ignored) ==
+-- application package --
+application projects errors: 0
+(0 = clean; note: apps/api projects references show TS6305 only until packages/application/dist is built by the coordinator's ordered 'tsc -b'; verified 0 errors once dist/projects exists.)
