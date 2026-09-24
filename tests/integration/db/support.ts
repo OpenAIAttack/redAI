@@ -18,7 +18,6 @@ export const DATABASE_URL = process.env['DATABASE_URL'];
 export const HAS_DB = typeof DATABASE_URL === 'string' && DATABASE_URL.length > 0;
 
 if (!HAS_DB) {
-  // eslint-disable-next-line no-console
   console.warn(
     '\n[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.\n' +
       '      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:\n' +

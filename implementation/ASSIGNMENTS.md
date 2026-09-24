@@ -10,8 +10,8 @@ shared files: root `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
 |---|---|---|---|---|---|
 | T00 | Coordinator | `docs/dependency-baseline.md` | — | — | ✅ integrated |
 | T01 | Coordinator | `apps/*`, `packages/*` skeleton, `worker/*` skeleton, root config, `scripts/`, `tests/import-boundary/`, `README.md`, coordinator books | — | local | ✅ integrated |
-| T02 | **Agent A** | `packages/db/**`, `tests/integration/db/**`, `db/**` (versioned migrations from reference DDL) | root lockfile/manifests (deps pre-installed: `pg`, `@types/pg`) | own PG database `redai_t02_*`, ports/object roots labeled per task | ⏳ dispatched |
-| T03 | **Agent B** | `packages/contracts/**`, `tests/contracts/**`, generated Go types under `worker/internal/contracts/**` | root lockfile (may add TS codegen dep — sole installer this wave) | fixtures only | ⏳ dispatched |
+| T02 | **Agent A** | `packages/db/**`, `tests/integration/db/**`, `db/**` (versioned migrations from reference DDL) | root lockfile/manifests (deps pre-installed: `pg`, `@types/pg`) | own PG database `redai_t02_*`, ports/object roots labeled per task | ✅ integrated (commit 23d8870); coordinator fixed 3 eslint unused-import errors in its test files |
+| T03 | **Agent B** | `packages/contracts/**`, `tests/contracts/**`, generated Go types under `worker/internal/contracts/**` | root lockfile (may add TS codegen dep — sole installer this wave) | fixtures only | ✅ integrated (no lockfile change; `worker/go.sum` still absent) |
 
 ### Concurrency guard for this wave
 - Disjoint subtrees: A ⇒ `packages/db` + `tests/integration/db` + `db`; B ⇒

@@ -1,8 +1,13 @@
 # Trạng thái triển khai ứng dụng
 
-Cập nhật: **2026-09-24**. Milestone M0 đang triển khai. Baseline: nhánh
-`claude/fervent-archimedes-fnkoam`. DONE chỉ đặt sau review + integration checks
-trên cây nguồn đã tích hợp; "PASS" do coder tự báo chưa đủ để đóng task.
+Cập nhật: **2026-09-24**. **Milestone M0 (T00–T03) hoàn tất** trên cây nguồn đã
+tích hợp. Baseline: nhánh `claude/fervent-archimedes-fnkoam`. DONE chỉ đặt sau
+review + integration checks trên cây nguồn đã tích hợp; "PASS" do coder tự báo
+chưa đủ để đóng task.
+
+Integrated M0 evidence: `pnpm run check` xanh (52 test luôn chạy) + 14 DB
+integration test xanh trên PostgreSQL 16.13 (chạy với DATABASE_URL trực tiếp).
+Tiếp theo: cổng **G0** (docs/18-release-acceptance.md) trước khi sang M1 (T04–T07).
 
 Lệnh kiểm tra chung: `pnpm run check` (env → typecheck → lint → format → test →
 build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATUS bên dưới.
@@ -11,8 +16,8 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 |---|---|---|---|---|
 | T00 — Khóa dependency và môi trường | DONE | (M0 baseline) | `docs/dependency-baseline.md`; `pnpm run env:check` passes | gVisor thiếu → chỉ chặn execution lab (T18/T19/T29) |
 | T01 — Khởi tạo monorepo và quality commands | DONE | (M0 baseline) | `pnpm run check` xanh (9 vitest, tsc -b, eslint, prettier, go vet/build/test); import-boundary test | — |
-| T02 — Migration PostgreSQL và invariants DB | IN_PROGRESS | — | Agent A dispatched (own PG DB) | — |
-| T03 — Sinh type và kiểm tra API contracts | IN_PROGRESS | — | Agent B dispatched (fixtures) | — |
+| T02 — Migration PostgreSQL và invariants DB | DONE | 23d8870 | 14 integration tests xanh trên PG16.13 (fresh+upgrade, cross-project FK, active-run, immutable rows, event counter); `release-evidence/T02/` | PG18 verify hoãn (D04) |
+| T03 — Sinh type và kiểm tra API contracts | DONE | (M0 integ) | 43 TS contract tests + drift guard; Go parity tests; `release-evidence/T03/` | — |
 | T04 — Bootstrap owner và sessions | NOT_STARTED | — | — | — |
 | T05 — Secret vault và model/settings configs | NOT_STARTED | — | — | — |
 | T06 — Project, Chat metadata, notes và bindings | NOT_STARTED | — | — | — |

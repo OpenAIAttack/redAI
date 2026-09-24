@@ -1,0 +1,5 @@
+
+> @redai/contracts@0.0.0 codegen:check /home/user/redAI/packages/contracts
+> tsx src/codegen/generate.ts --check
+
+codegen drift check OK: generated output is current

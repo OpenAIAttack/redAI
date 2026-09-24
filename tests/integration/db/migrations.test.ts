@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mkdtempSync, readFileSync, writeFileSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -7,7 +7,7 @@ import {
   loadMigrations,
   defaultMigrationsDir,
 } from '../../../packages/db/src/index.js';
-import { HAS_DB, createTestDatabase, type TestDatabase } from './support.js';
+import { HAS_DB, createTestDatabase } from './support.js';
 
 const d = HAS_DB ? describe : describe.skip;
 

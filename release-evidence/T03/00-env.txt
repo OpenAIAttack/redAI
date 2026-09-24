@@ -1,0 +1,5 @@
+# T03 evidence — 2026-09-24T08:20:16Z
+
+## 1. Node / Go versions
+v22.22.2
+go version go1.24.7 linux/amd64
