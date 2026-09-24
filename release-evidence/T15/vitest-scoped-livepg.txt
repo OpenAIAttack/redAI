@@ -1,0 +1,13 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/workerIdentity/service.test.ts (12 tests) 13ms
+ ✓ apps/api/src/worker/plugin.test.ts (9 tests) 123ms
+ ✓ packages/application/src/workerIdentity/dbRepository.test.ts (5 tests) 387ms
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  09:18:14
+   Duration  975ms (transform 364ms, setup 0ms, collect 617ms, tests 523ms, environment 1ms, prepare 242ms)
+

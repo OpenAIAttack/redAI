@@ -1,0 +1,14 @@
+=== go vet ===
+vet-exit=0
+=== gofmt -l (empty means clean) ===
+=== go test -race -v ===
+=== RUN   TestEnrollPersistsCredentialToFileNotEnv
+--- PASS: TestEnrollPersistsCredentialToFileNotEnv (0.01s)
+=== RUN   TestEnrollRejectsSecondRedemption
+--- PASS: TestEnrollRejectsSecondRedemption (0.01s)
+=== RUN   TestRenewBeforeExpiryRotatesAndPersists
+--- PASS: TestRenewBeforeExpiryRotatesAndPersists (0.01s)
+=== RUN   TestEnrollRequiresHTTPS
+--- PASS: TestEnrollRequiresHTTPS (0.00s)
+PASS
+ok  	github.com/openaiattack/redai/worker/internal/enrollment	1.057s
