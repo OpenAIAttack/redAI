@@ -1,0 +1,17 @@
+# T16 — Worker journal, spool & supervisor — validation evidence
+# date: 2026-09-24T15:45:57Z
+# go: go version go1.24.7 linux/amd64
+# module: github.com/openaiattack/redai/worker (go.sum intentionally ABSENT — stdlib only)
+
+=== gofmt -l . (empty == clean) ===
+gofmt: clean
+
+=== go vet ./... ===
+vet_exit=0
+
+=== go build ./... ===
+build_exit=0
+
+=== go.sum ===
+ls: cannot access 'go.sum': No such file or directory
+go.sum ABSENT (correct — no external module deps added)
