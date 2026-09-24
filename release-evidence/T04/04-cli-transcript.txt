@@ -1,0 +1,23 @@
+### migrate
+apply  0001_init_schema.sql
+apply  0002_triggers_and_events.sql
+migrations complete: 2 applied, 0 already present
+
+### bootstrap (password piped via stdin, never argv/env)
+Owner created. Save this recovery code now — it is shown only once:
+
+  7956C-SE3A4-HDV5F-4T47C-9SKZZ-Z29Y1-B29DQ-YM7CX-4QWA8-48RBR-60
+
+Store it offline. Losing it means recovery requires host database access.
+exit=0
+
+### second bootstrap refused (no second owner)
+An owner already exists; refusing to create a second owner.
+exit=1
+
+### DB state: owners / workspaces / inbox counts
+      1 |          1 |     1
+
+### password_hash is a scrypt KDF, never plaintext:
+ scrypt$32768$8$1$6sjmP
+

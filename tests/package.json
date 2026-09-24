@@ -1,0 +1,12 @@
+{
+  "name": "@redai/tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@redai/domain": "workspace:*"
+  }
+}

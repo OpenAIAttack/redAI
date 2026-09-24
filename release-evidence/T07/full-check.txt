@@ -1,0 +1,163 @@
+
+> redai@0.0.0 check /home/user/redAI
+> pnpm run env:check && pnpm run typecheck && pnpm run lint && pnpm run format && pnpm run test && pnpm run build && pnpm run go:check
+
+
+> redai@0.0.0 env:check /home/user/redAI
+> node scripts/check-env.mjs
+
+✓ Node.js: v22.22.2
+✓ pnpm: 10.33.0
+✓ Go: go version go1.24.7 linux/amd64
+✓ PostgreSQL client: psql (PostgreSQL) 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
+⚠ gVisor (runsc): not found — execution/sandbox lab (T18/T19/T29) blocked; scaffold/DB/mocks unaffected.
+
+Environment check passed.
+
+> redai@0.0.0 typecheck /home/user/redAI
+> tsc -b
+
+
+> redai@0.0.0 lint /home/user/redAI
+> eslint .
+
+
+> redai@0.0.0 format /home/user/redAI
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> redai@0.0.0 test /home/user/redAI
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/artifacts/service.test.ts (11 tests) 98ms
+ ✓ apps/api/src/artifacts/plugin.test.ts (10 tests) 210ms
+ ✓ packages/storage/src/objectStore.test.ts (14 tests) 116ms
+ ✓ packages/application/src/projects/service.test.ts (15 tests) 13ms
+ ✓ packages/application/src/workerIdentity/service.test.ts (12 tests) 15ms
+ ✓ packages/application/src/auth/service.test.ts (11 tests) 13ms
+ ✓ apps/api/src/worker/plugin.test.ts (9 tests) 116ms
+ ✓ apps/api/src/projects/plugin.test.ts (10 tests) 113ms
+ ✓ packages/application/src/settings/service.test.ts (13 tests) 15ms
+ ✓ apps/api/src/settings/plugin.test.ts (12 tests) 132ms
+ ✓ apps/api/src/auth/plugin.test.ts (10 tests) 92ms
+ ✓ packages/application/src/projects/dbRepository.test.ts (10 tests) 4512ms
+   ✓ DB projects repository (live PostgreSQL) > HEADLINE: swapping a chat/note UUID from another project is rejected by the composite key 446ms
+   ✓ DB projects repository (live PostgreSQL) > a project is invisible under a different workspace_id (workspace predicate) 386ms
+   ✓ DB projects repository (live PostgreSQL) > the Inbox partial-unique blocks a second inbox and the Inbox cannot be archived 464ms
+   ✓ DB projects repository (live PostgreSQL) > archive preserves rows (chats/notes survive) and flips status only 488ms
+   ✓ DB projects repository (live PostgreSQL) > optimistic concurrency: a stale note update is a REVISION_CONFLICT (409-mapped) 452ms
+   ✓ DB projects repository (live PostgreSQL) > optimistic concurrency: two concurrent chat renames — exactly one wins 464ms
+   ✓ DB projects repository (live PostgreSQL) > selected_for_context drives the context read (what a context builder queries) 461ms
+   ✓ DB projects repository (live PostgreSQL) > worker binding: known worker binds; unknown worker/zone is a typed WorkerNotFound (FK) 466ms
+   ✓ DB projects repository (live PostgreSQL) > delete is blocked while an active run exists on the project/chat 459ms
+   ✓ DB projects repository (live PostgreSQL) > keyset pagination returns stable, non-overlapping pages ordered by updated_at desc 425ms
+ ✓ packages/application/src/workerIdentity/dbRepository.test.ts (5 tests) 559ms
+ ✓ tests/integration/db/artifacts.test.ts (9 tests) 4341ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > reaches ready only with verified bytes, and stores the observed digest 519ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > leaves the row pending on a hash mismatch (no partial ready) 482ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > is idempotent on duplicate finalize and the finalized payload is immutable 478ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > quarantines a media-type/bytes mismatch instead of publishing ready 448ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > crash between rename and DB commit: no public orphan, retry recovers 487ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > reconcile sweeps a rowless orphan object (finalized file, purged row) 506ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > surfaces a disk-full/IO publish failure as StorageIo and stays pending 461ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > cross-project isolation: an artifact is invisible under a foreign project id 455ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > lists artifacts newest-first within a project only 503ms
+ ✓ tests/integration/db/settings-vault.test.ts (7 tests) 506ms
+ ✓ packages/application/src/settings/vault.test.ts (11 tests) 9ms
+ ✓ tests/contracts/contracts.test.ts (43 tests) 1127ms
+   ✓ codegen drift guard > committed generated output is not stale 849ms
+ ✓ tests/integration/db/immutability.test.ts (4 tests) 2378ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects UPDATE of a scope_version (immutable authority) 731ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects UPDATE of a finding_version (verification history is immutable) 556ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects payload overwrite of a finalized artifact but allows non-payload updates 532ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > allows payload changes while an artifact is still pending (not yet finalized) 559ms
+ ✓ packages/storage/src/preview.test.ts (11 tests) 8ms
+ ✓ tests/integration/db/sessions.test.ts (4 tests) 2151ms
+   ✓ SessionRepository (T04) > stores only hashes and finds a session by its token hash 587ms
+   ✓ SessionRepository (T04) > slides idle expiry via touch, rotates CSRF, and revokes 515ms
+   ✓ SessionRepository (T04) > revokeAllForOwner revokes every live session and reports the count 470ms
+   ✓ SessionRepository (T04) > enforces token_hash uniqueness and the expiry CHECK 579ms
+ ✓ packages/application/src/settings/masterKey.test.ts (10 tests) 10ms
+ ✓ tests/integration/db/auth-bootstrap.test.ts (5 tests) 3854ms
+   ✓ owner bootstrap (T04, DB-backed) > creates the singleton owner + Workspace + Inbox in one transaction 734ms
+   ✓ owner bootstrap (T04, DB-backed) > refuses a second owner under a concurrent race (exactly one wins) 654ms
+   ✓ owner bootstrap (T04, DB-backed) > login → session validate works against a bootstrapped owner 740ms
+   ✓ owner bootstrap (T04, DB-backed) > runBootstrap creates once, prints a recovery code, then refuses 646ms
+   ✓ owner bootstrap (T04, DB-backed) > runReset reverifies the recovery code, resets, revokes sessions and rotates it 1079ms
+ ✓ tests/integration/db/event-counter.test.ts (2 tests) 1417ms
+   ✓ event counter: commit-ordered, gap-free per workspace (INV-009) > serializes two concurrent transactions so counter order == commit order 793ms
+   ✓ event counter: commit-ordered, gap-free per workspace (INV-009) > produces a gap-free, unique sequence under many concurrent commits 623ms
+ ✓ tests/integration/db/migrations.test.ts (3 tests) 1154ms
+   ✓ migrations: fresh apply + ordered upgrade smoke > applies 0001 then 0002 in order on an empty DB, tracking each 604ms
+   ✓ migrations: fresh apply + ordered upgrade smoke > rejects a recorded migration whose on-disk checksum changed (drift guard) 538ms
+ ✓ tests/integration/db/active-run.test.ts (3 tests) 1686ms
+   ✓ active-run uniqueness (INV-002) > enforces max_active_runs_chat = 1 via the partial unique index 586ms
+   ✓ active-run uniqueness (INV-002) > allows a new active run once the previous run reaches a terminal state 585ms
+   ✓ active-run uniqueness (INV-002) > does NOT cap active runs per workspace in the DB (application-level invariant) 513ms
+ ✓ tests/integration/db/composite-fk.test.ts (2 tests) 1003ms
+   ✓ composite FK: cross-project references are rejected > a run cannot reference a chat that lives in a different project 581ms
+   ✓ composite FK: cross-project references are rejected > a message cannot attach to a run from a different project 420ms
+ ✓ tests/import-boundary/boundary.test.ts (2 tests) 4ms
+ ✓ apps/api/src/auth/bodySchemas.test.ts (3 tests) 4ms
+ ✓ packages/application/src/auth/crypto.test.ts (6 tests) 818ms
+   ✓ scryptHasher > round-trips a password and rejects a wrong one 347ms
+   ✓ scryptHasher > produces a distinct salt (and therefore hash) each time 467ms
+ ✓ packages/domain/src/health.test.ts (4 tests) 3ms
+ ✓ apps/api/src/server.test.ts (3 tests) 60ms
+
+ Test Files  31 passed (31)
+      Tests  274 passed (274)
+   Start at  10:02:21
+   Duration  13.09s (transform 1.65s, setup 0ms, collect 4.28s, tests 26.54s, environment 6ms, prepare 2.03s)
+
+
+> redai@0.0.0 build /home/user/redAI
+> tsc -b && pnpm -r --if-present run build
+
+Scope: 13 of 14 workspace projects
+apps/web build$ tsc -b
+packages/contracts build$ tsc -b
+packages/domain build$ tsc -b
+packages/observability build$ tsc -b
+apps/web build: Done
+packages/contracts build: Done
+packages/ui build$ tsc -b
+packages/observability build: Done
+packages/domain build: Done
+packages/ui build: Done
+packages/db build$ tsc -b
+packages/llm build$ tsc -b
+packages/policy build$ tsc -b
+packages/storage build$ tsc -b
+packages/db build: Done
+tests build$ tsc -b
+packages/llm build: Done
+packages/policy build: Done
+packages/storage build: Done
+tests build: Done
+packages/application build$ tsc -b
+packages/application build: Done
+apps/api build$ tsc -b
+apps/runtime build$ tsc -b
+apps/runtime build: Done
+apps/api build: Done
+
+> redai@0.0.0 go:check /home/user/redAI
+> cd worker && go vet ./... && go build ./... && go test ./...
+
+?   	github.com/openaiattack/redai/worker/cmd/redai-worker	[no test files]
+ok  	github.com/openaiattack/redai/worker/internal/api	(cached)
+?   	github.com/openaiattack/redai/worker/internal/artifacts	[no test files]
+ok  	github.com/openaiattack/redai/worker/internal/contracts	(cached)
+ok  	github.com/openaiattack/redai/worker/internal/enrollment	(cached)
+?   	github.com/openaiattack/redai/worker/internal/executor	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/journal	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/lease	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/proxy	[no test files]
+?   	github.com/openaiattack/redai/worker/internal/sandbox	[no test files]

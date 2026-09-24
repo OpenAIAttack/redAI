@@ -1,0 +1,12 @@
+# T07 quality gates
+# date: 2026-09-24T10:03:08Z
+
+== prettier --check (scoped) ==
+Checking formatting...
+All matched files use Prettier code style!
+
+== eslint (full) ==
+eslint exit=0 (clean)
+
+== tsc -b (full) ==
+tsc -b exit=0

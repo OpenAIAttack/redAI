@@ -1,0 +1,19 @@
+# T06 scoped vitest — live PostgreSQL 16 (throwaway cluster port 55462)
+# DATABASE_URL=postgres://redai@127.0.0.1:55462/postgres
+# command: pnpm exec vitest run packages/application/src/projects apps/api/src/projects
+# date: 2026-09-24T09:24:11Z
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/projects/service.test.ts (15 tests) 16ms
+ ✓ apps/api/src/projects/plugin.test.ts (10 tests) 152ms
+ ✓ packages/application/src/projects/dbRepository.test.ts (10 tests) 2491ms
+   ✓ DB projects repository (live PostgreSQL) > HEADLINE: swapping a chat/note UUID from another project is rejected by the composite key 324ms
+
+ Test Files  3 passed (3)
+      Tests  35 passed (35)
+   Start at  09:24:12
+   Duration  3.06s (transform 472ms, setup 0ms, collect 869ms, tests 2.66s, environment 1ms, prepare 206ms)
+

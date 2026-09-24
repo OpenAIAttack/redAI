@@ -1,0 +1,2773 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/api.schema.json",
+  "title": "redAI api",
+  "$defs": {
+    "LoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "writeOnly": true
+        }
+      },
+      "required": [
+        "username",
+        "password"
+      ],
+      "additionalProperties": false
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "owner_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "setup_complete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "owner_id",
+        "workspace_id",
+        "username",
+        "csrf_token",
+        "expires_at",
+        "setup_complete"
+      ],
+      "additionalProperties": false
+    },
+    "Project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 8000
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived",
+            "deleting",
+            "deleted"
+          ]
+        },
+        "approval_mode": {
+          "$ref": "common.schema.json#/$defs/ApprovalMode"
+        },
+        "data_mode": {
+          "$ref": "common.schema.json#/$defs/DataMode"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "updated_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "workspace_id",
+        "name",
+        "description",
+        "status",
+        "approval_mode",
+        "data_mode",
+        "revision",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectCreate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 8000
+        },
+        "approval_mode": {
+          "$ref": "common.schema.json#/$defs/ApprovalMode"
+        },
+        "data_mode": {
+          "$ref": "common.schema.json#/$defs/DataMode"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectUpdate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 8000
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "archived"
+          ]
+        },
+        "approval_mode": {
+          "$ref": "common.schema.json#/$defs/ApprovalMode"
+        },
+        "data_mode": {
+          "$ref": "common.schema.json#/$defs/DataMode"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "Note": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "content": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 65536
+        },
+        "selected_for_context": {
+          "type": "boolean"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "updated_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "title",
+        "content",
+        "selected_for_context",
+        "revision",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "NoteWrite": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "content": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 65536
+        },
+        "selected_for_context": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "title",
+        "content",
+        "selected_for_context"
+      ],
+      "additionalProperties": false
+    },
+    "WorkerBinding": {
+      "type": "object",
+      "properties": {
+        "worker_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "zone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "worker_id",
+        "zone",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "WorkerBindings": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/WorkerBinding"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "DNSChallengeCreate": {
+      "type": "object",
+      "properties": {
+        "root_domain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253
+        }
+      },
+      "required": [
+        "root_domain"
+      ],
+      "additionalProperties": false
+    },
+    "DNSChallenge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "record_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "record_value": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "verified",
+            "expired",
+            "revoked"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "record_name",
+        "record_value",
+        "expires_at",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "DNSVerify": {
+      "type": "object",
+      "properties": {
+        "challenge_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        }
+      },
+      "required": [
+        "challenge_id"
+      ],
+      "additionalProperties": false
+    },
+    "DNSProof": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "root_domain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253
+        },
+        "verified_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "expired",
+            "revoked"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "root_domain",
+        "verified_at",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "ScopeVersionCreate": {
+      "type": "object",
+      "properties": {
+        "policy": {
+          "$ref": "scope.schema.json"
+        }
+      },
+      "required": [
+        "policy"
+      ],
+      "additionalProperties": false
+    },
+    "ScopeVersion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "policy": {
+          "$ref": "scope.schema.json"
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "version",
+        "policy",
+        "sha256",
+        "created_at"
+      ],
+      "additionalProperties": false
+    },
+    "GrantCreate": {
+      "type": "object",
+      "properties": {
+        "scope_version_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "dns_proof_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorization_basis": {
+          "type": "string",
+          "enum": [
+            "owner_attestation",
+            "written_authorization",
+            "lab_attestation"
+          ]
+        },
+        "attestation": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 8000
+        },
+        "valid_until": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "scope_version_id",
+        "dns_proof_id",
+        "authorization_basis",
+        "attestation",
+        "valid_until"
+      ],
+      "additionalProperties": false
+    },
+    "Grant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "scope_version_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "revoked",
+            "expired"
+          ]
+        },
+        "policy_epoch": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "valid_until": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "scope_version_id",
+        "status",
+        "policy_epoch",
+        "created_at",
+        "valid_until"
+      ],
+      "additionalProperties": false
+    },
+    "Reason": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "ChatCreate": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Chat": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "pinned": {
+          "type": "boolean"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "updated_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "title",
+        "pinned",
+        "revision",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "ChatUpdate": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "pinned": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "MessageCreate": {
+      "type": "object",
+      "properties": {
+        "client_message_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 65536
+        },
+        "artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "client_message_id",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "chat_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seq": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "user",
+            "assistant",
+            "system"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 262144
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "streaming",
+            "completed",
+            "interrupted"
+          ]
+        },
+        "artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 64
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "chat_id",
+        "run_id",
+        "seq",
+        "role",
+        "text",
+        "status",
+        "artifact_ids",
+        "created_at"
+      ],
+      "additionalProperties": false
+    },
+    "RunCreate": {
+      "type": "object",
+      "properties": {
+        "chat_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "client_message_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "agent"
+          ]
+        },
+        "provider_config_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "worker_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approval_mode": {
+          "$ref": "common.schema.json#/$defs/ApprovalMode"
+        },
+        "scope_version_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "grant_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data_mode": {
+          "$ref": "common.schema.json#/$defs/DataMode"
+        },
+        "limits": {
+          "$ref": "run.schema.json#/$defs/Limits"
+        },
+        "resumes_run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "chat_id",
+        "client_message_id",
+        "text",
+        "mode",
+        "provider_config_id"
+      ],
+      "additionalProperties": false
+    },
+    "Snapshot": {
+      "type": "object",
+      "properties": {
+        "snapshot_cursor": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "run": {
+          "$ref": "run.schema.json"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Message"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "tool_calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/UUID"
+              },
+              "state": {
+                "$ref": "common.schema.json#/$defs/ToolCallState"
+              },
+              "tool_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "required": [
+              "id",
+              "state",
+              "tool_name"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "approvals": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "snapshot_cursor",
+        "run",
+        "messages",
+        "tool_calls",
+        "approvals"
+      ],
+      "additionalProperties": false
+    },
+    "Approval": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "run_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "tool_call_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "fingerprint": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "risk_tier": {
+          "$ref": "common.schema.json#/$defs/RiskTier"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected",
+            "expired",
+            "stale"
+          ]
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "run_id",
+        "tool_call_id",
+        "fingerprint",
+        "risk_tier",
+        "summary",
+        "status",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalDecision": {
+      "type": "object",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "fingerprint": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        }
+      },
+      "required": [
+        "decision",
+        "fingerprint"
+      ],
+      "additionalProperties": false
+    },
+    "BudgetIncrease": {
+      "type": "object",
+      "properties": {
+        "new_limit_micro_usd": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "new_limit_micro_usd",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "ManualToolCreate": {
+      "type": "object",
+      "properties": {
+        "tool_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "input": {
+          "type": "object",
+          "maxProperties": 40
+        }
+      },
+      "required": [
+        "tool_name",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    "ToolCall": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "run_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "tool_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "state": {
+          "$ref": "common.schema.json#/$defs/ToolCallState"
+        },
+        "effect_class": {
+          "$ref": "common.schema.json#/$defs/EffectClass"
+        },
+        "current_attempt_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "run_id",
+        "tool_name",
+        "state",
+        "effect_class",
+        "current_attempt_id"
+      ],
+      "additionalProperties": false
+    },
+    "ArtifactCreate": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 26214400
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "classification": {
+          "$ref": "common.schema.json#/$defs/Classification"
+        }
+      },
+      "required": [
+        "filename",
+        "media_type",
+        "byte_size",
+        "sha256",
+        "classification"
+      ],
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 26214400
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "classification": {
+          "$ref": "common.schema.json#/$defs/Classification"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "ready",
+            "quarantined",
+            "deleting",
+            "deleted"
+          ]
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "filename",
+        "media_type",
+        "byte_size",
+        "sha256",
+        "classification",
+        "status",
+        "created_at"
+      ],
+      "additionalProperties": false
+    },
+    "ArtifactFinalize": {
+      "type": "object",
+      "properties": {
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 26214400
+        }
+      },
+      "required": [
+        "sha256",
+        "byte_size"
+      ],
+      "additionalProperties": false
+    },
+    "FindingWrite": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "affected_asset_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "affected_origin": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "cwe": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32,
+              "pattern": "^CWE-[0-9]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "info",
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "severity_rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": [
+            "candidate",
+            "needs_review",
+            "verified",
+            "rejected",
+            "inconclusive"
+          ]
+        },
+        "remediation_status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "fixed",
+            "accepted_risk"
+          ]
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 12000
+        },
+        "observed_behavior": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        },
+        "expected_behavior": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 12000
+        },
+        "reproduction": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 12000
+        },
+        "remediation": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 12000
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "minItems": 0,
+          "maxItems": 50
+        },
+        "source_run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "owner_confirmed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "title",
+        "summary",
+        "affected_asset_id",
+        "affected_origin",
+        "category",
+        "cwe",
+        "severity",
+        "severity_rationale",
+        "confidence",
+        "verification_status",
+        "remediation_status",
+        "impact",
+        "observed_behavior",
+        "expected_behavior",
+        "reproduction",
+        "remediation",
+        "evidence_ids",
+        "limitations",
+        "source_run_id",
+        "owner_confirmed"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verification_status": {
+                "const": "verified"
+              }
+            },
+            "required": [
+              "verification_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "RetestCreate": {
+      "type": "object",
+      "properties": {
+        "finding_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "chat_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "provider_config_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "worker_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "grant_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "scope_version_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        }
+      },
+      "required": [
+        "finding_version",
+        "chat_id",
+        "provider_config_id",
+        "worker_id",
+        "grant_id",
+        "scope_version_id",
+        "objective"
+      ],
+      "additionalProperties": false
+    },
+    "ReportCreate": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "finding_versions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "finding_id": {
+                "$ref": "common.schema.json#/$defs/UUID"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              }
+            },
+            "required": [
+              "finding_id",
+              "version"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "run_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "vi",
+            "en"
+          ]
+        },
+        "classification": {
+          "$ref": "common.schema.json#/$defs/Classification"
+        },
+        "include_raw_evidence": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "title",
+        "finding_versions",
+        "run_ids",
+        "language",
+        "classification",
+        "include_raw_evidence"
+      ],
+      "additionalProperties": false
+    },
+    "Report": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "rendering",
+            "ready",
+            "failed"
+          ]
+        },
+        "snapshot_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 3
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "title",
+        "state",
+        "snapshot_sha256",
+        "artifact_ids",
+        "created_at"
+      ],
+      "additionalProperties": false
+    },
+    "Worker": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "zone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "online",
+            "offline",
+            "draining",
+            "revoked",
+            "unhealthy"
+          ]
+        },
+        "capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "last_seen_at": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "manifest_sha256": {
+          "$ref": "common.schema.json#/$defs/SHA256"
+        },
+        "agent_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "id",
+        "display_name",
+        "zone",
+        "state",
+        "capacity",
+        "last_seen_at",
+        "manifest_sha256",
+        "agent_version"
+      ],
+      "additionalProperties": false
+    },
+    "EnrollmentTokenCreate": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "zone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        }
+      },
+      "required": [
+        "display_name",
+        "zone",
+        "capacity"
+      ],
+      "additionalProperties": false
+    },
+    "EnrollmentToken": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "token",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "ProviderWrite": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "adapter_kind": {
+          "type": "string",
+          "enum": [
+            "mock",
+            "chat_completions_compatible"
+          ]
+        },
+        "base_url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "format": "uri"
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "credential_ref": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "context_window": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 1000000
+        },
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 128,
+          "maximum": 65536
+        },
+        "input_price_micro_usd_per_million": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "output_price_micro_usd_per_million": {
+          "$ref": "common.schema.json#/$defs/Money"
+        },
+        "allowed_data_modes": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/DataMode"
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "display_name",
+        "adapter_kind",
+        "base_url",
+        "model_id",
+        "credential_ref",
+        "context_window",
+        "max_output_tokens",
+        "input_price_micro_usd_per_million",
+        "output_price_micro_usd_per_million",
+        "allowed_data_modes",
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
+    "Provider": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "config": {
+          "$ref": "api.schema.json#/$defs/ProviderWrite"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "probe_status": {
+          "type": "string",
+          "enum": [
+            "not_tested",
+            "passed",
+            "failed"
+          ]
+        },
+        "updated_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "config",
+        "revision",
+        "probe_status",
+        "updated_at"
+      ],
+      "additionalProperties": false
+    },
+    "ProbeResult": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "passed",
+            "failed"
+          ]
+        },
+        "supports_tools": {
+          "type": "boolean"
+        },
+        "supports_streaming": {
+          "type": "boolean"
+        },
+        "supports_structured_output": {
+          "type": "boolean"
+        },
+        "usage_observed": {
+          "type": "boolean"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "checked_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "status",
+        "supports_tools",
+        "supports_streaming",
+        "supports_structured_output",
+        "usage_observed",
+        "error_code",
+        "checked_at"
+      ],
+      "additionalProperties": false
+    },
+    "SecretWrite": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "model_api_key",
+            "target_credential"
+          ]
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536,
+          "writeOnly": true
+        },
+        "allowed_origins": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "project_id",
+        "value",
+        "allowed_origins"
+      ],
+      "additionalProperties": false
+    },
+    "SecretMetadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "model_api_key",
+            "target_credential"
+          ]
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "revoked_at": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "project_id",
+        "version",
+        "created_at",
+        "revoked_at"
+      ],
+      "additionalProperties": false
+    },
+    "Health": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "healthy",
+            "degraded",
+            "unavailable"
+          ]
+        },
+        "database": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "error"
+          ]
+        },
+        "storage": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "full",
+            "error"
+          ]
+        },
+        "keys": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "locked",
+            "error"
+          ]
+        },
+        "execution_enabled": {
+          "type": "boolean"
+        },
+        "schema_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "status",
+        "database",
+        "storage",
+        "keys",
+        "execution_enabled",
+        "schema_version"
+      ],
+      "additionalProperties": false
+    },
+    "MaintenanceJob": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "backup",
+            "export",
+            "import",
+            "purge",
+            "diagnostics"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "running",
+            "ready",
+            "failed"
+          ]
+        },
+        "artifact_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "state",
+        "artifact_id",
+        "created_at",
+        "error_code"
+      ],
+      "additionalProperties": false
+    },
+    "BackupCreate": {
+      "type": "object",
+      "properties": {
+        "verify": {
+          "const": true
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "verify"
+      ],
+      "additionalProperties": false
+    },
+    "ExportCreate": {
+      "type": "object",
+      "properties": {
+        "include_raw_evidence": {
+          "type": "boolean"
+        },
+        "include_chats": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "include_raw_evidence",
+        "include_chats"
+      ],
+      "additionalProperties": false
+    },
+    "ImportCreate": {
+      "type": "object",
+      "properties": {
+        "bundle_artifact_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "activate_authorization": {
+          "const": false
+        },
+        "new_project_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      },
+      "required": [
+        "bundle_artifact_id",
+        "activate_authorization",
+        "new_project_name"
+      ],
+      "additionalProperties": false
+    },
+    "SearchResult": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "chat",
+            "note",
+            "finding",
+            "artifact"
+          ]
+        },
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "excerpt": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "project_id",
+        "title",
+        "excerpt"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Project"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "ChatPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Chat"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "MessagePage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Message"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "NotePage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Note"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "WorkerPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Worker"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "ProviderPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Provider"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "ArtifactPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Artifact"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "ReportPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Report"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "SearchResultPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/SearchResult"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "ScopeVersionPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/ScopeVersion"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "GrantPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Grant"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "FindingPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "finding.schema.json"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "SessionMetadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "last_seen_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "expires_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "current": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "last_seen_at",
+        "expires_at",
+        "current"
+      ],
+      "additionalProperties": false
+    },
+    "SessionPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/SessionMetadata"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "PasswordChange": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "writeOnly": true
+        },
+        "new_password": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 1024,
+          "writeOnly": true
+        }
+      },
+      "required": [
+        "current_password",
+        "new_password"
+      ],
+      "additionalProperties": false
+    },
+    "Settings": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "config": {
+          "type": "object",
+          "properties": {
+            "default_approval_mode": {
+              "$ref": "common.schema.json#/$defs/ApprovalMode"
+            },
+            "default_data_mode": {
+              "$ref": "common.schema.json#/$defs/DataMode"
+            },
+            "default_run_limits": {
+              "$ref": "run.schema.json#/$defs/Limits"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "vi",
+                "en"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": [
+                "dark",
+                "light",
+                "system"
+              ]
+            },
+            "timezone": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "events_retention_days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3650
+            },
+            "logs_retention_days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3650
+            },
+            "storage_quota_bytes": {
+              "$ref": "common.schema.json#/$defs/Counter"
+            }
+          },
+          "required": [
+            "default_approval_mode",
+            "default_data_mode",
+            "default_run_limits",
+            "language",
+            "theme",
+            "timezone",
+            "events_retention_days",
+            "logs_retention_days",
+            "storage_quota_bytes"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "revision",
+        "config"
+      ],
+      "additionalProperties": false
+    },
+    "SettingsUpdate": {
+      "type": "object",
+      "properties": {
+        "default_approval_mode": {
+          "$ref": "common.schema.json#/$defs/ApprovalMode"
+        },
+        "default_data_mode": {
+          "$ref": "common.schema.json#/$defs/DataMode"
+        },
+        "default_run_limits": {
+          "$ref": "run.schema.json#/$defs/Limits"
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "vi",
+            "en"
+          ]
+        },
+        "theme": {
+          "type": "string",
+          "enum": [
+            "dark",
+            "light",
+            "system"
+          ]
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "events_retention_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        },
+        "logs_retention_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3650
+        },
+        "storage_quota_bytes": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "OwnerReconcile": {
+      "type": "object",
+      "properties": {
+        "decision": {
+          "type": "string",
+          "enum": [
+            "close_inconclusive",
+            "accept_observed_result",
+            "confirm_quiescent_no_replay"
+          ]
+        },
+        "observed_quiescent": {
+          "type": "boolean"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 8000
+        }
+      },
+      "required": [
+        "decision",
+        "observed_quiescent",
+        "evidence_ids",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "ToolCallPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/ToolCall"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceSnapshot": {
+      "type": "object",
+      "properties": {
+        "snapshot_cursor": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "selected_project": {
+          "anyOf": [
+            {
+              "$ref": "api.schema.json#/$defs/Project"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "active_runs": {
+          "type": "array",
+          "items": {
+            "$ref": "run.schema.json"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "recent_chats": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Chat"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "workers": {
+          "type": "array",
+          "items": {
+            "$ref": "api.schema.json#/$defs/Worker"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "snapshot_cursor",
+        "selected_project",
+        "active_runs",
+        "recent_chats",
+        "workers"
+      ],
+      "additionalProperties": false
+    },
+    "SecretReplace": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536,
+          "writeOnly": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "value",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "ExecutionResume": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 1000
+        },
+        "current_password": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "writeOnly": true
+        },
+        "allow_new_runs_only": {
+          "const": true
+        }
+      },
+      "required": [
+        "reason",
+        "current_password",
+        "allow_new_runs_only"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

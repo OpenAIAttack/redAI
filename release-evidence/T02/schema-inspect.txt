@@ -1,0 +1,31 @@
+# schema_migrations
+ version |           filename           |     checksum     
+---------+------------------------------+------------------
+ 0001    | 0001_init_schema.sql         | c1607bdb74ff3352
+ 0002    | 0002_triggers_and_events.sql | 5be1044b40dc6994
+(2 rows)
+
+# counts
+ tables | redai_functions | user_triggers 
+--------+-----------------+---------------
+     39 |               3 |             3
+(1 row)
+
+# immutability triggers
+           tgname           |       tbl        
+----------------------------+------------------
+ artifact_payload_immutable | artifacts
+ finding_version_immutable  | finding_versions
+ scope_version_immutable    | scope_versions
+(3 rows)
+
+# invariant partial indexes
+           indexname            |   tablename    
+--------------------------------+----------------
+ one_active_run_per_chat        | runs
+ one_coordinator                | agent_sessions
+ one_inbox                      | projects
+ one_pending_approval           | approvals
+ one_unsettled_attempt_per_call | task_attempts
+(5 rows)
+

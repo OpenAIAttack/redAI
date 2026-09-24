@@ -1,0 +1,79 @@
+=== RUN   TestContractCasesParity
+=== RUN   TestContractCasesParity/event-valid.json
+=== RUN   TestContractCasesParity/event-invalid-counter.json
+=== RUN   TestContractCasesParity/event-invalid-state.json
+=== RUN   TestContractCasesParity/export-manifest-valid.json
+=== RUN   TestContractCasesParity/export-invalid-activate-grants.json
+=== RUN   TestContractCasesParity/finding-candidate-valid.json
+=== RUN   TestContractCasesParity/finding-verified-structurally-valid.json
+=== RUN   TestContractCasesParity/finding-invalid-verified-no-evidence.json
+=== RUN   TestContractCasesParity/http-input-valid.json
+=== RUN   TestContractCasesParity/http-input-invalid-model-risk.json
+=== RUN   TestContractCasesParity/reviewer-valid.json
+=== RUN   TestContractCasesParity/reviewer-invalid-confidence.json
+=== RUN   TestContractCasesParity/run-valid.json
+=== RUN   TestContractCasesParity/run-invalid-mode.json
+=== RUN   TestContractCasesParity/run-invalid-money-number.json
+=== RUN   TestContractCasesParity/run-invalid-state.json
+=== RUN   TestContractCasesParity/run-invalid-timestamp.json
+=== RUN   TestContractCasesParity/scope-valid.json
+=== RUN   TestContractCasesParity/scope-invalid-port.json
+=== RUN   TestContractCasesParity/scope-invalid-inheritance.json
+=== RUN   TestContractCasesParity/summary-valid.json
+=== RUN   TestContractCasesParity/summary-invalid-authorization.json
+=== RUN   TestContractCasesParity/terminal-input-valid.json
+=== RUN   TestContractCasesParity/terminal-input-invalid-network.json
+=== RUN   TestContractCasesParity/worker-claims-valid.json
+=== RUN   TestContractCasesParity/worker-invalid-resource-limit.json
+=== RUN   TestContractCasesParity/worker-offline-envelope-valid.json
+=== RUN   TestContractCasesParity/worker-invalid-scoped-no-grant.json
+=== RUN   TestContractCasesParity/worker-result-valid.json
+--- PASS: TestContractCasesParity (0.02s)
+    --- PASS: TestContractCasesParity/event-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/event-invalid-counter.json (0.00s)
+    --- PASS: TestContractCasesParity/event-invalid-state.json (0.00s)
+    --- PASS: TestContractCasesParity/export-manifest-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/export-invalid-activate-grants.json (0.00s)
+    --- PASS: TestContractCasesParity/finding-candidate-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/finding-verified-structurally-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/finding-invalid-verified-no-evidence.json (0.00s)
+    --- PASS: TestContractCasesParity/http-input-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/http-input-invalid-model-risk.json (0.00s)
+    --- PASS: TestContractCasesParity/reviewer-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/reviewer-invalid-confidence.json (0.00s)
+    --- PASS: TestContractCasesParity/run-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/run-invalid-mode.json (0.00s)
+    --- PASS: TestContractCasesParity/run-invalid-money-number.json (0.00s)
+    --- PASS: TestContractCasesParity/run-invalid-state.json (0.00s)
+    --- PASS: TestContractCasesParity/run-invalid-timestamp.json (0.00s)
+    --- PASS: TestContractCasesParity/scope-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/scope-invalid-port.json (0.00s)
+    --- PASS: TestContractCasesParity/scope-invalid-inheritance.json (0.00s)
+    --- PASS: TestContractCasesParity/summary-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/summary-invalid-authorization.json (0.00s)
+    --- PASS: TestContractCasesParity/terminal-input-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/terminal-input-invalid-network.json (0.00s)
+    --- PASS: TestContractCasesParity/worker-claims-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/worker-invalid-resource-limit.json (0.00s)
+    --- PASS: TestContractCasesParity/worker-offline-envelope-valid.json (0.00s)
+    --- PASS: TestContractCasesParity/worker-invalid-scoped-no-grant.json (0.00s)
+    --- PASS: TestContractCasesParity/worker-result-valid.json (0.00s)
+=== RUN   TestRejectsMissingRequiredFields
+=== RUN   TestRejectsMissingRequiredFields/run-valid.json/state
+=== RUN   TestRejectsMissingRequiredFields/scope-valid.json/rules
+=== RUN   TestRejectsMissingRequiredFields/finding-candidate-valid.json/severity
+=== RUN   TestRejectsMissingRequiredFields/worker-claims-valid.json/fencing_token
+=== RUN   TestRejectsMissingRequiredFields/worker-result-valid.json/status
+=== RUN   TestRejectsMissingRequiredFields/terminal-input-valid.json/argv
+--- PASS: TestRejectsMissingRequiredFields (0.00s)
+    --- PASS: TestRejectsMissingRequiredFields/run-valid.json/state (0.00s)
+    --- PASS: TestRejectsMissingRequiredFields/scope-valid.json/rules (0.00s)
+    --- PASS: TestRejectsMissingRequiredFields/finding-candidate-valid.json/severity (0.00s)
+    --- PASS: TestRejectsMissingRequiredFields/worker-claims-valid.json/fencing_token (0.00s)
+    --- PASS: TestRejectsMissingRequiredFields/worker-result-valid.json/status (0.00s)
+    --- PASS: TestRejectsMissingRequiredFields/terminal-input-valid.json/argv (0.00s)
+=== RUN   TestEnumsMatchSpecLock
+--- PASS: TestEnumsMatchSpecLock (0.00s)
+PASS
+ok  	github.com/openaiattack/redai/worker/internal/contracts	(cached)
+ls: cannot access 'go.sum': No such file or directory

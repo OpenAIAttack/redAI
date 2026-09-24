@@ -1,0 +1,45 @@
+{
+  "claims": {
+    "schema_version": "1.0",
+    "installation_id": "10000000-0000-4000-8000-000000000060",
+    "workspace_id": "10000000-0000-4000-8000-000000000001",
+    "project_id": "10000000-0000-4000-8000-000000000002",
+    "run_id": "10000000-0000-4000-8000-000000000004",
+    "tool_call_id": "10000000-0000-4000-8000-000000000061",
+    "attempt_id": "10000000-0000-4000-8000-000000000062",
+    "attempt_no": 1,
+    "fencing_token": "1",
+    "worker_id": "10000000-0000-4000-8000-000000000006",
+    "worker_session_id": "10000000-0000-4000-8000-000000000063",
+    "tool_name": "terminal.execute",
+    "input_sha256": "28925b0c37137f2c8caefc34bd63203aef3ba13577571e237a523173d7a5a118",
+    "scope_version_id": null,
+    "grant_id": null,
+    "policy_epoch": "1",
+    "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "network_profile": "scoped_web",
+    "timeout_seconds": 10,
+    "issued_at": "2026-09-24T03:00:00Z",
+    "expires_at": "2026-09-24T03:00:45Z",
+    "scope_policy_sha256": null,
+    "tool_manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "resource_limits": {
+      "cpu_millis": 1000,
+      "memory_bytes": 1073741824,
+      "pids": 128,
+      "output_bytes": 26214400
+    }
+  },
+  "lease_jws": "eyJhbGciOiJFZERTQSIsImtpZCI6ImZpeHR1cmUtb25seS1kby1ub3QtdHJ1c3QiLCJ0eXAiOiJyZWRhaS1sZWFzZStqd3QifQ.eyJhdHRlbXB0X2lkIjoiMTAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDYyIiwiYXR0ZW1wdF9ubyI6MSwiZXhwaXJlc19hdCI6IjIwMjYtMDktMjRUMDM6MDA6NDVaIiwiZmVuY2luZ190b2tlbiI6IjEiLCJncmFudF9pZCI6bnVsbCwiaW1hZ2VfZGlnZXN0Ijoic2hhMjU2OmFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEiLCJpbnB1dF9zaGEyNTYiOiIyODkyNWIwYzM3MTM3ZjJjOGNhZWZjMzRiZDYzMjAzYWVmM2JhMTM1Nzc1NzFlMjM3YTUyMzE3M2Q3YTVhMTE4IiwiaW5zdGFsbGF0aW9uX2lkIjoiMTAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDYwIiwiaXNzdWVkX2F0IjoiMjAyNi0wOS0yNFQwMzowMDowMFoiLCJuZXR3b3JrX3Byb2ZpbGUiOiJvZmZsaW5lIiwicG9saWN5X2Vwb2NoIjoiMSIsInByb2plY3RfaWQiOiIxMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDIiLCJyZXNvdXJjZV9saW1pdHMiOnsiY3B1X21pbGxpcyI6MTAwMCwibWVtb3J5X2J5dGVzIjoxMDczNzQxODI0LCJvdXRwdXRfYnl0ZXMiOjI2MjE0NDAwLCJwaWRzIjoxMjh9LCJydW5faWQiOiIxMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDQiLCJzY2hlbWFfdmVyc2lvbiI6IjEuMCIsInNjb3BlX3BvbGljeV9zaGEyNTYiOm51bGwsInNjb3BlX3ZlcnNpb25faWQiOm51bGwsInRpbWVvdXRfc2Vjb25kcyI6MTAsInRvb2xfY2FsbF9pZCI6IjEwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDA2MSIsInRvb2xfbWFuaWZlc3Rfc2hhMjU2IjoiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYiIsInRvb2xfbmFtZSI6InRlcm1pbmFsLmV4ZWN1dGUiLCJ3b3JrZXJfaWQiOiIxMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDYiLCJ3b3JrZXJfc2Vzc2lvbl9pZCI6IjEwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDA2MyIsIndvcmtzcGFjZV9pZCI6IjEwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAwMSJ9.pBennlSkqqLwDiRRw6A7h8h-a6DyvmvI0LwVq9x4FBMrwz-nqRu3_f8XTvBBpHLGvvkQ69JekWWIVvgUmOWeDg",
+  "input": {
+    "argv": [
+      "printf",
+      "fixture-ok\\n"
+    ],
+    "cwd": "/workspace",
+    "timeout_seconds": 10,
+    "network_profile": "offline"
+  },
+  "policy_snapshot": null,
+  "input_artifact_ids": []
+}

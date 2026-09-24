@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/scope.schema.json",
+  "title": "redAI scope",
+  "$defs": {
+    "OriginRule": {
+      "type": "object",
+      "properties": {
+        "rule_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253
+        },
+        "match": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "subdomains"
+          ]
+        },
+        "include_apex": {
+          "type": "boolean"
+        },
+        "schemes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "http",
+              "https"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "path_prefixes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048,
+            "pattern": "^/"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 7
+        },
+        "zone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "lab_ip_ranges": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "minItems": 0,
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "rule_id",
+        "host",
+        "match",
+        "include_apex",
+        "schemes",
+        "ports",
+        "path_prefixes",
+        "methods",
+        "zone"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule_id": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "match": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "subdomains"
+            ]
+          },
+          "include_apex": {
+            "type": "boolean"
+          },
+          "schemes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "http",
+                "https"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 2
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "path_prefixes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048,
+              "pattern": "^/"
+            },
+            "minItems": 1,
+            "maxItems": 32
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 7
+          },
+          "zone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "lab_ip_ranges": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "rule_id",
+          "host",
+          "match",
+          "include_apex",
+          "schemes",
+          "ports",
+          "path_prefixes",
+          "methods",
+          "zone"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule_id": {
+            "$ref": "common.schema.json#/$defs/UUID"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253
+          },
+          "match": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "subdomains"
+            ]
+          },
+          "include_apex": {
+            "type": "boolean"
+          },
+          "schemes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "http",
+                "https"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 2
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "path_prefixes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048,
+              "pattern": "^/"
+            },
+            "minItems": 1,
+            "maxItems": 32
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 7
+          },
+          "zone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "lab_ip_ranges": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "rule_id",
+          "host",
+          "match",
+          "include_apex",
+          "schemes",
+          "ports",
+          "path_prefixes",
+          "methods",
+          "zone"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 100
+    },
+    "action_categories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "offline",
+          "external_read",
+          "external_write"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "allowed_worker_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/UUID"
+      },
+      "minItems": 0,
+      "maxItems": 32
+    },
+    "allowed_zones": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "minItems": 1,
+      "maxItems": 16
+    },
+    "dependency_authorization": {
+      "const": "explicit_only"
+    },
+    "deny_platform_resources": {
+      "const": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "name",
+    "rules",
+    "exclusions",
+    "action_categories",
+    "allowed_worker_ids",
+    "allowed_zones",
+    "dependency_authorization",
+    "deny_platform_resources"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,79 @@
+T06 — Project, Chat metadata, notes & bindings
+================================================
+Date: 2026-09-24 · Branch: claude/fervent-archimedes-fnkoam · Base HEAD: 64a467d
+Status: DONE (35/35 scoped tests green, incl. 10 live-PostgreSQL). Uncommitted for coordinator.
+
+FILES (all NEW; no shared file edited)
+  packages/application/src/projects/
+    ports.ts            - Clock/RandomSource ports + ProjectsRepository storage port (DB-neutral records)
+    errors.ts           - typed use-case errors with stable code + httpStatus
+    cursor.ts           - opaque keyset (updated_at,id) pagination cursor
+    service.ts          - ProjectsService: project CRUD/archive/delete, Inbox, chat/note CRUD,
+                          optimistic revision concurrency, selected_for_context context read, bindings
+    dbRepository.ts     - createDbProjectsRepository(pool): raw SQL over @redai/db Executor/withTransaction
+    memoryRepository.ts - InMemoryProjectsRepository mirroring the SQL semantics (fast unit tests)
+    index.ts            - local barrel (coordinator re-exports from packages/application/src/index.ts)
+    service.test.ts     - 15 unit tests (in-memory)
+    dbRepository.test.ts- 10 live-PG integration tests (self-contained throwaway-db harness on @redai/db)
+  apps/api/src/projects/
+    bodySchemas.ts      - Ajv JSON-Schema validators for every request body + param/query helpers
+    errors.ts           - redAI error envelope + ProjectsError->envelope mapping (structural, no runtime class import)
+    plugin.ts           - registerProjects(app, deps): self-contained Fastify plugin, injected owner-auth guard
+    index.ts            - barrel: registerProjects + createDbProjectsService(pool) composition helper
+    plugin.test.ts      - 10 inject tests (auth 401/403, pagination shape, 422, isolation 404, 409 conflict)
+
+EVIDENCE
+  vitest-scoped-livepg.txt - pnpm exec vitest run packages/application/src/projects apps/api/src/projects
+                             => Test Files 3 passed, Tests 35 passed (live PG16, port 55462, own datadir)
+  quality-gates.txt        - prettier --check (clean), eslint (exit 0), tsc --noEmit projects errors: 0
+
+HOW TO RE-RUN THE LIVE-PG SUITE
+  export PGBIN=/usr/lib/postgresql/16/bin PGDATA=$PWD/.tmp-pg/t06 PGPORT=55462
+  runuser -u postgres -- "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+  runuser -u postgres -- "$PGBIN/pg_ctl" -D "$PGDATA" \
+      -o "-p $PGPORT -k /tmp -c listen_addresses=127.0.0.1" -w -l "$PGDATA/log" start
+  export DATABASE_URL="postgres://redai@127.0.0.1:55462/postgres"
+  pnpm exec vitest run packages/application/src/projects apps/api/src/projects
+  runuser -u postgres -- "$PGBIN/pg_ctl" -D "$PGDATA" stop -m immediate ; rm -rf "$PWD/.tmp-pg"
+  (Without DATABASE_URL the DB suite SKIPS LOUDLY; unit + inject suites still run.)
+
+COORDINATOR WIRING (2 barrels + 1 server hook; this task must not edit those shared files)
+  1. packages/application/src/index.ts : re-export from './projects/index.js'
+     (ProjectsService, createDbProjectsRepository, InMemoryProjectsRepository, error classes, types).
+  2. apps/api server.ts : after auth, mount the plugin, e.g.
+       import { registerProjects, createDbProjectsService } from './projects/index.js';
+       registerProjects(app, {
+         service: createDbProjectsService(pool),
+         authenticate: async (req) => {            // reuse the auth plugin's cookie->validateSession guard
+           const ctx = await authService.validateSession(sessionCookie(req)); // 401 if it throws/returns null
+           return ctx ? { workspaceId: ctx.workspaceId, ownerId: ctx.ownerId } : null;
+         },
+         authorizeMutation: (req, ctx) => originAllowed(req) && csrfValid(req, ctx), // Origin + CSRF double-submit
+       });
+  Import note: the apps/api/projects files currently import the use-case TYPES/values from
+  '../../../../packages/application/src/projects/index.js' (relative) because the package barrel is
+  not yet wired. Once step 1 lands and 'tsc -b' builds packages/application first, those may be
+  switched to '@redai/application' (like apps/api/auth). Verified: apps/api/src/projects typechecks
+  with 0 errors as soon as packages/application/dist/projects exists (build-order artifact only).
+
+SPEC AMBIGUITIES RESOLVED
+  - `workspaces` is a per-install singleton (workspaces_singleton_key), so cross-WORKSPACE isolation
+    cannot be tested with two workspaces in one DB; the DB suite proves the workspace predicate by
+    querying an existing project under a foreign workspace_id (returns null). Cross-PROJECT isolation
+    (the headline) is fully tested with two real projects.
+  - docs/05 §6 "Delete Project requires no active run or accept cancel": implemented as a tombstone
+    (status -> 'deleting') gated on countActiveRunsForProject==0 + exact-name confirmation + Inbox refusal.
+    The batched purge job / cancel-first flow is a later task; delete here only sets the tombstone.
+  - Inbox protection: the Inbox cannot be archived or deleted (system project); the partial-unique
+    `one_inbox` guarantees the singleton (verified: a second is_inbox insert raises 23505).
+  - `revision` (bigint) is transmitted as a decimal string in responses (docs/05 §1); the update
+    request carries `expected_revision` as a bounded integer; comparison is exact in SQL.
+  - I did NOT edit implementation/STATUS.md (shared, concurrent T05/T15) — this file is the T06 status.
+
+OPEN RISKS + MINIMAL NEXT STEP
+  - Origin/CSRF for mutations is INJECTED (authorizeMutation) and defaults to allow so the plugin is
+    unit-testable in isolation. RISK: if the coordinator forgets to inject the real check, mutations
+    would lack CSRF. Minimal next step: wire authorizeMutation to the auth plugin's originAllowed+csrfValid
+    (snippet above) and add one inject test with a bad Origin at the server level.
+  - Binding tests insert a worker row via direct SQL only as an FK fixture (T15 owns worker identity);
+    no worker identity/credential code was touched.

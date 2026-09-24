@@ -1,0 +1,41 @@
+{
+  "name": "@redai/application",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./settings": {
+      "types": "./dist/settings/index.d.ts",
+      "default": "./dist/settings/index.js"
+    },
+    "./projects": {
+      "types": "./dist/projects/index.d.ts",
+      "default": "./dist/projects/index.js"
+    },
+    "./workerIdentity": {
+      "types": "./dist/workerIdentity/index.d.ts",
+      "default": "./dist/workerIdentity/index.js"
+    },
+    "./artifacts": {
+      "types": "./dist/artifacts/index.d.ts",
+      "default": "./dist/artifacts/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@redai/domain": "workspace:*",
+    "@redai/policy": "workspace:*",
+    "@redai/contracts": "workspace:*",
+    "@redai/db": "workspace:*",
+    "@redai/storage": "workspace:*",
+    "@redai/llm": "workspace:*"
+  }
+}

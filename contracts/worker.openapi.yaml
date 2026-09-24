@@ -1,0 +1,496 @@
+openapi: 3.1.0
+info:
+  title: redAI Worker API
+  version: 1.0.0-draft.1
+  description: Trusted worker transport; attempts bound to worker session, fencing
+    token, live grant and lease.
+servers:
+- url: /worker/v1
+security:
+- WorkerBearer: []
+paths:
+  /enroll:
+    post:
+      operationId: enrollWorker
+      summary: enrollWorker
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/EnrollmentResponse
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: &id001
+          type: string
+          format: uuid
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/EnrollmentRequest
+  /sessions:
+    post:
+      operationId: openWorkerSession
+      summary: openWorkerSession
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/OpenSessionResponse
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/OpenSessionRequest
+  /heartbeat:
+    post:
+      operationId: workerHeartbeat
+      summary: workerHeartbeat
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/HeartbeatResponse
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/HeartbeatRequest
+  /tasks/claim:
+    post:
+      operationId: claimTask
+      summary: claimTask
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/TaskEnvelope
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+        '204':
+          description: No task before long-poll deadline.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/ClaimRequest
+  /tasks/{attempt_id}/ack:
+    post:
+      operationId: ackTask
+      summary: ackTask
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: &id002
+                $ref: ./schemas/common.schema.json#/$defs/OK
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: attempt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/AckRequest
+  /tasks/{attempt_id}/renew:
+    post:
+      operationId: renewTask
+      summary: renewTask
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/RenewResponse
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: attempt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/RenewRequest
+  /tasks/{attempt_id}/events:
+    post:
+      operationId: eventsTask
+      summary: eventsTask
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: *id002
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: attempt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/EventsRequest
+  /tasks/{attempt_id}/result:
+    post:
+      operationId: resultTask
+      summary: resultTask
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/ResultAck
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: attempt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/WorkerResult
+  /tasks/{attempt_id}/reconcile:
+    post:
+      operationId: reconcileTask
+      summary: reconcileTask
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/ReconcileResponse
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: attempt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/ReconcileRequest
+  /artifacts:
+    post:
+      operationId: createWorkerArtifact
+      summary: createWorkerArtifact
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Artifact
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/WorkerArtifactCreate
+  /artifacts/{artifact_id}/content:
+    put:
+      operationId: uploadWorkerArtifact
+      summary: uploadWorkerArtifact
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: *id002
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+  /artifacts/{artifact_id}/finalize:
+    post:
+      operationId: finalizeWorkerArtifact
+      summary: finalizeWorkerArtifact
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/api.schema.json#/$defs/Artifact
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ArtifactFinalize
+  /credential-capabilities:
+    post:
+      operationId: issueCredentialCapability
+      summary: issueCredentialCapability
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/CredentialCapabilityResponse
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/CredentialCapabilityRequest
+  /credentials/rotate:
+    post:
+      operationId: rotateWorkerCredential
+      summary: rotateWorkerCredential
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/RotateCredentialResponse
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/RotateCredentialRequest
+  /credential-capabilities/resolve:
+    post:
+      operationId: resolveCredentialCapability
+      summary: resolveCredentialCapability
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/worker.schema.json#/$defs/ResolvedCredential
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema: *id001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/worker.schema.json#/$defs/ResolveCapabilityRequest
+  /tasks/{attempt_id}/artifacts/{artifact_id}/content:
+    get:
+      operationId: downloadTaskInputArtifact
+      summary: downloadTaskInputArtifact
+      responses:
+        '200':
+          description: Bytes only for an input artifact explicitly linked to the active
+            attempt.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: Structured error
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/common.schema.json#/$defs/Error
+      parameters:
+      - name: attempt_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: artifact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Worker-Session
+        in: header
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Fencing-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^[0-9]+$
+components:
+  securitySchemes:
+    WorkerBearer:
+      type: http
+      scheme: bearer

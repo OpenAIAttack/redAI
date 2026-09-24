@@ -1,0 +1,19 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/workerIdentity/service.test.ts (12 tests) 13ms
+ ↓ packages/application/src/workerIdentity/dbRepository.test.ts (5 tests | 5 skipped)
+stderr | packages/application/src/workerIdentity/dbRepository.test.ts
+
+[T15] DATABASE_URL is not set — the worker-identity DB suite is SKIPPED.
+      Start a throwaway PostgreSQL cluster and export DATABASE_URL, then re-run:
+        pnpm exec vitest run packages/application/src/workerIdentity
+
+
+
+ Test Files  1 passed | 1 skipped (2)
+      Tests  12 passed | 5 skipped (17)
+   Start at  09:18:28
+   Duration  539ms (transform 297ms, setup 0ms, collect 362ms, tests 13ms, environment 0ms, prepare 140ms)
+

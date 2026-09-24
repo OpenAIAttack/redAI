@@ -1,0 +1,2 @@
+# T05 typecheck (scoped tsconfig, workspace .d.ts) — Thu Sep 24 09:17:30 UTC 2026
+tsc EXIT: 0

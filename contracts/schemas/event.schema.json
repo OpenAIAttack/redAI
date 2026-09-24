@@ -1,0 +1,1103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/event.schema.json",
+  "title": "redAI event",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "run.state_changed"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "from": {
+              "$ref": "common.schema.json#/$defs/RunState"
+            },
+            "to": {
+              "$ref": "common.schema.json#/$defs/RunState"
+            },
+            "reason_code": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "from",
+            "to",
+            "reason_code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "run.created"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "run_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "chat_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            }
+          },
+          "required": [
+            "run_id",
+            "chat_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "message.delta"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "message_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "generation_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "delta_seq": {
+              "$ref": "common.schema.json#/$defs/Counter"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 16384
+            },
+            "provisional": {
+              "const": true
+            }
+          },
+          "required": [
+            "message_id",
+            "generation_id",
+            "delta_seq",
+            "text",
+            "provisional"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "message.committed"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "message_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "sha256": {
+              "$ref": "common.schema.json#/$defs/SHA256"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "completed",
+                "interrupted"
+              ]
+            }
+          },
+          "required": [
+            "message_id",
+            "sha256",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "plan.updated"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "plan_revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "step_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            }
+          },
+          "required": [
+            "plan_revision",
+            "step_count"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "approval.requested"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "approval_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "tool_call_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "expires_at": {
+              "$ref": "common.schema.json#/$defs/Timestamp"
+            }
+          },
+          "required": [
+            "approval_id",
+            "tool_call_id",
+            "expires_at"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "approval.decided"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "approval_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "decision": {
+              "type": "string",
+              "enum": [
+                "approved",
+                "rejected",
+                "expired",
+                "stale"
+              ]
+            }
+          },
+          "required": [
+            "approval_id",
+            "decision"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "tool.state_changed"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "tool_call_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "state": {
+              "$ref": "common.schema.json#/$defs/ToolCallState"
+            },
+            "attempt_id": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/UUID"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "tool_call_id",
+            "state",
+            "attempt_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "worker.state_changed"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "worker_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "online",
+                "offline",
+                "draining",
+                "revoked",
+                "unhealthy"
+              ]
+            }
+          },
+          "required": [
+            "worker_id",
+            "state"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "artifact.ready"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "artifact_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "sha256": {
+              "$ref": "common.schema.json#/$defs/SHA256"
+            },
+            "byte_size": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 26214400
+            }
+          },
+          "required": [
+            "artifact_id",
+            "sha256",
+            "byte_size"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "finding.updated"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "finding_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "verification_status": {
+              "type": "string",
+              "enum": [
+                "candidate",
+                "needs_review",
+                "verified",
+                "rejected",
+                "inconclusive"
+              ]
+            }
+          },
+          "required": [
+            "finding_id",
+            "version",
+            "verification_status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "budget.updated"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "observed_micro_usd": {
+              "$ref": "common.schema.json#/$defs/Money"
+            },
+            "reserved_micro_usd": {
+              "$ref": "common.schema.json#/$defs/Money"
+            },
+            "limit_micro_usd": {
+              "$ref": "common.schema.json#/$defs/Money"
+            }
+          },
+          "required": [
+            "observed_micro_usd",
+            "reserved_micro_usd",
+            "limit_micro_usd"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "grant.revoked"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "grant_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "policy_epoch": {
+              "$ref": "common.schema.json#/$defs/Counter"
+            }
+          },
+          "required": [
+            "grant_id",
+            "policy_epoch"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "report.ready"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "report_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "artifact_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/UUID"
+              },
+              "minItems": 1,
+              "maxItems": 3
+            }
+          },
+          "required": [
+            "report_id",
+            "artifact_ids"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "event_id": {
+          "$ref": "common.schema.json#/$defs/Counter"
+        },
+        "workspace_id": {
+          "$ref": "common.schema.json#/$defs/UUID"
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "stream.cursor"
+        },
+        "created_at": {
+          "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "cursor": {
+              "$ref": "common.schema.json#/$defs/Counter"
+            }
+          },
+          "required": [
+            "cursor"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "workspace_id",
+        "project_id",
+        "run_id",
+        "type",
+        "created_at",
+        "data"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

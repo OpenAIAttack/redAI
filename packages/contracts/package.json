@@ -1,0 +1,27 @@
+{
+  "name": "@redai/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "codegen": "tsx src/codegen/generate.ts",
+    "codegen:check": "tsx src/codegen/generate.ts --check"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^15.0.3",
+    "tsx": "^4.19.2"
+  }
+}

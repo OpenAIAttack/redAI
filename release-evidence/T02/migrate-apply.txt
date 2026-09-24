@@ -1,0 +1,21 @@
+# T02 evidence — fresh migration apply on PostgreSQL 16.13
+# generated: 2026-09-24T08:08:44Z
+# server: PostgreSQL 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+# command: DATABASE_URL=.../redai_t02_evidence pnpm --filter @redai/db run migrate
+
+
+> @redai/db@0.0.0 migrate /home/user/redAI/packages/db
+> tsx src/cli/migrate.ts
+
+apply  0001_init_schema.sql
+apply  0002_triggers_and_events.sql
+migrations complete: 2 applied, 0 already present
+
+# --- idempotent re-run (no ORM auto-sync) ---
+
+> @redai/db@0.0.0 migrate /home/user/redAI/packages/db
+> tsx src/cli/migrate.ts
+
+skip   0001_init_schema.sql (already applied)
+skip   0002_triggers_and_events.sql (already applied)
+migrations complete: 0 applied, 2 already present

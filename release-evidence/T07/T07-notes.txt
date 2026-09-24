@@ -1,0 +1,107 @@
+T07 — Local ObjectStore & safe upload
+======================================
+Date: 2026-09-24 · Branch: claude/fervent-archimedes-fnkoam · Base HEAD: 580914d
+Status: DONE. Full `pnpm run check` green (exit 0): 31 test files / 274 tests
+(219 pre-existing + 55 new), incl. 9 new live-PostgreSQL-16 artifact tests + Go
+`go test ./...`. Uncommitted for the coordinator.
+
+BEHAVIOR
+  Durable artifact lifecycle over a DB row + local ObjectStore bytes:
+    createUpload  -> `pending` row, logical storage_key reserved (ws/project/artifactId), no bytes
+    putContent    -> bytes streamed into staging/<artifactId> (still pending), byte-capped
+    finalize      -> server computes sha256+size over OBSERVED bytes, verifies vs the client-
+                     declared values, ATOMIC rename staging -> objects/<key>, then commits the row
+                     to `ready` (or `quarantined` when bytes contradict the declared media type)
+    download      -> streams verified bytes; only a `ready` row is ever served (no public orphan),
+                     as attachment + `X-Content-Type-Options: nosniff` (untrusted bytes never render)
+    preview       -> bounded, HTML-escaped, secret-redacted, safe preview for
+                     text/markdown/json/yaml/csv/png/jpeg only; others -> 415; never fetches externals
+  Safety: path-traversal / absolute / symlink / bad-char keys rejected; writes stay inside the
+  configured root; disk-full / IO / interrupted publish leaves the row `pending` (never a partial
+  `ready`); finalize is idempotent (a duplicate returns the current row, no double-ready) and
+  crash-recoverable (a rename-then-crash retry re-verifies the published object); reconciliation
+  sweeps rowless orphan objects + stale staging and reports `ready` rows whose bytes went missing.
+  Cross-project isolation is structural: every op threads (workspaceId, projectId, artifactId) so a
+  foreign id resolves to 404 (INV-001). INV-007: a finalized payload is immutable (DB trigger +
+  pending-only markReady).
+
+FILES ADDED
+  packages/storage/src/          (was a T01 skeleton; now the real package)
+    errors.ts          - StorageError + codes + structural guard
+    paths.ts           - key validation, resolveWithinRoot, assertNoSymlink (traversal/symlink guard)
+    sniff.ts           - media-type vs bytes sniff + PNG/JPEG header dims + UTF-8 check
+    preview.ts         - buildPreview (bounded/escaped/redacted), htmlEscape, redactSecrets, CSV parser
+    objectStore.ts     - ObjectStore interface + LocalObjectStore (staged write, verify, atomic finalize,
+                         crash recovery, symlink-guarded read/preview, listObjectKeys/listStaging)
+    reconcile.ts       - pure reconcile(store, dbView) -> orphan/missing/stale, optional sweep
+    index.ts           - barrel (replaced placeholder)
+    objectStore.test.ts- 14 unit tests (temp-dir): verify, mismatch, traversal, symlink, IO-fail, recovery, reconcile
+    preview.test.ts    - 11 unit tests: HTML escape, secret redaction, PNG/JPEG dims, mismatch, unsupported, CSV
+  packages/application/src/artifacts/
+    ports.ts           - ArtifactsRepository + ProjectGate + DB-neutral ArtifactRecord
+    errors.ts          - typed use-case errors (code + httpStatus)
+    cursor.ts          - opaque keyset (created_at,id) cursor
+    service.ts         - ArtifactsService (createUpload/putContent/finalize/openDownload/preview/reconcile)
+                         + createLocalObjectStore(root)
+    dbRepository.ts    - createDbArtifactsRepository(pool) + createDbProjectGate(pool) (raw SQL, composite-key scoped)
+    memoryRepository.ts- InMemoryArtifactsRepository + InMemoryProjectGate (mirror SQL semantics)
+    index.ts           - subpath barrel for @redai/application/artifacts
+    service.test.ts    - 11 unit tests (in-memory repo + real temp-dir store)
+  apps/api/src/artifacts/
+    bodySchemas.ts     - Ajv JSON-Schema validators (ArtifactCreate/ArtifactFinalize) + params/headers/filename
+    errors.ts          - redAI error envelope + structural ArtifactsError mapping
+    plugin.ts          - registerArtifacts(app, deps): owner-auth-injected Fastify plugin, octet-stream
+                         body parser (bodyLimit = upload_max_bytes), 7 project-scoped routes
+    index.ts           - barrel + createDbArtifactsService(pool, objectStoreRoot)
+    plugin.test.ts     - 10 inject tests (full flow, 401/403/400/422/415/413, cross-project 404)
+  tests/integration/db/artifacts.test.ts - 9 live-PG16 tests (D09 relative-source imports, skips loudly)
+
+SHARED FILES EDITED (solo wave — allowed)
+  packages/application/package.json      - added "./artifacts" subpath export (D08)
+  packages/application/src/index.ts      - barrel comment updated (T07 subpath noted)
+  apps/api/package.json                  - added "@redai/storage": "workspace:*" dep
+  apps/api/tsconfig.json                 - added ../../packages/storage project reference
+  apps/api/src/server.ts                 - wired registerArtifacts into the env.databaseUrl branch,
+                                           behind createOwnerGuard, only when env.objectStoreRoot set
+  pnpm-lock.yaml                         - relinked (apps/api -> @redai/storage workspace edge); no new
+                                           external/registry deps (Node stdlib crypto/fs only)
+
+DEPENDENCIES
+  No new runtime dependencies. Storage uses only Node stdlib (node:crypto for sha256,
+  node:fs/promises for atomic rename/open). Ajv (already a dep) validates API bodies.
+
+SPEC AMBIGUITIES RESOLVED
+  1. The frozen public.openapi.yaml addresses get/content/finalize at a FLAT `/artifacts/{id}`
+     (only list/create are project-scoped). T07 explicitly REQUIRES cross-project isolation on
+     download/preview as a test, and the whole codebase addresses project-level entities under
+     `/api/v1/projects/:projectId/...` (T06). AGENTS.md priority: INV-* / permission boundaries win
+     over an API sketch. Resolution: ALL artifact routes are project-scoped
+     (`/api/v1/projects/:projectId/artifacts[/:artifactId][/content|/finalize|/preview]`), so
+     project A's URL with project B's artifact id is a composite-key 404, never a cross-project read.
+  2. `artifacts.kind` is NOT NULL with no CHECK and is absent from ArtifactCreate. Resolved: default
+     kind = 'upload' server-side for owner uploads (later tasks set richer kinds for tool evidence).
+  3. No `/preview` path exists in the frozen contract; T07 requires a safe preview. Added
+     `GET .../artifacts/:artifactId/preview` returning a bounded, escaped, redacted JSON preview.
+  4. Idempotency-Key is contract-required on the mutating routes; T07 requires idempotent finalize.
+     The finalize state machine is naturally idempotent (pending->ready once); the header is required
+     for contract compliance (400 if absent) but not yet persisted for create-dedup (see risks).
+
+OPEN RISKS + MINIMAL NEXT STEP
+  - Idempotency-Key is required but not stored, so a retried createUpload makes a second pending row
+    (cheap; swept by reconcile). Next step: a small idempotency table keyed by (route, key) in T09.
+  - Disk-full was exercised via an ENOTDIR-class IO failure (parent path is a file), which is
+    root-independent and reliably reproduces "no partial ready"; a true ENOSPC needs a size-capped
+    tmpfs in the deployment lab (T28/T31).
+  - reconcile() sweeps orphans/stale staging on demand; wiring it to the `artifact_reconcile`
+    maintenance job (migration-0002 kind) is a runtime-scheduler task (T13+).
+  - Health deep-liveness probe of the ObjectStore (D03) is not wired here; env.objectStoreRoot
+    presence still gates mounting. Next step: add an ObjectStore ping to readiness in a health task.
+
+HOW TO RE-RUN THE LIVE-PG SUITE
+  rm -rf .tmp-pg/t07 && mkdir -p .tmp-pg && chown -R postgres:postgres .tmp-pg
+  runuser -u postgres -- /usr/lib/postgresql/16/bin/initdb -D "$PWD/.tmp-pg/t07" -U redai --auth=trust
+  runuser -u postgres -- /usr/lib/postgresql/16/bin/pg_ctl -D "$PWD/.tmp-pg/t07" \
+    -o "-p 55464 -k /tmp" -l "$PWD/.tmp-pg/t07/log" start
+  export DATABASE_URL="postgres://redai@127.0.0.1:55464/postgres"
+  pnpm exec vitest run tests/integration/db/artifacts.test.ts
+  runuser -u postgres -- /usr/lib/postgresql/16/bin/pg_ctl -D "$PWD/.tmp-pg/t07" stop && rm -rf .tmp-pg/t07

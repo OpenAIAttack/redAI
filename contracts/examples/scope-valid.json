@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "name": "Documented fixture project — not a live target",
+  "rules": [
+    {
+      "rule_id": "10000000-0000-4000-8000-000000000020",
+      "host": "app.example.test",
+      "match": "exact",
+      "include_apex": true,
+      "schemes": [
+        "https"
+      ],
+      "ports": [
+        443
+      ],
+      "path_prefixes": [
+        "/api/"
+      ],
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "zone": "lab",
+      "lab_ip_ranges": [
+        "192.0.2.0/24"
+      ]
+    }
+  ],
+  "exclusions": [],
+  "action_categories": [
+    "offline",
+    "external_read"
+  ],
+  "allowed_worker_ids": [
+    "10000000-0000-4000-8000-000000000006"
+  ],
+  "allowed_zones": [
+    "lab"
+  ],
+  "dependency_authorization": "explicit_only",
+  "deny_platform_resources": true
+}

@@ -1,0 +1,44 @@
+{
+  "$comment": "Contract fixture manifest. Maps each file in contracts/examples/ to the schema it exercises and whether it must validate. Consumed by both the TypeScript (Ajv) suite and the Go worker parity test. `schema` values are @redai/contracts CONTRACT_SCHEMAS keys.",
+  "examples_dir": "contracts/examples",
+  "cases": [
+    { "file": "event-valid.json", "schema": "event", "expected": "valid" },
+    { "file": "event-invalid-counter.json", "schema": "event", "expected": "invalid" },
+    { "file": "event-invalid-state.json", "schema": "event", "expected": "invalid" },
+
+    { "file": "export-manifest-valid.json", "schema": "export-manifest", "expected": "valid" },
+    { "file": "export-invalid-activate-grants.json", "schema": "export-manifest", "expected": "invalid" },
+
+    { "file": "finding-candidate-valid.json", "schema": "finding", "expected": "valid" },
+    { "file": "finding-verified-structurally-valid.json", "schema": "finding", "expected": "valid" },
+    { "file": "finding-invalid-verified-no-evidence.json", "schema": "finding", "expected": "invalid" },
+
+    { "file": "http-input-valid.json", "schema": "tool-input.HttpRequest", "expected": "valid" },
+    { "file": "http-input-invalid-model-risk.json", "schema": "tool-input.HttpRequest", "expected": "invalid" },
+
+    { "file": "reviewer-valid.json", "schema": "reviewer", "expected": "valid" },
+    { "file": "reviewer-invalid-confidence.json", "schema": "reviewer", "expected": "invalid" },
+
+    { "file": "run-valid.json", "schema": "run", "expected": "valid" },
+    { "file": "run-invalid-mode.json", "schema": "run", "expected": "invalid" },
+    { "file": "run-invalid-money-number.json", "schema": "run", "expected": "invalid" },
+    { "file": "run-invalid-state.json", "schema": "run", "expected": "invalid" },
+    { "file": "run-invalid-timestamp.json", "schema": "run", "expected": "invalid" },
+
+    { "file": "scope-valid.json", "schema": "scope", "expected": "valid" },
+    { "file": "scope-invalid-port.json", "schema": "scope", "expected": "invalid" },
+    { "file": "scope-invalid-inheritance.json", "schema": "scope", "expected": "invalid" },
+
+    { "file": "summary-valid.json", "schema": "summary", "expected": "valid" },
+    { "file": "summary-invalid-authorization.json", "schema": "summary", "expected": "invalid" },
+
+    { "file": "terminal-input-valid.json", "schema": "tool-input.TerminalExecute", "expected": "valid" },
+    { "file": "terminal-input-invalid-network.json", "schema": "tool-input.TerminalExecute", "expected": "invalid" },
+
+    { "file": "worker-claims-valid.json", "schema": "worker.LeaseClaims", "expected": "valid" },
+    { "file": "worker-invalid-resource-limit.json", "schema": "worker.LeaseClaims", "expected": "invalid" },
+    { "file": "worker-offline-envelope-valid.json", "schema": "worker.TaskEnvelope", "expected": "valid" },
+    { "file": "worker-invalid-scoped-no-grant.json", "schema": "worker.TaskEnvelope", "expected": "invalid" },
+    { "file": "worker-result-valid.json", "schema": "worker.WorkerResult", "expected": "valid" }
+  ]
+}

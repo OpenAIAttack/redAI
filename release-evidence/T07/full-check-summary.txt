@@ -1,0 +1,23 @@
+# T07 full pnpm run check summary
+# DATABASE_URL=postgres://redai@127.0.0.1:55464/postgres (throwaway PG16)
+> pnpm run env:check && pnpm run typecheck && pnpm run lint && pnpm run format && pnpm run test && pnpm run build && pnpm run go:check
+> redai@0.0.0 env:check /home/user/redAI
+> redai@0.0.0 typecheck /home/user/redAI
+> redai@0.0.0 lint /home/user/redAI
+> eslint .
+> redai@0.0.0 format /home/user/redAI
+Checking formatting...
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+   ✓ DB projects repository (live PostgreSQL) > selected_for_context drives the context read (what a context builder queries) 461ms
+ Test Files  31 passed (31)
+      Tests  274 passed (274)
+   Duration  13.09s (transform 1.65s, setup 0ms, collect 4.28s, tests 26.54s, environment 6ms, prepare 2.03s)
+> redai@0.0.0 build /home/user/redAI
+> tsc -b && pnpm -r --if-present run build
+apps/web build$ tsc -b
+packages/contracts build$ tsc -b
+packages/domain build$ tsc -b
+packages/observability build$ tsc -b
+apps/web build: Done
+packages/contracts build: Done
+CHECK EXIT=0 (verified separately)

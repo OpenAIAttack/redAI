@@ -1,0 +1,7 @@
+T04 — Bootstrap owner & sessions (API side): environment
+date: 2026-09-24T08:55:14Z
+node: v22.22.2
+pnpm: 10.33.0
+postgres: postgres (PostgreSQL) 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
+git HEAD: 1aaa9f838853a14da8d2851daf94d7c1c58b69db
+branch: claude/fervent-archimedes-fnkoam

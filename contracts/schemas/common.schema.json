@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.redai.invalid/v1/common.schema.json",
+  "title": "redAI common",
+  "$defs": {
+    "UUID": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "Money": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,17})$",
+      "description": "Integer micro-USD as decimal string."
+    },
+    "Counter": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,18})$"
+    },
+    "SHA256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "ApprovalMode": {
+      "type": "string",
+      "enum": [
+        "automatic",
+        "always_ask",
+        "ask_high_risk",
+        "reject"
+      ]
+    },
+    "DataMode": {
+      "type": "string",
+      "enum": [
+        "local_only",
+        "redacted_cloud",
+        "cloud_full"
+      ]
+    },
+    "RunState": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "waiting_approval",
+        "waiting_worker",
+        "paused",
+        "cancel_requested",
+        "cancellation_pending",
+        "needs_attention",
+        "completed",
+        "failed",
+        "canceled",
+        "expired"
+      ]
+    },
+    "ToolCallState": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "blocked",
+        "waiting_approval",
+        "queued",
+        "executing",
+        "succeeded",
+        "failed",
+        "canceled",
+        "unknown"
+      ]
+    },
+    "AttemptState": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "leased",
+        "started",
+        "uploading",
+        "succeeded",
+        "failed",
+        "cancel_requested",
+        "canceled",
+        "lost",
+        "unknown"
+      ]
+    },
+    "EffectClass": {
+      "type": "string",
+      "enum": [
+        "pure",
+        "sandbox_write",
+        "external_read",
+        "external_write",
+        "destructive",
+        "unknown"
+      ]
+    },
+    "NetworkProfile": {
+      "type": "string",
+      "enum": [
+        "offline",
+        "scoped_web"
+      ]
+    },
+    "RiskTier": {
+      "type": "string",
+      "enum": [
+        "routine",
+        "high",
+        "forbidden"
+      ]
+    },
+    "Classification": {
+      "type": "string",
+      "enum": [
+        "public",
+        "internal",
+        "sensitive",
+        "restricted"
+      ]
+    },
+    "Pagination": {
+      "type": "object",
+      "properties": {
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Z][A-Z0-9_]+$"
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "request_id": {
+              "$ref": "common.schema.json#/$defs/UUID"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "object",
+              "maxProperties": 12,
+              "additionalProperties": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "request_id",
+            "retryable"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    "OK": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false
+    },
+    "PageQuery": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

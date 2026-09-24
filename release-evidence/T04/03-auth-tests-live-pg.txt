@@ -1,0 +1,27 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/application/src/auth/service.test.ts (11 tests) 14ms
+ ✓ apps/api/src/auth/plugin.test.ts (10 tests) 90ms
+ ✓ packages/application/src/auth/crypto.test.ts (6 tests) 722ms
+   ✓ scryptHasher > round-trips a password and rejects a wrong one 308ms
+   ✓ scryptHasher > produces a distinct salt (and therefore hash) each time 408ms
+ ✓ apps/api/src/auth/bodySchemas.test.ts (3 tests) 4ms
+ ✓ tests/integration/db/sessions.test.ts (4 tests) 1468ms
+   ✓ SessionRepository (T04) > stores only hashes and finds a session by its token hash 385ms
+   ✓ SessionRepository (T04) > slides idle expiry via touch, rotates CSRF, and revokes 344ms
+   ✓ SessionRepository (T04) > revokeAllForOwner revokes every live session and reports the count 366ms
+   ✓ SessionRepository (T04) > enforces token_hash uniqueness and the expiry CHECK 372ms
+ ✓ tests/integration/db/auth-bootstrap.test.ts (5 tests) 2802ms
+   ✓ owner bootstrap (T04, DB-backed) > creates the singleton owner + Workspace + Inbox in one transaction 507ms
+   ✓ owner bootstrap (T04, DB-backed) > refuses a second owner under a concurrent race (exactly one wins) 433ms
+   ✓ owner bootstrap (T04, DB-backed) > login → session validate works against a bootstrapped owner 630ms
+   ✓ owner bootstrap (T04, DB-backed) > runBootstrap creates once, prints a recovery code, then refuses 415ms
+   ✓ owner bootstrap (T04, DB-backed) > runReset reverifies the recovery code, resets, revokes sessions and rotates it 815ms
+
+ Test Files  6 passed (6)
+      Tests  39 passed (39)
+   Start at  08:54:18
+   Duration  3.48s (transform 663ms, setup 0ms, collect 1.25s, tests 5.10s, environment 1ms, prepare 410ms)
+

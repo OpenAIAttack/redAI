@@ -1,0 +1,7 @@
+
+> @redai/contracts@0.0.0 codegen /home/user/redAI/packages/contracts
+> tsx src/codegen/generate.ts
+
+wrote src/generated/types.ts
+wrote src/generated/schemas.ts
+wrote src/generated/validators.ts
