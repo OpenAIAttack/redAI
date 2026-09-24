@@ -1,0 +1,17 @@
+{
+  "id": "structured-json",
+  "description": "Probe echo tool call returning a well-formed structured object.",
+  "match": { "hasTools": true, "lastUserIncludes": "redai_probe_echo" },
+  "events": [
+    {
+      "tool_call": {
+        "index": 0,
+        "id": "call_echo_1",
+        "name": "redai_probe_echo",
+        "arguments": "{\"marker\":\"probe\"}"
+      }
+    },
+    { "usage": { "input_tokens": 20, "output_tokens": 6 } },
+    { "finish": "tool_calls" }
+  ]
+}

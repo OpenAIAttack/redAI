@@ -1,0 +1,18 @@
+{
+  "id": "tool-call-sequence",
+  "description": "A single valid FileRead tool call, arguments streamed across two deltas.",
+  "match": { "hasTools": true },
+  "events": [
+    {
+      "tool_call": {
+        "index": 0,
+        "id": "call_read_1",
+        "name": "file_read",
+        "arguments": "{\"path\":\"/repo/"
+      }
+    },
+    { "tool_call": { "index": 0, "arguments": "README.md\",\"max_bytes\":4096}" } },
+    { "usage": { "input_tokens": 40, "output_tokens": 18 } },
+    { "finish": "tool_calls" }
+  ]
+}

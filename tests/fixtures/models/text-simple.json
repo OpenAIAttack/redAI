@@ -1,0 +1,11 @@
+{
+  "id": "text-simple",
+  "description": "A plain text answer streamed as two chunks, then usage + stop.",
+  "match": { "hasTools": false, "lastUserIncludes": "READY" },
+  "events": [
+    { "text": "REA" },
+    { "text": "DY" },
+    { "usage": { "input_tokens": 12, "output_tokens": 2, "total_tokens": 14 } },
+    { "finish": "stop" }
+  ]
+}

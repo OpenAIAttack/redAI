@@ -1,0 +1,5 @@
+{
+  "id": "unknown-usage",
+  "description": "Provider omits usage entirely; the gateway records usage as unknown.",
+  "events": [{ "text": "done" }, { "finish": "stop" }]
+}

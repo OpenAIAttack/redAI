@@ -1,0 +1,6 @@
+# T08 evidence — prettier --check (owned files)
+# date: 2026-09-24T10:24:28Z
+
+Checking formatting...
+All matched files use Prettier code style!
+EXIT=0

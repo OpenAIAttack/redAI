@@ -1,0 +1,4 @@
+# T08 evidence — eslint (pnpm exec eslint packages/llm)
+# date: 2026-09-24T10:24:27Z
+
+EXIT=0

@@ -1,0 +1,13 @@
+{
+  "id": "stream-multi",
+  "description": "Multi-chunk streamed text with a per-chunk delay so a test can abort mid-stream.",
+  "chunkDelayMs": 20,
+  "events": [
+    { "text": "one " },
+    { "text": "two " },
+    { "text": "three " },
+    { "text": "four" },
+    { "usage": { "input_tokens": 8, "output_tokens": 4 } },
+    { "finish": "stop" }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "id": "interrupted-stream",
+  "description": "Stream that dies mid-frame after emitting a partial answer.",
+  "events": [{ "text": "partial ans" }, { "interrupt": "connection reset before finish" }]
+}

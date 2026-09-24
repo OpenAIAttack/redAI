@@ -1,0 +1,19 @@
+# T08 evidence — scoped tests (pnpm exec vitest run packages/llm)
+# date: 2026-09-24T10:24:24Z
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/user/redAI
+
+ ✓ packages/llm/src/routing.test.ts (6 tests) 10ms
+ ✓ packages/llm/src/mock/provider.test.ts (12 tests) 172ms
+ ✓ packages/llm/src/openai/adapter.test.ts (16 tests) 334ms
+ ✓ packages/llm/src/probe.test.ts (3 tests) 7ms
+ ✓ packages/llm/src/assemble.test.ts (6 tests) 5ms
+ ✓ packages/llm/src/toolValidation.test.ts (3 tests) 7ms
+
+ Test Files  6 passed (6)
+      Tests  46 passed (46)
+   Start at  10:24:25
+   Duration  1.73s (transform 571ms, setup 0ms, collect 933ms, tests 535ms, environment 1ms, prepare 626ms)
+

@@ -1,0 +1,9 @@
+# T08 evidence — build (pnpm --filter @redai/llm run build)
+# date: 2026-09-24T10:24:24Z
+
+
+> @redai/llm@0.0.0 build /home/user/redAI/packages/llm
+> tsc -b
+
+
+EXIT=0

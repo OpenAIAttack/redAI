@@ -1,0 +1,15 @@
+{
+  "id": "malformed-tool-json",
+  "description": "Tool call whose streamed arguments never form valid JSON (truncated object).",
+  "events": [
+    {
+      "tool_call": {
+        "index": 0,
+        "id": "call_bad_1",
+        "name": "file_read",
+        "arguments": "{\"path\":\"/x\",\"max_bytes\":"
+      }
+    },
+    { "finish": "tool_calls" }
+  ]
+}
