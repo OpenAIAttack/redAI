@@ -1,0 +1,5 @@
+T13 — Durable Agent loop & checkpoints — evidence
+Date: 2026-09-24T16:31:43Z
+Branch: claude/fervent-archimedes-fnkoam  HEAD: 486765f
+PG: PostgreSQL 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+DATABASE_URL=postgres://redai@127.0.0.1:55468/postgres (port 55468)

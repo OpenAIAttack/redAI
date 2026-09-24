@@ -12,6 +12,9 @@ export const RUNTIME_PACKAGE = '@redai/runtime';
 export { AskRuntimeDriver, DEFAULT_LEASE_SECONDS } from './ask/index.js';
 export type { AskRuntimeDriverDeps, TickResult } from './ask/index.js';
 
+export { AgentRuntimeDriver, DEFAULT_MAX_PHASES_PER_RUN } from './agent/index.js';
+export type { AgentRuntimeDriverDeps, AgentTickResult, AgentClaimPort } from './agent/index.js';
+
 async function main(): Promise<void> {
   console.log('redAI runtime skeleton started; durable Ask loop is T09, Agent loop lands in T13.');
 }

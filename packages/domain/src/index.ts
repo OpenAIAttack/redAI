@@ -7,3 +7,6 @@ export const DOMAIN_PACKAGE = '@redai/domain';
 
 export type { ReadinessStatus, ComponentCheck, ReadinessResult } from './health.js';
 export { computeReadiness } from './health.js';
+
+// Pure run domain: state machine, step boundaries, logical tool ids, loop & limits.
+export * from './runs/index.js';
