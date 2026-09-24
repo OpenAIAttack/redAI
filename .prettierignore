@@ -4,6 +4,16 @@ dist
 pnpm-lock.yaml
 coverage
 
+# Next.js build output + generated types (apps/web, T10a)
+**/.next
+apps/web/next-env.d.ts
+# next build rewrites this tsconfig in its own style on every run
+apps/web/tsconfig.json
+# Playwright e2e artifacts (apps/web, T10a)
+apps/web/e2e/results.json
+apps/web/test-results
+apps/web/playwright-report
+
 # Go worker (gofmt owns formatting there)
 worker
 

@@ -24,6 +24,10 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/*.tsbuildinfo',
       'worker/**',
+      // The Next.js app is linted by `next build`'s TypeScript typecheck (and can
+      // opt into `next lint`); keeping it out of the root flat config avoids
+      // needing React/Next plugins here. See apps/web (T10a).
+      'apps/web/**',
       'specs/**',
       'assets/**',
       'contracts/examples/**',

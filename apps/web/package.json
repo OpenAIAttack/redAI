@@ -2,15 +2,25 @@
   "name": "@redai/web",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
-  "main": "dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
   "scripts": {
-    "build": "tsc -b"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "next": "15.1.6",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@redai/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.0",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/react": "16.1.0",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
+    "jsdom": "25.0.1"
   }
 }

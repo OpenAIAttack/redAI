@@ -1,0 +1,120 @@
+T10a — Next.js app foundation (non-chat shell)
+==============================================
+Date: 2026-09-24 · Branch: claude/fervent-archimedes-fnkoam · Base HEAD: 354050e
+Status: DONE. Full `pnpm run check` GREEN (exit 0). Uncommitted for the coordinator.
+
+FULL CHECK RESULT (release-evidence/T10a/full-check.txt)
+  env:check   passed (node 22 / pnpm 10 / go 1.24 / psql 16; runsc WARN only)
+  typecheck   tsc -b passed (web excluded from references; web typecheck via next build)
+  lint        eslint . passed (apps/web ignored in root flat config)
+  format      prettier --check . passed
+  test        vitest: 30 files passed / 11 skipped; 282 passed / 54 skipped
+              (266 pre-existing DB-less + 16 new web tests; DB integration skips loudly
+               without DATABASE_URL per D09)
+  build       tsc -b + `pnpm -r run build` incl. a REAL offline `next build` (10 routes)
+  go:check    go vet + build + test all ok
+  e2e (separate, NOT in default test): `pnpm --filter @redai/web run test:e2e`
+              9/9 chromium smoke+responsive passed (release-evidence/T10a/e2e-smoke.txt)
+              screenshots: release-evidence/T10a/screens/ (login+setup, dark+light,
+              1440/1024/390)
+
+STACK / VERSIONS (pinned, offline)
+  next 15.1.6 · react/react-dom 18.3.1 · typescript 5.7 (root) · @types/react 18.3.18
+  test: jsdom 25.0.1 · @testing-library/react 16.1.0 · @testing-library/dom 10.4.0
+  e2e:  @playwright/test 1.56.0 (matches preinstalled chromium rev 1194 at
+        PLAYWRIGHT_BROWSERS_PATH; `playwright install` NOT run)
+  Offline build: system fonts only (no next/font remote), images unoptimized,
+  NEXT_TELEMETRY_DISABLED, security headers/CSP baseline in next.config.mjs.
+
+SCREENS IMPLEMENTED (wired to REAL APIs; loading/empty/error/saved states, no fake data)
+  /login              real POST /auth/login; CSRF double-submit; precise states
+                      (invalid=401 generic, rate-limited=429 + retry-after, forbidden origin)
+  /setup              explains one-owner CLI bootstrap; probes /auth/session for state
+  /                   recent projects (GET /projects) + inbox hint; create project (POST)
+  /p/:id              overview: project + recent chats; archive/unarchive; new chat;
+                      not-found(404)/archived/error states; findings = honest empty shell
+  /p/:id/files        artifacts (GET /artifacts) + notes (GET /notes); upload = labelled
+                      T10b shell; logical filenames only
+  /p/:id/settings     scope: approval_mode/data_mode/name/desc via PATCH w/ expected_revision;
+                      dirty/conflict(409)/saved states; worker bindings list (read-only)
+  /settings           Appearance (theme+lang per-viewer, timezone via PUT /settings w/
+                      If-Match revision), Providers (list/add-with-vault-key/toggle/secrets
+                      revoke — masked metadata only, no raw secret), Security (session info +
+                      server-side sign-out; password/session mgmt via host CLI, stated)
+  /workers            honest info page (no owner worker-list API yet); clarifies
+                      "local worker" (Go task-runner) vs "local model" (inference)
+  /p/:id/c/:chatId    chat + Workbench SHELL: composer (Enter send / Shift+Enter newline /
+                      no-send-during-IME / disabled-when-empty / Ask|Agent / model-boundary
+                      chip) and 5 Workbench tabs (Plan/Activity/Files/Findings/Usage) all
+                      labelled "coming with the Agent (T10b)". Includes a labelled
+                      SafeMarkdown rendering preview (NOT agent output).
+
+DEFERRED TO T10b (built as honest shells, never faked)
+  live turn transport / SSE client, message transcript, live Workbench panel data,
+  attachment upload, approval cards, findings list. Composer Send is inert + labelled.
+
+SANITIZATION
+  SafeMarkdown renders to React elements only (never dangerouslySetInnerHTML): raw HTML
+  is inert text; links pass @redai/ui sanitizeUrl (drops javascript: and other schemes;
+  http(s) marked external rel=noopener). Covered by 5 unit tests.
+  No secret is placed in the client bundle or localStorage; CSRF token held in memory
+  (+ readable CSRF cookie), never persisted.
+
+SHARED-TREE INTEGRATION (files I own)
+  root tsconfig.json     removed { "path": "apps/web" } (Next app is non-composite/noEmit)
+  eslint.config.mjs      added 'apps/web/**' to ignores (web linted by next build typecheck)
+  .prettierignore        added **/.next, next-env.d.ts, apps/web/tsconfig.json (next rewrites
+                         it each build), playwright artifacts
+  root package.json      UNCHANGED (existing `build` already runs `pnpm -r run build` →
+                         next build; `test` picks up apps/web/**/*.test.ts). No script
+                         behavior removed for other packages.
+  packages/ui            replaced placeholder with real, React-free shared primitives:
+                         design tokens (dark/light) + sanitizeUrl/formatBytes/severityRank,
+                         genuinely consumed by the web app.
+
+FILES ADDED (apps/web/**) — Next App Router
+  package.json, tsconfig.json, next.config.mjs, next-env.d.ts, playwright.config.ts
+  src/app: layout.tsx, providers.tsx, globals.css, login/page.tsx, setup/page.tsx,
+    (app)/layout.tsx, (app)/page.tsx, (app)/settings/page.tsx, (app)/workers/page.tsx,
+    (app)/p/[projectId]/(detail)/{layout,page}.tsx, .../files/page.tsx,
+    .../settings/page.tsx, (app)/p/[projectId]/c/[chatId]/page.tsx
+  src/components: AppShell, Sidebar(in AppShell), SessionProvider, ProjectNav, Composer,
+    Workbench, SafeMarkdown, states
+  src/lib: api.ts, endpoints.ts, types.ts, useAsync.ts
+  src/i18n: index.tsx, vi.ts, en.ts (vi default; en enforced to same key shape)
+  src/theme: ThemeProvider.tsx (dark default, pre-paint bootstrap script)
+  tests (in default `pnpm run test`): src/components/SafeMarkdown.test.ts (5),
+    src/lib/api.test.ts (6), src/components/Workbench.test.ts (3), src/i18n/catalog.test.ts (2)
+  e2e (separate script): e2e/smoke.spec.ts
+
+DEPS ADDED (apps/web/package.json only; I am the only agent adding deps this wave)
+  deps: next 15.1.6, react 18.3.1, react-dom 18.3.1, @redai/ui workspace:*
+  dev:  @playwright/test 1.56.0, @testing-library/dom 10.4.0, @testing-library/react 16.1.0,
+        @types/react 18.3.18, @types/react-dom 18.3.5, jsdom 25.0.1
+  pnpm-lock.yaml updated accordingly.
+
+VITEST JSX NOTE
+  next build rewrites apps/web/tsconfig.json jsx to "preserve", which makes vitest's
+  esbuild emit classic React.createElement. Component files unit-tested under vitest
+  therefore carry an esbuild automatic-runtime pragma (/** @jsxRuntime automatic */
+  /** @jsxImportSource react */) — harmless for the SWC-based next build (verified).
+
+SPEC AMBIGUITIES (for docs/implementation-decisions.md)
+  - No UNAUTHENTICATED "owner exists" endpoint. docs/13 §1 wants /setup to check
+    owner-exists, but the browser can only tell "valid session" vs "401". /setup thus
+    probes /auth/session and explains the CLI bootstrap; it cannot distinguish
+    "no owner yet" from "not signed in". Minimal fix: add GET /api/v1/auth/bootstrap-state
+    returning { owner_exists }.
+  - No owner-facing worker LIST API (only per-project bindings + enrollment). /workers
+    is an honest info page; a list appears when the API lands.
+  - No API for owner password change / session list-revoke from the browser (docs/13 §4
+    Security). Handled as host-CLI ops and stated honestly; sign-out uses the real
+    server-side logout.
+
+OPEN RISKS + NEXT STEP
+  - Same-origin assumption: the browser calls /api/v1 relative (cookie + CSRF need
+    same origin). Deployment must put web+API behind one reverse proxy (or set
+    NEXT_PUBLIC_API_BASE_URL for a split dev origin). Next step: coordinator adds the
+    proxy/compose wiring for a same-origin dev run so authenticated screens can be
+    exercised E2E (currently e2e covers only the browserless login/setup surface).
+  - T10b wires the SSE client + turn transport into the reserved composer/Workbench.

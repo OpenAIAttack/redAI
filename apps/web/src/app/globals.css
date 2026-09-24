@@ -1,0 +1,413 @@
+/*
+ * Global styles + design tokens for redAI web.
+ *
+ * Tokens are defined on :root for dark (the default theme) and overridden for
+ * [data-theme='light']. Values mirror @redai/ui's darkTheme/lightTheme so the
+ * single source of truth stays consistent. Only system fonts are used — no
+ * remote font fetch — so `next build` is fully offline (docs/13 §6 intent).
+ * Spacing follows multiples of 4px; base font 14–16px, line-height 1.5 (docs/03 §10).
+ */
+
+:root,
+:root[data-theme='dark'] {
+  --bg: #0f1115;
+  --bg-elevated: #171a21;
+  --bg-inset: #0b0d11;
+  --border: #262b36;
+  --border-strong: #3a414f;
+  --text: #e7eaf0;
+  --text-muted: #a2abbd;
+  --text-faint: #6b7385;
+  --accent: #e5484d;
+  --accent-text: #ffffff;
+  --danger: #ff6369;
+  --warning: #f5a524;
+  --success: #46a758;
+  --info: #5b9dff;
+  --focus: #5b9dff;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --bg-elevated: #f6f7f9;
+  --bg-inset: #eef0f3;
+  --border: #dfe3e9;
+  --border-strong: #c3c9d4;
+  --text: #1a1d24;
+  --text-muted: #565e6e;
+  --text-faint: #8b93a3;
+  --accent: #d5323a;
+  --accent-text: #ffffff;
+  --danger: #c62a30;
+  --warning: #b26a00;
+  --success: #2f7d3c;
+  --info: #2563c9;
+  --focus: #2563c9;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono {
+  font-family: ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+}
+
+a {
+  color: var(--info);
+}
+
+button {
+  font: inherit;
+}
+
+/* Focus visibility is required for every control (docs/03 §10). */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Motion is small and respects reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* --- primitives ---------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.btn:hover:not(:disabled) {
+  background: var(--bg-inset);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+}
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  background: var(--accent);
+}
+.btn-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: transparent;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-inset);
+  color: var(--text);
+}
+.textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+.faint {
+  color: var(--text-faint);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 13px;
+}
+
+/* State banners (never colour-only: each carries a label). */
+.banner {
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  font-size: 14px;
+}
+.banner-error {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.banner-info {
+  border-color: var(--info);
+  color: var(--info);
+}
+.banner-warn {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+/* --- app shell ----------------------------------------------------------- */
+
+.shell {
+  display: grid;
+  grid-template-columns: 264px 1fr;
+  min-height: 100vh;
+}
+.shell.collapsed {
+  grid-template-columns: 64px 1fr;
+}
+.sidebar {
+  border-right: 1px solid var(--border);
+  background: var(--bg-inset);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.sidebar a,
+.sidebar button.navitem {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar a:hover,
+.sidebar button.navitem:hover {
+  background: var(--bg-elevated);
+}
+.sidebar a.active {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+.main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.content {
+  padding: 24px 20px;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  margin: 8px 0;
+}
+
+/* Centered auth pages. */
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Chat + workbench split. */
+.chat-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  min-height: 0;
+  flex: 1;
+}
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid var(--border);
+}
+.transcript {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  max-width: 840px;
+  width: 100%;
+  margin: 0 auto;
+}
+.composer {
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  background: var(--bg);
+}
+.workbench {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-inset);
+  min-width: 0;
+}
+.workbench-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.workbench-tab {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.workbench-tab.active {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border-color: var(--border);
+}
+.workbench-body {
+  padding: 16px;
+  overflow: auto;
+  flex: 1;
+}
+
+/* Rendered markdown. */
+.md :is(h1, h2, h3) {
+  margin: 0.6em 0 0.3em;
+}
+.md p {
+  margin: 0.5em 0;
+}
+.md pre {
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  overflow: auto;
+}
+.md code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.92em;
+}
+.md :not(pre) > code {
+  background: var(--bg-inset);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+.md ul,
+.md ol {
+  padding-left: 1.4em;
+}
+
+/* Responsive: <1280 workbench overlays, <768 sidebar becomes a drawer. */
+@media (max-width: 1280px) {
+  .chat-layout {
+    grid-template-columns: 1fr;
+  }
+  .workbench {
+    border-top: 1px solid var(--border);
+  }
+}
+@media (max-width: 768px) {
+  .shell,
+  .shell.collapsed {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    display: none;
+  }
+  .sidebar.drawer-open {
+    display: flex;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 264px;
+    z-index: 20;
+  }
+  .content {
+    padding: 16px;
+  }
+}
