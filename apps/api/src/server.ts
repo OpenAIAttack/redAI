@@ -10,6 +10,7 @@ import {
   createDbWorkerIdentityRepository,
 } from '@redai/application/workerIdentity';
 import { createDbScopeService } from '@redai/application/scope';
+import { createDbExecutionService, createEd25519LeaseSigner } from '@redai/application/execution';
 import { createPool, type Pool } from '@redai/db';
 import { resolveTxt as dnsResolveTxt } from 'node:dns/promises';
 import { loadApiEnv, type ApiEnv } from './env.js';
@@ -24,6 +25,7 @@ import { createDbEventStream, createEventNotifySource, registerEvents } from './
 import { registerSettings } from './settings/index.js';
 import { registerScope } from './scope/index.js';
 import { registerWorkerIdentity } from './worker/index.js';
+import { registerWorkerTasks } from './worker-tasks/index.js';
 import { generateInstallationSigningKey } from './installation/signingKey.js';
 
 export interface BuildServerOptions {
@@ -139,14 +141,40 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
     });
 
     // Worker enrollment & identity (owner plane + /worker/v1 bearer plane).
+    // The one installation signing key is shared: its public half is the worker's
+    // trusted key (enrollment response), its private half signs task leases below.
     const installationKey = generateInstallationSigningKey();
+    const workerIdentityService = new WorkerIdentityService({
+      repo: createDbWorkerIdentityRepository(pool),
+    });
     registerWorkerIdentity(app, {
-      service: new WorkerIdentityService({ repo: createDbWorkerIdentityRepository(pool) }),
+      service: workerIdentityService,
       resolveOwner: (req) => ownerGuard.authenticate(req),
       config: {
         allowedOrigins: env.allowedOrigins,
         trustedSigningKeys: [installationKey.trusted],
       },
+    });
+
+    // Worker task plane (/worker/v1 claim/ack/renew/result) — bearer-authenticated
+    // by the worker credential. Leases are Ed25519-signed with the installation
+    // private key. The toolbox image/manifest digests pinned into the lease are
+    // placeholders until the real toolbox image lands (T18/T19); the current worker
+    // uses a mock executor, so no real image is pulled. Signed-lease semantics,
+    // claim/renew live-grant re-checks and result dedup are fully exercised.
+    const zeroSha = '0'.repeat(64);
+    registerWorkerTasks(app, {
+      service: createDbExecutionService(pool, {
+        signer: createEd25519LeaseSigner(
+          installationKey.privateKey,
+          installationKey.trusted.key_id,
+        ),
+        config: {
+          imageDigest: process.env.REDAI_TOOLBOX_IMAGE_DIGEST ?? `sha256:${zeroSha}`,
+          toolManifestSha256: process.env.REDAI_TOOL_MANIFEST_SHA256 ?? zeroSha,
+        },
+      }),
+      verifyCredential: (token) => workerIdentityService.verifyCredential(token),
     });
 
     // Secret vault + settings: only mounted once a master key file is configured,

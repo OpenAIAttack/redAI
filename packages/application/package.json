@@ -41,6 +41,14 @@
     "./events": {
       "types": "./dist/events/index.d.ts",
       "default": "./dist/events/index.js"
+    },
+    "./budget": {
+      "types": "./dist/budget/index.d.ts",
+      "default": "./dist/budget/index.js"
+    },
+    "./execution": {
+      "types": "./dist/execution/index.d.ts",
+      "default": "./dist/execution/index.js"
     }
   },
   "scripts": {
