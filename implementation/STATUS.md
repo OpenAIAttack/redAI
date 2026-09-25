@@ -1,6 +1,6 @@
 # Trạng thái triển khai ứng dụng
 
-Cập nhật: **2026-09-24**. **M0 + M1 + M2 (T00–T11) HOÀN TẤT** (T15 xong sớm) trên cây nguồn đã
+Cập nhật: **2026-09-25**. **M0+M1+M2 HOÀN TẤT; M3 backbone (T12,T13,T15,T16,T17) DONE, T14 module done (enforcement pending), T18/T19 BLOCKED (gVisor)** trên cây nguồn đã
 tích hợp. Baseline: nhánh `claude/fervent-archimedes-fnkoam`. DONE chỉ đặt sau
 review + integration checks trên cây nguồn đã tích hợp; "PASS" do coder tự báo
 chưa đủ để đóng task.
@@ -28,12 +28,12 @@ build → `go:check`). Bằng chứng M0 khác ở `release-evidence/` và STATU
 | T11 — SSE commit-ordered và reconnect | DONE | (M2) | Commit-ordered journal SSE, Last-Event-ID replay, NOTIFY+poll, backpressure; 22 tests (9 live-PG) | — |
 | T12 — DNS proof, scope policy và grant lifecycle | DONE | (M3) | Pure policy engine (normalize/deceptive-suffix/IPv6/SSRF, exclusions-before-includes, mode matrix — automatic never overrides deny); DNS-proof grant lifecycle, revoke-epoch live read, immutable scope, cross-project isolation; 92 tests (5 live-PG); wired into server.ts w/ node:dns resolver | — |
 | T13 — Durable Agent loop và checkpoints | DONE | (M3) | apps/runtime/agent + packages/domain/runs: lease/fence claim, plan parse, stable logical tool IDs, CAS checkpoints, loop detection, step/time limits, finalization gate (mock transport, NO real dispatch); restart-at-each-boundary + stale-fence + invalid-response-no-dispatch tested; 39 tests (4 live-PG) | T17 fills dispatchTool seam |
-| T14 — Ngân sách và privacy pipeline | NOT_STARTED | — | — | — |
+| T14 — Ngân sách và privacy pipeline | MODULE DONE (enforcement wiring pending) | 8366d64 | @redai/llm/context (redaction, secret-refs-not-values, canary across all egress), @redai/application/budget (reserve-before-request, shared ledger FOR UPDATE, unknown HELD not 0, audit), apps/web usage (measured/estimated/unknown). 39+ tests (7 live-PG). BLOCKER: reservation not yet called in AskService/AgentService — see D14 | Wire reserve/reconcile into runtime model-call path (D14) |
 | T15 — Worker enrollment và identity | DONE | (D04) | Enrollment tokens, hashed credentials, dual-plane auth, Go client; 26 TS + 4 Go tests; wired (main.go loop deferred to T16) | — |
 | T16 — Worker journal, spool và supervisor | DONE | aa2da55 | Crash-safe append+fsync journal (len+CRC records, torn-tail recovery, single-instance flock, strict phase order → no double-run/double-settle); bounded content-addressed spool (64 MiB backpressure, path-traversal-safe, 0700/0600); supervisor daemon (identity → journal recovery → heartbeat + credential renew-before-expiry → graceful shutdown/kill-grace, doctor metadata); main.go wired (flags/env, signals, --version). 23 Go subtests, `go test -race ./...` green; go.sum still absent. Claim/lease/result seam left for T17 (Scheduler + SessionContext). Evidence: release-evidence/T16/ | T17 fills Scheduler |
-| T17 — Task scheduler, signed leases và results | NOT_STARTED | — | — | — |
-| T18 — Offline sandbox runtime | NOT_STARTED | — | — | gVisor blocker |
-| T19 — Offline tools và artifacts | NOT_STARTED | — | — | gVisor blocker |
+| T17 — Task scheduler, signed leases và results | DONE | 2c060f7 + adfab6f (wired) | @redai/application/execution (claim TXN + capacity/binding, Ed25519/JCS signed lease, renew live-grant/epoch/session recheck, ACK/result dedup + quarantine, fencing), apps/api/worker-tasks (/worker/v1 plane, wired into server.ts w/ installation-key signer), worker/internal/{lease,executor,api} (verify JWS, OFFLINE mock executor + net tripwire, Scheduler seam). 31 TS (live-PG) + Go -race. No exactly-once external-effect claim; lost op not reassigned | Full agent→worker loop needs dispatchTool wiring + /worker/v1/sessions (D14) |
+| T18 — Offline sandbox runtime | BLOCKED | — | Requires gVisor (runsc) — absent in this environment (recorded T00). Cannot verify fail-closed isolation/egress without it; AGENTS.md forbids downgrading isolation | UNBLOCK: install gVisor, then build+verify the runsc sandbox |
+| T19 — Offline tools và artifacts | BLOCKED | — | Depends on T18 sandbox (gVisor absent). Offline tools run inside the sandbox, so cannot be verified here | UNBLOCK: T18 first |
 | T20 — HTTP typed adapter | NOT_STARTED | — | — | — |
 | T21 — Browser automation và scoped inspecting proxy | NOT_STARTED | — | — | — |
 | T22 — Approval UI và exact-action decisions | NOT_STARTED | — | — | — |
