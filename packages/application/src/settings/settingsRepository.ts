@@ -60,6 +60,7 @@ interface ProviderConfigRow {
   revision: number | string;
   enabled: boolean;
   probe_status: string;
+  probe_result: Record<string, unknown> | null;
   last_probe_at: Date | null;
   created_at: Date;
   updated_at: Date;
@@ -123,6 +124,7 @@ function toProviderConfigRecord(row: ProviderConfigRow): ProviderConfigRecord {
     revision: toInt(row.revision),
     enabled: row.enabled,
     probeStatus: row.probe_status,
+    probeResult: row.probe_result,
     lastProbeAt: row.last_probe_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -132,8 +134,8 @@ function toProviderConfigRecord(row: ProviderConfigRow): ProviderConfigRecord {
 async function insertSecretRow(exec: Executor, input: InsertSecretInput): Promise<SecretRow> {
   const result = await exec.query<SecretRow>(
     `INSERT INTO secrets
-       (workspace_id, project_id, name, kind, version, ciphertext, nonce, key_id, aad_sha256, allowed_origins)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb)
+       (workspace_id, project_id, name, kind, version, ciphertext, nonce, key_id, aad_sha256, allowed_origins, id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11)
      RETURNING *`,
     [
       input.workspaceId,
@@ -146,6 +148,7 @@ async function insertSecretRow(exec: Executor, input: InsertSecretInput): Promis
       input.material.keyId,
       input.material.aadSha256,
       JSON.stringify(input.allowedOrigins),
+      input.id,
     ],
   );
   return required(result.rows[0], 'secret insert returned no row');
@@ -278,6 +281,7 @@ export function createDbSettingsRepository(pool: Pool): SettingsRepository {
                 config = COALESCE($5::jsonb, config),
                 credential_ref = CASE WHEN $6 THEN $7 ELSE credential_ref END,
                 enabled = COALESCE($8, enabled),
+                probe_status = 'not_tested', probe_result = NULL, last_probe_at = NULL, probe_attempt_id = NULL,
                 revision = revision + 1,
                 updated_at = now()
           WHERE id = $1 AND workspace_id = $2 AND revision = $3

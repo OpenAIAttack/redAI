@@ -892,6 +892,7 @@ export const apiSchema: Record<string, unknown> = {
         usage_observed: { type: 'boolean' },
         error_code: { anyOf: [{ type: 'string', minLength: 1, maxLength: 64 }, { type: 'null' }] },
         checked_at: { $ref: 'common.schema.json#/$defs/Timestamp' },
+        cancellation_observed: { type: 'boolean' },
       },
       required: [
         'status',
@@ -901,6 +902,7 @@ export const apiSchema: Record<string, unknown> = {
         'usage_observed',
         'error_code',
         'checked_at',
+        'cancellation_observed',
       ],
       additionalProperties: false,
     },
@@ -1357,6 +1359,15 @@ export const apiSchema: Record<string, unknown> = {
         allow_new_runs_only: { const: true },
       },
       required: ['reason', 'current_password', 'allow_new_runs_only'],
+      additionalProperties: false,
+    },
+    ProbeRequest: {
+      type: 'object',
+      properties: {
+        confirmed: { const: true, type: 'boolean' },
+        expected_revision: { type: 'integer', minimum: 1, maximum: 2147483647 },
+      },
+      required: ['confirmed', 'expected_revision'],
       additionalProperties: false,
     },
   },

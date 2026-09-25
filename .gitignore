@@ -151,3 +151,7 @@ worker/redai-worker
 worker/bin/
 release-evidence/**/local-*
 *.tsbuildinfo
+
+# Per-repository development toolchain and local state
+/.tools/
+/.local/

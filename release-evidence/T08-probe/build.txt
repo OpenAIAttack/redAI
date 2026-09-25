@@ -1,0 +1,53 @@
+
+> redai@0.0.0 build /home/richard/Workspace/redAI
+> tsc -b && pnpm -r --if-present run build
+
+Scope: 13 of 14 workspace projects
+apps/web build$ next build --webpack
+packages/contracts build$ tsc -b
+packages/domain build$ tsc -b
+packages/observability build$ tsc -b
+packages/contracts build: Done
+packages/domain build: Done
+packages/ui build$ tsc -b
+packages/observability build: Done
+packages/ui build: Done
+apps/web build: ▲ Next.js 16.3.5 (webpack)
+apps/web build: ✓ Running next.config.mjs took 86ms
+apps/web build:   Creating an optimized production build ...
+apps/web build: ✓ Compiled successfully in 9.1s
+apps/web build:   Running TypeScript ...
+apps/web build:   Finished TypeScript in 6.8s ...
+apps/web build:   Collecting page data using 3 workers ...
+apps/web build:   Generating static pages using 3 workers (0/6) ...
+apps/web build:   Generating static pages using 3 workers (1/6)
+apps/web build:   Generating static pages using 3 workers (2/6)
+apps/web build:   Generating static pages using 3 workers (4/6)
+apps/web build: ✓ Generating static pages using 3 workers (6/6) in 611ms
+apps/web build:   Finalizing page optimization ...
+apps/web build:   Collecting build traces ...
+apps/web build: Route (app)
+apps/web build: ┌ ƒ /
+apps/web build: ├ ƒ /_not-found
+apps/web build: ├ ƒ /login
+apps/web build: ├ ƒ /settings
+apps/web build: └ ƒ /setup
+apps/web build: ƒ Proxy (Middleware)
+apps/web build: ƒ  (Dynamic)  server-rendered on demand
+apps/web build: Done
+packages/db build$ tsc -b
+packages/llm build$ tsc -b
+packages/policy build$ tsc -b
+packages/storage build$ tsc -b
+packages/llm build: Done
+tests build$ tsc -b
+packages/storage build: Done
+packages/policy build: Done
+packages/db build: Done
+tests build: Done
+packages/application build$ tsc -b
+packages/application build: Done
+apps/api build$ tsc -b
+apps/runtime build$ tsc -b
+apps/runtime build: Done
+apps/api build: Done

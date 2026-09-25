@@ -68,3 +68,6 @@ export type {
   SettingsRepository,
   OptimisticResult,
 } from './ports.js';
+
+export { ProviderProbeService } from './probeService.js';
+export { createDbProbeStore, type ProbeStore, type ProbeIdentity } from './probeStore.js';

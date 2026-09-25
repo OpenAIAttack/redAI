@@ -47,3 +47,21 @@ export function parseLoginRequest(body: unknown): LoginRequest {
   }
   return body as LoginRequest;
 }
+
+export const PASSWORD_CHANGE_SCHEMA = {
+  type: 'object',
+  required: ['current_password', 'new_password'],
+  additionalProperties: false,
+  properties: {
+    current_password: { type: 'string', minLength: 1, maxLength: 1024, writeOnly: true },
+    new_password: { type: 'string', minLength: 12, maxLength: 1024, writeOnly: true },
+  },
+} as const;
+const validatePasswordChange = ajv.compile(PASSWORD_CHANGE_SCHEMA);
+export function parseChangePassword(body: unknown): {
+  current_password: string;
+  new_password: string;
+} {
+  if (!validatePasswordChange(body)) throw new BodyValidationError('Invalid password change.');
+  return body as { current_password: string; new_password: string };
+}

@@ -1,0 +1,12 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/richard/Workspace/redAI
+
+ ✓ tests/import-boundary/boundary.test.ts (2 tests) 7ms
+ ✓ packages/llm/src/stream.test.ts (19 tests) 173ms
+ ✓ packages/llm/src/compatible.test.ts (37 tests) 224ms
+
+ Test Files  3 passed (3)
+      Tests  58 passed (58)
+   Start at  20:27:39
+   Duration  852ms (transform 346ms, setup 0ms, collect 517ms, tests 404ms, environment 1ms, prepare 415ms)

@@ -17,6 +17,8 @@ import type {
   HttpRequest,
   LeaseClaims,
   Message,
+  ProbeRequest,
+  ProbeResult,
   Project,
   Reviewer,
   Run,
@@ -197,6 +199,26 @@ export function validateHeartbeatRequest(data: unknown): asserts data is Heartbe
 /** Validate and return `data` typed as HeartbeatRequest, or throw. */
 export function parseHeartbeatRequest(data: unknown): HeartbeatRequest {
   validateHeartbeatRequest(data);
+  return data;
+}
+
+/** Assert `data` is a valid ProbeRequest (contract key: api.ProbeRequest). */
+export function validateProbeRequest(data: unknown): asserts data is ProbeRequest {
+  assertValidFor('api.ProbeRequest', data);
+}
+/** Validate and return `data` typed as ProbeRequest, or throw. */
+export function parseProbeRequest(data: unknown): ProbeRequest {
+  validateProbeRequest(data);
+  return data;
+}
+
+/** Assert `data` is a valid ProbeResult (contract key: api.ProbeResult). */
+export function validateProbeResult(data: unknown): asserts data is ProbeResult {
+  assertValidFor('api.ProbeResult', data);
+}
+/** Validate and return `data` typed as ProbeResult, or throw. */
+export function parseProbeResult(data: unknown): ProbeResult {
+  validateProbeResult(data);
   return data;
 }
 

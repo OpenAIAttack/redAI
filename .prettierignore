@@ -24,3 +24,8 @@ AGENTS.md
 SPEC_LOCK.json
 LICENSE
 *.md
+
+.tools/
+.local/
+**/.next/
+apps/web/next-env.d.ts

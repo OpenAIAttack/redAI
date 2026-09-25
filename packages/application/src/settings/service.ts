@@ -1,3 +1,5 @@
+import { validatePublicSettings, validateApiKey } from './validate.js';
+import { randomUUID } from 'node:crypto';
 /**
  * Settings + secret-vault use cases: create/list/revoke secrets, versioned provider
  * configs with a metadata-only credential reference, workspace settings with
@@ -76,6 +78,7 @@ export interface ProviderConfigView {
   revision: number;
   enabled: boolean;
   probe_status: string;
+  probe_result: Record<string, unknown> | null;
   last_probe_at: string | null;
   created_at: string;
   updated_at: string;
@@ -176,11 +179,20 @@ export class SettingsService {
       input.kind,
       projectId,
     );
+    const id = randomUUID();
     const material = this.vault.encrypt(
-      { workspaceId: input.workspaceId, kind: input.kind, name: input.name, version },
+      {
+        workspaceId: input.workspaceId,
+        secretId: id,
+        projectId,
+        kind: input.kind,
+        name: input.name,
+        version,
+      },
       Buffer.from(input.plaintext, 'utf8'),
     );
     const record = await this.repo.insertSecret({
+      id,
       workspaceId: input.workspaceId,
       projectId,
       name: input.name,
@@ -232,6 +244,8 @@ export class SettingsService {
     const plaintext = this.vault.decrypt(
       {
         workspaceId: secret.workspaceId,
+        secretId: secret.id,
+        projectId: secret.projectId,
         kind: secret.kind,
         name: secret.name,
         version: secret.version,
@@ -276,6 +290,7 @@ export class SettingsService {
       revision: record.revision,
       enabled: record.enabled,
       probe_status: record.probeStatus,
+      probe_result: record.probeResult,
       last_probe_at: record.lastProbeAt ? record.lastProbeAt.toISOString() : null,
       created_at: record.createdAt.toISOString(),
       updated_at: record.updatedAt.toISOString(),
@@ -300,6 +315,9 @@ export class SettingsService {
    */
   async createProviderConfig(input: CreateProviderConfigInput): Promise<ProviderConfigView> {
     this.validateProviderConfig(input.config);
+    if (input.apiKey !== undefined) validateApiKey(input.apiKey);
+    if (input.apiKey && input.credentialRef)
+      throw new InvalidSettingsError('Choose either api_key or credential_ref.');
     const enabled = input.enabled ?? true;
 
     if (input.apiKey !== undefined && input.apiKey !== '') {
@@ -310,12 +328,21 @@ export class SettingsService {
         null,
       );
       const name = `provider:${input.displayName}`;
+      const id = randomUUID();
       const material = this.vault.encrypt(
-        { workspaceId: input.workspaceId, kind: 'model_api_key', name, version },
+        {
+          workspaceId: input.workspaceId,
+          secretId: id,
+          projectId: null,
+          kind: 'model_api_key',
+          name,
+          version,
+        },
         Buffer.from(input.apiKey, 'utf8'),
       );
       const { config } = await this.repo.createProviderConfigWithSecret(
         {
+          id,
           workspaceId: input.workspaceId,
           projectId: null,
           name,
@@ -339,6 +366,9 @@ export class SettingsService {
     if (credentialRef !== null) {
       const secret = await this.repo.getSecretById(credentialRef, input.workspaceId);
       if (!secret) throw new CredentialNotFoundError();
+      if (secret.projectId !== null || secret.kind !== 'model_api_key')
+        throw new CrossProjectSecretError();
+      if (secret.revokedAt !== null) throw new SecretRevokedError();
     }
     const row = await this.repo.insertProviderConfig({
       workspaceId: input.workspaceId,
@@ -376,6 +406,24 @@ export class SettingsService {
   }
 
   private validateProviderConfig(config: Record<string, unknown>): void {
+    validatePublicSettings(config);
+    if (config.base_url !== undefined) {
+      try {
+        const url = new URL(String(config.base_url));
+        if (
+          !['http:', 'https:'].includes(url.protocol) ||
+          url.username ||
+          url.password ||
+          url.search ||
+          url.hash
+        )
+          throw new Error();
+      } catch {
+        throw new InvalidSettingsError(
+          'Provider endpoint must be HTTP(S), without credentials, query or fragment.',
+        );
+      }
+    }
     const modes = config['allowed_data_modes'];
     if (modes !== undefined) {
       if (
@@ -407,6 +455,7 @@ export class SettingsService {
     expectedRevision: number,
     settings: Record<string, unknown>,
   ): Promise<WorkspaceSettingsView> {
+    validatePublicSettings(settings);
     const result = await this.repo.updateWorkspaceSettings(
       workspaceId,
       expectedRevision,

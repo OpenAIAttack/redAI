@@ -1,0 +1,109 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/richard/Workspace/redAI
+
+ ❯ packages/llm/src/stream.test.ts (14 tests | 14 failed) 27ms
+   × compatible SSE > decodes fragmented UTF-8/CRLF and observes trailing usage before DONE 10ms
+     → adapter.stream is not a function
+   × compatible SSE > assembles tool arguments but emits no tool fragments for execution 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 0 3ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 1 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 2 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 3 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 4 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 5 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 6 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 7 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 8 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects malformed/truncated or ambiguous streams 9 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > bounds total bytes including comments 1ms
+     → fixture(...).adapter.stream is not a function
+   × compatible SSE > rejects cancellation before sending 2ms
+     → adapter.stream is not a function
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > decodes fragmented UTF-8/CRLF and observes trailing usage before DONE
+TypeError: adapter.stream is not a function
+ ❯ packages/llm/src/stream.test.ts:35:26
+     33|     const { adapter, transport } = fixture(wire.replaceAll('\n', '\r\n…
+     34|     const delta = vi.fn();
+     35|     expect(await adapter.stream(request, delta)).toMatchObject({ text:…
+       |                          ^
+     36|     expect(delta).toHaveBeenCalledWith({ type: 'text', text: 'Chào' });
+     37|     expect(JSON.parse(String(transport.mock.calls[0]![1]!.body))).toMa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > assembles tool arguments but emits no tool fragments for execution
+TypeError: fixture(...).adapter.stream is not a function
+ ❯ packages/llm/src/stream.test.ts:43:40
+     41|       event({ tool_calls: [{ index: 0, function: { arguments: 'true}' …
+     42|     const delta = vi.fn();
+     43|     expect(await fixture(wire).adapter.stream(request, delta)).toMatch…
+       |                                        ^
+     44|     expect(delta).not.toHaveBeenCalled();
+     45|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 0
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 1
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 2
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 3
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 4
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 5
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 6
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 7
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 8
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects malformed/truncated or ambiguous streams 9
+TypeError: fixture(...).adapter.stream is not a function
+ ❯ packages/llm/src/stream.test.ts:58:40
+     56|     event({ tool_calls: [{ index: 0, id: 'c', type: 'function', functi…
+     57|   ])('rejects malformed/truncated or ambiguous streams %#', async wire…
+     58|     await expect(fixture(wire).adapter.stream(request, () => {})).reje…
+       |                                        ^
+     59|   });
+     60|   it('bounds total bytes including comments', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > bounds total bytes including comments
+TypeError: fixture(...).adapter.stream is not a function
+ ❯ packages/llm/src/stream.test.ts:61:99
+     59|   });
+     60|   it('bounds total bytes including comments', async () => {
+     61|     await expect(fixture(': ' + 'x'.repeat(100) + '\n\n' + end, { maxR…
+       |                                                                                                   ^
+     62|   });
+     63|   it('rejects cancellation before sending', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  packages/llm/src/stream.test.ts > compatible SSE > rejects cancellation before sending
+TypeError: adapter.stream is not a function
+ ❯ packages/llm/src/stream.test.ts:65:26
+     63|   it('rejects cancellation before sending', async () => {
+     64|     const { adapter, transport } = fixture(end);
+     65|     await expect(adapter.stream(request, () => {}, AbortSignal.abort()…
+       |                          ^
+     66|     expect(transport).not.toHaveBeenCalled();
+     67|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ Test Files  1 failed (1)
+      Tests  14 failed (14)
+   Start at  20:25:12
+   Duration  501ms (transform 120ms, setup 0ms, collect 120ms, tests 27ms, environment 0ms, prepare 116ms)

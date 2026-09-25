@@ -1,0 +1,11 @@
+
+> redai@0.0.0 env:check /home/richard/Workspace/redAI
+> node scripts/check-env.mjs
+
+✓ Node.js: v22.23.3
+✓ pnpm: 10.33.0
+✓ Go: go version go1.27.1 linux/amd64
+✓ PostgreSQL client: psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
+✓ gVisor: runsc version release-20260921.0
+
+Environment check passed.

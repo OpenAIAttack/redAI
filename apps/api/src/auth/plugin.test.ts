@@ -225,3 +225,98 @@ describe('POST /api/v1/auth/logout', () => {
     await app.close();
   });
 });
+
+describe('password change HTTP boundary', () => {
+  it('requires CSRF, commits once, revokes all sessions and rejects stale credentials', async () => {
+    const { app } = await setup();
+    try {
+      const signedIn = await login(app);
+      const headers = {
+        origin: ORIGIN,
+        host: HOST,
+        cookie: signedIn.cookieHeader,
+        'idempotency-key': 'password-change-test',
+      };
+      const payload = {
+        current_password: 'correct-horse-battery',
+        new_password: 'new-correct-horse-battery',
+      };
+      expect(
+        (await app.inject({ method: 'POST', url: '/api/v1/auth/password', headers, payload }))
+          .statusCode,
+      ).toBe(403);
+      const results = await Promise.all(
+        [1, 2].map(() =>
+          app.inject({
+            method: 'POST',
+            url: '/api/v1/auth/password',
+            headers: { ...headers, 'x-csrf-token': signedIn.csrf },
+            payload,
+          }),
+        ),
+      );
+      expect(results.filter((r) => r.statusCode === 200)).toHaveLength(1);
+      expect(
+        (
+          await app.inject({
+            method: 'GET',
+            url: '/api/v1/auth/session',
+            headers: { cookie: signedIn.cookieHeader },
+          })
+        ).statusCode,
+      ).toBe(401);
+    } finally {
+      await app.close();
+    }
+  });
+});
+
+describe('owner session management', () => {
+  it('returns metadata only and lets owner revoke a chosen session', async () => {
+    const { app } = await setup();
+    try {
+      const first = await login(app);
+      const second = await login(app);
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/v1/auth/sessions',
+        headers: { cookie: first.cookieHeader },
+      });
+      expect(response.statusCode).toBe(200);
+      expect(response.body).not.toContain('csrf');
+      expect(response.body).not.toContain('token-');
+      const other = response.json().items.find((s: { current: boolean }) => !s.current);
+      const revoke = await app.inject({
+        method: 'POST',
+        url: `/api/v1/auth/sessions/${other.id}/revoke`,
+        headers: {
+          cookie: first.cookieHeader,
+          origin: ORIGIN,
+          host: HOST,
+          'x-csrf-token': first.csrf,
+        },
+      });
+      expect(revoke.statusCode).toBe(200);
+      expect(
+        (
+          await app.inject({
+            method: 'GET',
+            url: '/api/v1/auth/session',
+            headers: { cookie: second.cookieHeader },
+          })
+        ).statusCode,
+      ).toBe(401);
+      expect(
+        (
+          await app.inject({
+            method: 'GET',
+            url: '/api/v1/auth/sessions',
+            headers: { authorization: 'Bearer worker-token' },
+          })
+        ).statusCode,
+      ).toBe(401);
+    } finally {
+      await app.close();
+    }
+  });
+});

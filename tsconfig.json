@@ -12,7 +12,6 @@
     { "path": "packages/ui" },
     { "path": "apps/api" },
     { "path": "apps/runtime" },
-    { "path": "apps/web" },
     { "path": "tests" }
   ]
 }

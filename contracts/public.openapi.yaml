@@ -1981,6 +1981,12 @@ paths:
     post:
       operationId: probeProvider
       summary: probeProvider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./schemas/api.schema.json#/$defs/ProbeRequest
       responses:
         '200':
           description: Success

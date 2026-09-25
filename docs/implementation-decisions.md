@@ -15,3 +15,26 @@ captures the smaller decisions and rationale.
 | D07 | The **installation signing key** echoed in the worker enrollment response (contract: ≥1 trusted key) is generated **at API process start** (in-memory Ed25519) for M1 wiring; persistent installation-key management (rotation, retirement, the signer) is a later payload-signing task. Stable for the process lifetime, which is enough before any long-lived worker exists. | Unblocks worker-enroll wiring without pulling the full signing subsystem into M1. No persistent worker exists yet, so process-lifetime stability suffices. | Payload-signing task (persistent keys). |
 | D08 | The **`@redai/application` sub-modules** (settings, projects, workerIdentity) are exposed via **package subpath exports** (`@redai/application/settings`, `/projects`, `/workerIdentity`) rather than a single flat barrel. | The modules re-export overlapping helper names (`systemClock`, `constantTimeEqual`, `Clock`, `RandomSource`); subpaths keep flat names without collisions and let the coordinator wire them with minimal churn. | All API consumers. |
 | D09 | **DB-backed integration tests** (`tests/integration/db/**`, `packages/*/**/dbRepository.test.ts`) are executed by **Vitest (esbuild), not type-checked by `tsc -b`**; they import package source by relative path (matching the T02 pattern) and skip loudly without `DATABASE_URL`. A dedicated test typecheck can be added in T33 (CI hardening). | These tests cross package boundaries (shared throwaway-DB helper) and must not sit inside a composite project's `rootDir`. Vitest already runs them; tsc build stays clean. | T33 (optional test typecheck). |
+
+## D10 — Provider probe consent and concurrency (T08)
+
+Issue: `POST /providers/{provider_id}/probe` has no request body, despite docs/11
+requiring explicit owner confirmation of possible usage. Add strict ProbeRequest
+with `confirmed: true` and `expected_revision`. Keep the existing UUID
+Idempotency-Key requirement. Claim the key durably before network; duplicate
+pending requests return 409 PROBE_IN_PROGRESS, completed requests replay the
+stored result. Reusing a key with another body returns 409 IDEMPOTENCY_CONFLICT.
+An interrupted process leaves an unresolved key; never replay it automatically.
+A new key is an explicit new request, blocked while another probe is unresolved.
+Config edits invalidate capability evidence; completion from an old revision
+must not mark the edited config verified. Persist latest result separately from
+owner-declared config flags. Missing usage stays unknown. Cancellation means the
+client stops reading; it cannot prove the provider stopped billing/computing.
+
+ProbeResult adds `cancellation_observed` explicitly: client abort evidence is not a
+claim about provider compute/billing termination. Migration 0003 adds derived
+`probe_result` and a `probe_attempt_id` fence. Pending keys are never replayed;
+after the 2-minute exclusion window, a newly confirmed key may run, and the attempt
+fence prevents older completions replacing its evidence. This is not an automatic
+retry. Network support is deliberately conservative (public IPv4 HTTPS, or an
+installation-owned exact local endpoint allowlist); see `docs/model-probe.md`.

@@ -226,3 +226,47 @@ describe('SettingsService workspace settings (optimistic concurrency)', () => {
     expect(current.revision).toBe(2);
   });
 });
+
+describe('SettingsService metadata boundaries', () => {
+  it.each(['••••••••', '********', '${API_KEY}', 'your-api-key'])(
+    'rejects placeholder keys %s',
+    async (apiKey) => {
+      const { svc } = makeService();
+      await expect(
+        svc.createProviderConfig({ workspaceId: WS, displayName: 'p', config: {}, apiKey }),
+      ).rejects.toMatchObject({ code: 'INVALID_SETTINGS' });
+      expect(await svc.listProviderConfigs(WS)).toHaveLength(0);
+    },
+  );
+  it('rejects nested secret values and immutable security switches in metadata', async () => {
+    const { svc } = makeService();
+    await expect(
+      svc.createProviderConfig({
+        workspaceId: WS,
+        displayName: 'p',
+        config: { headers: { Authorization: 'CANARY' } },
+      }),
+    ).rejects.toMatchObject({ code: 'INVALID_SETTINGS' });
+    await expect(
+      svc.updateSettings(WS, 1, { security: { disable_csrf: true } }),
+    ).rejects.toMatchObject({ code: 'INVALID_SETTINGS' });
+  });
+  it('rejects project-bound target secrets as provider credentials', async () => {
+    const { svc } = makeService();
+    const secret = await svc.createSecret({
+      workspaceId: WS,
+      projectId: PROJECT_A,
+      kind: 'target_credential',
+      name: 'target',
+      plaintext: 'canary',
+    });
+    await expect(
+      svc.createProviderConfig({
+        workspaceId: WS,
+        displayName: 'p',
+        config: {},
+        credentialRef: secret.id,
+      }),
+    ).rejects.toBeInstanceOf(CrossProjectSecretError);
+  });
+});

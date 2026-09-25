@@ -1714,6 +1714,9 @@
         },
         "checked_at": {
           "$ref": "common.schema.json#/$defs/Timestamp"
+        },
+        "cancellation_observed": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1723,7 +1726,8 @@
         "supports_structured_output",
         "usage_observed",
         "error_code",
-        "checked_at"
+        "checked_at",
+        "cancellation_observed"
       ],
       "additionalProperties": false
     },
@@ -2766,6 +2770,25 @@
         "reason",
         "current_password",
         "allow_new_runs_only"
+      ],
+      "additionalProperties": false
+    },
+    "ProbeRequest": {
+      "type": "object",
+      "properties": {
+        "confirmed": {
+          "const": true,
+          "type": "boolean"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "confirmed",
+        "expected_revision"
       ],
       "additionalProperties": false
     }

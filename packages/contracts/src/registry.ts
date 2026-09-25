@@ -75,6 +75,8 @@ export const CONTRACT_SCHEMAS = {
     type: 'HeartbeatRequest',
   },
 
+  'api.ProbeRequest': { uri: `${SCHEMA_BASE}api.schema.json#/$defs/ProbeRequest`, type: 'ProbeRequest' },
+  'api.ProbeResult': { uri: `${SCHEMA_BASE}api.schema.json#/$defs/ProbeResult`, type: 'ProbeResult' },
   // Core public API resources.
   'api.Project': { uri: `${SCHEMA_BASE}api.schema.json#/$defs/Project`, type: 'Project' },
   'api.RunCreate': { uri: `${SCHEMA_BASE}api.schema.json#/$defs/RunCreate`, type: 'RunCreate' },

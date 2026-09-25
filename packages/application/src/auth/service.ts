@@ -1,3 +1,4 @@
+import { argon2Hasher } from './argon2.js';
 /**
  * Owner authentication use cases: bootstrap, login, session validation with
  * idle+absolute expiry and sliding renewal, logout, password change and
@@ -14,7 +15,6 @@ import {
   cryptoRandom,
   hashRecoveryCode,
   hashToken,
-  scryptHasher,
   systemClock,
   constantTimeEqual,
 } from './crypto.js';
@@ -133,7 +133,7 @@ export class AuthService {
   public constructor(deps: AuthServiceDeps) {
     this.repo = deps.repo;
     this.clock = deps.clock ?? systemClock;
-    this.hasher = deps.hasher ?? scryptHasher;
+    this.hasher = deps.hasher ?? argon2Hasher;
     this.random = deps.random ?? cryptoRandom;
     this.policy = deps.policy ?? DEFAULT_SESSION_POLICY;
     this.minPasswordLength = deps.minPasswordLength ?? MIN_PASSWORD_LENGTH;
@@ -292,6 +292,24 @@ export class AuthService {
   }
 
   /** Authenticated password change: verifies current, sets new, revokes ALL sessions. */
+  async listOwnerSessions(ownerId: string, workspaceId: string, currentId: string) {
+    const rows = await this.repo.listOwnerSessions(ownerId, workspaceId);
+    return rows.map((s) => ({
+      id: s.id,
+      created_at: s.createdAt.toISOString(),
+      last_seen_at: s.lastSeenAt.toISOString(),
+      expires_at: s.expiresAt.toISOString(),
+      revoked_at: s.revokedAt?.toISOString() ?? null,
+      current: s.id === currentId,
+    }));
+  }
+
+  async revokeOwnerSession(ownerId: string, workspaceId: string, id: string): Promise<void> {
+    const rows = await this.repo.listOwnerSessions(ownerId, workspaceId);
+    if (!rows.some((s) => s.id === id)) throw new SessionInvalidError();
+    await this.repo.revokeSession(id, this.clock.now());
+  }
+
   async changePassword(input: ChangePasswordInput): Promise<{ revokedSessions: number }> {
     const owner = await this.repo.getOwnerById(input.ownerId);
     if (!owner) throw new InvalidCredentialsError();
@@ -305,6 +323,7 @@ export class AuthService {
       owner.workspaceId,
       passwordHash,
       this.clock.now(),
+      owner.passwordHash,
     );
     return { revokedSessions };
   }

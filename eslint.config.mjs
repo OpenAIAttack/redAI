@@ -21,6 +21,10 @@ export default tseslint.config(
   {
     ignores: [
       '**/dist/**',
+      '**/.next/**',
+      '.tools/**',
+      '.local/**',
+      'apps/web/next-env.d.ts',
       '**/node_modules/**',
       '**/*.tsbuildinfo',
       'worker/**',

@@ -1,3 +1,4 @@
+import { originAllowed } from './origin.js';
 /**
  * Fastify owner-auth plugin: login / logout / session routes with a secure session
  * cookie, CSRF double-submit + Origin allowlist on state-changing requests, login
@@ -16,7 +17,7 @@ import {
 } from '@redai/application';
 import { clearCookie, cookieNames, parseCookies, serializeCookie } from './cookies.js';
 import { sendError } from './errors.js';
-import { BodyValidationError, parseLoginRequest } from './bodySchemas.js';
+import { BodyValidationError, parseLoginRequest, parseChangePassword } from './bodySchemas.js';
 import { DEFAULT_RATE_LIMIT, LoginRateLimiter, type RateLimitConfig } from './rateLimit.js';
 
 const SEVEN_DAYS_SECONDS = 7 * 24 * 60 * 60;
@@ -35,19 +36,6 @@ export interface AuthPluginDeps {
   auth: AuthService;
   clock: Clock;
   config: AuthHttpConfig;
-}
-
-function originAllowed(req: FastifyRequest, config: AuthHttpConfig): boolean {
-  const origin = req.headers.origin;
-  // A state-changing request MUST carry an Origin we recognise (OWASP; docs/13 §2).
-  if (typeof origin !== 'string' || origin === '') return false;
-  if (config.allowedOrigins.includes(origin)) return true;
-  const host = req.headers.host;
-  try {
-    return typeof host === 'string' && new URL(origin).host === host;
-  } catch {
-    return false;
-  }
 }
 
 export function registerAuth(app: FastifyInstance, deps: AuthPluginDeps): void {
@@ -164,6 +152,58 @@ export function registerAuth(app: FastifyInstance, deps: AuthPluginDeps): void {
       );
     }
     return reply.code(200).send(auth.profileFromContext(ctx, csrfToken));
+  });
+
+  app.get('/api/v1/auth/sessions', async (req, reply) => {
+    const ctx = await authenticate(req);
+    if (!ctx) return sendError(reply, 401, 'UNAUTHENTICATED', 'No valid session.');
+    return reply.send({
+      items: await auth.listOwnerSessions(ctx.ownerId, ctx.workspaceId, ctx.sessionId),
+    });
+  });
+  app.post('/api/v1/auth/sessions/:id/revoke', async (req, reply) => {
+    const ctx = await authenticate(req);
+    if (!ctx) return sendError(reply, 401, 'UNAUTHENTICATED', 'No valid session.');
+    if (!originAllowed(req, config) || !csrfValid(req, ctx))
+      return sendError(reply, 403, 'FORBIDDEN', 'Origin or CSRF check failed.');
+    const { id } = req.params as { id: string };
+    try {
+      await auth.revokeOwnerSession(ctx.ownerId, ctx.workspaceId, id);
+    } catch (e) {
+      if (e instanceof SessionInvalidError)
+        return sendError(reply, 404, 'SESSION_NOT_FOUND', 'Session not found.');
+      throw e;
+    }
+    return reply.send({ revoked: true });
+  });
+
+  app.post('/api/v1/auth/password', async (req, reply) => {
+    if (!originAllowed(req, config))
+      return sendError(reply, 403, 'FORBIDDEN_ORIGIN', 'Origin not allowed.');
+    const ctx = await authenticate(req);
+    if (!ctx) return sendError(reply, 401, 'UNAUTHENTICATED', 'No valid session.');
+    if (!csrfValid(req, ctx)) return sendError(reply, 403, 'CSRF_INVALID', 'Invalid CSRF token.');
+    if (typeof req.headers['idempotency-key'] !== 'string' || !req.headers['idempotency-key'])
+      return sendError(reply, 400, 'IDEMPOTENCY_KEY_REQUIRED', 'Idempotency-Key is required.');
+    try {
+      const body = parseChangePassword(req.body);
+      const result = await auth.changePassword({
+        ownerId: ctx.ownerId,
+        currentPassword: body.current_password,
+        newPassword: body.new_password,
+      });
+      reply.header('set-cookie', [
+        clearCookie(names.session, { secure: config.cookieSecure, httpOnly: true }),
+        clearCookie(names.csrf, { secure: config.cookieSecure, httpOnly: false }),
+      ]);
+      return reply.code(200).send({ changed: true, revoked_sessions: result.revokedSessions });
+    } catch (err) {
+      if (err instanceof BodyValidationError)
+        return sendError(reply, 422, 'INVALID_BODY', 'Invalid request body.');
+      if (err instanceof InvalidCredentialsError)
+        return sendError(reply, 401, 'INVALID_CREDENTIALS', 'Invalid credentials.');
+      throw err;
+    }
   });
 
   app.post('/api/v1/auth/logout', async (req, reply) => {

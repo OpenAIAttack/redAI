@@ -10,6 +10,8 @@ const KEY_A = Buffer.alloc(32, 1);
 const KEY_B = Buffer.alloc(32, 2);
 
 const identity: SecretIdentity = {
+  secretId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+  projectId: null,
   workspaceId: '11111111-1111-4111-8111-111111111111',
   kind: 'model_api_key',
   name: 'openai',
@@ -21,6 +23,17 @@ function vaultWith(key: Buffer, random: RandomSource = nodeRandomSource): Secret
 }
 
 describe('SecretVault AES-256-GCM', () => {
+  it('rejects ciphertext moved to a different project or secret row', () => {
+    const vault = vaultWith(KEY_A);
+    const material = vault.encrypt(identity, Buffer.from('canary'));
+    expect(() =>
+      vault.decrypt({ ...identity, projectId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' }, material),
+    ).toThrow(SecretDecryptError);
+    expect(() =>
+      vault.decrypt({ ...identity, secretId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' }, material),
+    ).toThrow(SecretDecryptError);
+  });
+
   it('round-trips encrypt → decrypt', () => {
     const vault = vaultWith(KEY_A);
     const secret = 'sk-super-secret-value';

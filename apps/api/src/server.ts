@@ -2,16 +2,19 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import { AuthService, systemClock, type Clock } from '@redai/application';
 import {
   SettingsService,
+  ProviderProbeService,
+  createDbProbeStore,
   createDbSettingsRepository,
   createFileMasterKeyProvider,
+  MasterKeyUnavailableError,
 } from '@redai/application/settings';
 import {
   WorkerIdentityService,
   createDbWorkerIdentityRepository,
 } from '@redai/application/workerIdentity';
-import { createPool, type Pool } from '@redai/db';
+import { createPool, pingDatabase, type Pool } from '@redai/db';
 import { loadApiEnv, type ApiEnv } from './env.js';
-import { readinessFromEnv } from './health.js';
+import { checkReadiness, probeObjectStore, type ReadinessProbes } from './health.js';
 import { buildAuthConfig, createDbAuthService, registerAuth } from './auth/index.js';
 import { createOwnerGuard } from './auth/ownerGuard.js';
 import type { AuthHttpConfig } from './auth/plugin.js';
@@ -23,6 +26,8 @@ import { generateInstallationSigningKey } from './installation/signingKey.js';
 
 export interface BuildServerOptions {
   env?: ApiEnv;
+  /** Inject only in tests; production probes actual configured dependencies. */
+  readinessProbes?: ReadinessProbes;
   /**
    * Inject an auth service (tests use an in-memory-backed one). When omitted and a
    * `DATABASE_URL` is configured, a DB-backed service is composed from a pool that
@@ -44,13 +49,35 @@ export interface BuildServerOptions {
 export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
   const env = opts.env ?? loadApiEnv();
   const app = Fastify({ logger: false });
+  // A small dedicated pool bounds health traffic independently of application load.
+  const healthPool =
+    env.databaseUrl && !opts.readinessProbes
+      ? createPool({
+          connectionString: env.databaseUrl,
+          max: 1,
+          connectionTimeoutMillis: 1000,
+          queryTimeoutMillis: 1000,
+          applicationName: 'redai-health',
+        })
+      : undefined;
+  if (healthPool) app.addHook('onClose', () => healthPool.end());
+  const probes = opts.readinessProbes ?? {
+    database: () => (healthPool ? pingDatabase(healthPool) : Promise.resolve(false)),
+    objectStore: () =>
+      env.objectStoreRoot ? probeObjectStore(env.objectStoreRoot) : Promise.resolve(false),
+  };
+  // Coalesce concurrent health requests so they cannot multiply filesystem probes.
+  let pendingReadiness: ReturnType<typeof checkReadiness> | undefined;
 
   // Liveness: the process is up and serving. Always 200 when reachable.
   app.get('/api/health/live', async () => ({ status: 'live' }));
 
   // Readiness: distinguishes unconfigured / degraded / ready.
   app.get('/api/health/ready', async (_req, reply) => {
-    const result = readinessFromEnv(env);
+    pendingReadiness ??= checkReadiness(env, probes).finally(() => {
+      pendingReadiness = undefined;
+    });
+    const result = await pendingReadiness;
     const httpStatus = result.status === 'ready' ? 200 : 503;
     return reply.code(httpStatus).send({
       status: result.status,
@@ -114,11 +141,29 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
     // Secret vault + settings: only mounted once a master key file is configured,
     // because the vault cannot be unlocked without it. Absence is an honest
     // "unconfigured" state, not a crash.
-    if ((process.env.REDAI_MASTER_KEY_FILE ?? '') !== '') {
+    {
+      const settingsService = new SettingsService({
+        repo: createDbSettingsRepository(pool),
+        masterKeys: process.env.REDAI_MASTER_KEY_FILE
+          ? createFileMasterKeyProvider()
+          : {
+              activeKey() {
+                throw new MasterKeyUnavailableError('Secret store is locked.');
+              },
+              keyById() {
+                throw new MasterKeyUnavailableError('Secret store is locked.');
+              },
+            },
+      });
       registerSettings(app, {
-        service: new SettingsService({
-          repo: createDbSettingsRepository(pool),
-          masterKeys: createFileMasterKeyProvider(),
+        service: settingsService,
+        probeService: new ProviderProbeService({
+          settings: settingsService,
+          store: createDbProbeStore(pool),
+          approvedLocalBaseUrls: (process.env.REDAI_LOCAL_MODEL_BASE_URLS ?? '')
+            .split(',')
+            .map((value) => value.trim())
+            .filter(Boolean),
         }),
         ownerAuth: {
           authenticate: (req) => ownerGuard.authenticate(req),
@@ -127,6 +172,10 @@ export function buildServer(opts: BuildServerOptions = {}): FastifyInstance {
       });
     }
   }
+  app.addHook('onSend', async (req, reply, payload) => {
+    if (req.url.startsWith('/api/v1/')) reply.header('cache-control', 'no-store');
+    return payload;
+  });
   // Without a database and without an injected service, the API surface is not
   // mounted (the install is unconfigured); health still reports that state.
 

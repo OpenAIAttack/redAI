@@ -2,7 +2,7 @@
  * AEAD secret vault (docs/11 §8): AES-256-GCM from the Node stdlib, a fresh 12-byte
  * nonce per ciphertext, and a 16-byte auth tag. Each ciphertext is bound to its
  * logical identity through the GCM Additional Authenticated Data (AAD), which is a
- * canonical encoding of `workspace_id | kind | name | version`. Because the AAD is
+ * canonical encoding of `workspace_id | project_id | secret_id | kind | name | version`. Because the AAD is
  * authenticated, a ciphertext row physically moved to another workspace/project or
  * relabelled will fail to open — it cannot be decrypted in the wrong context.
  *
@@ -19,6 +19,8 @@ const TAG_BYTES = 16;
 
 export interface SecretIdentity {
   workspaceId: string;
+  secretId: string;
+  projectId: string | null;
   kind: SecretKind;
   name: string;
   version: number;
@@ -30,7 +32,15 @@ export interface SecretIdentity {
  */
 export function canonicalAad(identity: SecretIdentity): Buffer {
   return Buffer.from(
-    JSON.stringify([identity.workspaceId, identity.kind, identity.name, identity.version]),
+    JSON.stringify([
+      'redai-vault-v2',
+      identity.workspaceId,
+      identity.projectId,
+      identity.secretId,
+      identity.kind,
+      identity.name,
+      identity.version,
+    ]),
     'utf8',
   );
 }

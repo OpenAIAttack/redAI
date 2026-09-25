@@ -72,7 +72,7 @@ export class InMemorySettingsRepository implements SettingsRepository {
   insertSecret(input: InsertSecretInput): Promise<SecretRecord> {
     const now = new Date();
     const record: SecretRecord = {
-      id: randomUUID(),
+      id: input.id,
       workspaceId: input.workspaceId,
       projectId: input.projectId,
       name: input.name,
@@ -124,6 +124,7 @@ export class InMemorySettingsRepository implements SettingsRepository {
       revision: 1,
       enabled: input.enabled,
       probeStatus: 'not_tested',
+      probeResult: null,
       lastProbeAt: null,
       createdAt: now,
       updatedAt: now,
@@ -139,7 +140,7 @@ export class InMemorySettingsRepository implements SettingsRepository {
     // Critical section: no await between the two inserts.
     const now = new Date();
     const secretRecord: SecretRecord = {
-      id: randomUUID(),
+      id: secret.id,
       workspaceId: secret.workspaceId,
       projectId: secret.projectId,
       name: secret.name,
@@ -164,6 +165,7 @@ export class InMemorySettingsRepository implements SettingsRepository {
       revision: 1,
       enabled: config.enabled,
       probeStatus: 'not_tested',
+      probeResult: null,
       lastProbeAt: null,
       createdAt: now,
       updatedAt: now,
@@ -201,6 +203,9 @@ export class InMemorySettingsRepository implements SettingsRepository {
     if (patch.config !== undefined) c.config = patch.config;
     if (patch.credentialRef !== undefined) c.credentialRef = patch.credentialRef;
     if (patch.enabled !== undefined) c.enabled = patch.enabled;
+    c.probeStatus = 'not_tested';
+    c.probeResult = null;
+    c.lastProbeAt = null;
     c.revision += 1;
     c.updatedAt = new Date();
     return Promise.resolve({ kind: 'ok', value: c });

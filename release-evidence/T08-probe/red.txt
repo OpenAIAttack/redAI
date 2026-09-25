@@ -1,0 +1,18 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/richard/Workspace/redAI
+
+ ❯ packages/llm/src/probe.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/llm/src/probe.test.ts [ packages/llm/src/probe.test.ts ]
+Error: Failed to load url ./probe.js (resolved id: ./probe.js) in /home/richard/Workspace/redAI/packages/llm/src/probe.test.ts. Does the file exist?
+ ❯ loadAndTransform node_modules/.pnpm/vite@5.4.21_@types+node@22.20.4/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51969:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  20:34:07
+   Duration  390ms (transform 48ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 85ms)

@@ -1639,6 +1639,7 @@ export interface ProbeResult {
   usage_observed: boolean;
   error_code: string | null;
   checked_at: Timestamp;
+  cancellation_observed: boolean;
 }
 /**
  * This interface was referenced by `RedaiContracts`'s JSON-Schema
@@ -2001,6 +2002,14 @@ export interface ExecutionResume {
   reason: string;
   current_password: string;
   allow_new_runs_only: true;
+}
+/**
+ * This interface was referenced by `RedaiContracts`'s JSON-Schema
+ * via the `definition` "ProbeRequest".
+ */
+export interface ProbeRequest {
+  confirmed: true;
+  expected_revision: number;
 }
 /**
  * This interface was referenced by `RedaiContracts`'s JSON-Schema

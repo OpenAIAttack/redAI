@@ -1,3 +1,4 @@
+import { InvalidCredentialsError } from './errors.js';
 /**
  * In-memory {@link AuthRepository} for tests and local wiring without a database.
  * It mirrors the DB adapter's contract, including the single-owner invariant: a
@@ -118,13 +119,24 @@ export class InMemoryAuthRepository implements AuthRepository {
     return Promise.resolve(n);
   }
 
+  listOwnerSessions(ownerId: string, workspaceId: string): Promise<SessionRecord[]> {
+    return Promise.resolve(
+      [...this.sessions.values()]
+        .filter((s) => s.ownerId === ownerId && s.workspaceId === workspaceId)
+        .map((s) => this.publicRecord(s)),
+    );
+  }
+
   changePassword(
     ownerId: string,
     workspaceId: string,
     passwordHash: string,
     changedAt: Date,
+    expectedPasswordHash: string,
   ): Promise<number> {
-    if (this.owner && this.owner.id === ownerId) {
+    if (!this.owner || this.owner.passwordHash !== expectedPasswordHash)
+      return Promise.reject(new InvalidCredentialsError());
+    if (this.owner.id === ownerId) {
       this.owner = { ...this.owner, passwordHash, passwordChangedAt: changedAt };
     }
     return this.revokeAllOwnerSessions(ownerId, workspaceId, changedAt);

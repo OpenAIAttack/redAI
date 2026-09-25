@@ -13,6 +13,8 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { sendError } from '../auth/errors.js';
 import {
   BodyValidationError,
+  parseProbeBody,
+  isProbeUuid,
   parseCreateProviderConfig,
   parseUpdateProviderConfig,
   parseUpdateSettings,
@@ -76,11 +78,24 @@ export interface SettingsServicePort {
 export interface SettingsPluginDeps {
   service: SettingsServicePort;
   ownerAuth: SettingsAuth;
+  probeService?: {
+    probe(input: {
+      workspaceId: string;
+      ownerId: string;
+      id: string;
+      expectedRevision: number;
+      idempotencyKey: string;
+      confirmed: true;
+    }): Promise<unknown>;
+  };
 }
 
 /** Map a settings-domain error `code` to an HTTP status + envelope code. */
 function statusForCode(code: string): { status: number; envelope: string } {
   switch (code) {
+    case 'PROBE_IN_PROGRESS':
+    case 'IDEMPOTENCY_CONFLICT':
+      return { status: 409, envelope: code };
     case 'REVISION_CONFLICT':
       return { status: 409, envelope: 'REVISION_CONFLICT' };
     case 'SECRET_REVOKED':
@@ -256,6 +271,40 @@ export function registerSettings(app: FastifyInstance, deps: SettingsPluginDeps)
     if (body.enabled !== undefined) args.enabled = body.enabled;
     return handle(reply, async () =>
       reply.code(200).send(await service.updateProviderConfig(args)),
+    );
+  });
+
+  app.post('/api/v1/providers/:provider_id/probe', async (req, reply) => {
+    const ctx = await requireOwner(req, reply);
+    if (!ctx || !requireMutation(req, reply, ctx)) return reply;
+    const id = (req.params as { provider_id: string }).provider_id;
+    const key = req.headers['idempotency-key'];
+    if (!isProbeUuid(id) || !isProbeUuid(key))
+      return sendError(reply, 422, 'INVALID_BODY', 'Provider and idempotency key must be UUIDs.');
+    let body;
+    try {
+      body = parseProbeBody(req.body);
+    } catch {
+      return sendError(
+        reply,
+        422,
+        'INVALID_BODY',
+        'Explicit confirmation and revision are required.',
+      );
+    }
+    if (!deps.probeService)
+      return sendError(reply, 503, 'PROBE_UNAVAILABLE', 'Provider probing is not configured.');
+    return handle(reply, async () =>
+      reply.code(200).send(
+        await deps.probeService!.probe({
+          workspaceId: ctx.workspaceId,
+          ownerId: ctx.ownerId,
+          id,
+          idempotencyKey: key,
+          expectedRevision: body.expected_revision,
+          confirmed: body.confirmed,
+        }),
+      ),
     );
   });
 

@@ -36,6 +36,8 @@ export interface CreatePoolOptions {
   connectionTimeoutMillis?: number;
   /** Optional application_name for pg_stat_activity visibility. */
   applicationName?: string;
+  /** Client/server query deadline, used by bounded readiness probes. */
+  queryTimeoutMillis?: number;
   /**
    * Handler for asynchronous errors emitted by idle clients (e.g. the backend is
    * terminated out from under the pool). Defaults to a no-op. pg REQUIRES a
@@ -52,6 +54,7 @@ export function createPool(options: CreatePoolOptions): Pool {
     max: options.max ?? 10,
     idleTimeoutMillis: options.idleTimeoutMillis ?? 30_000,
     connectionTimeoutMillis: options.connectionTimeoutMillis ?? 10_000,
+    ...(options.queryTimeoutMillis ? { query_timeout: options.queryTimeoutMillis, statement_timeout: options.queryTimeoutMillis } : {}),
     ...(options.applicationName ? { application_name: options.applicationName } : {}),
   };
   const pool = new PgPool(config);

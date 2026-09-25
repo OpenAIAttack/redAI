@@ -15,7 +15,9 @@ export type SettingsErrorCode =
   | 'PROVIDER_CONFIG_NOT_FOUND'
   | 'CREDENTIAL_NOT_FOUND'
   | 'REVISION_CONFLICT'
-  | 'INVALID_SETTINGS';
+  | 'INVALID_SETTINGS'
+  | 'PROBE_IN_PROGRESS'
+  | 'IDEMPOTENCY_CONFLICT';
 
 export class SettingsError extends Error {
   /** Marker used for cross-package detection without importing the class. */

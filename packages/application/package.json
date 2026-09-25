@@ -31,11 +31,12 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@redai/domain": "workspace:*",
-    "@redai/policy": "workspace:*",
+    "@node-rs/argon2": "2.2.1",
     "@redai/contracts": "workspace:*",
     "@redai/db": "workspace:*",
-    "@redai/storage": "workspace:*",
-    "@redai/llm": "workspace:*"
+    "@redai/domain": "workspace:*",
+    "@redai/llm": "workspace:*",
+    "@redai/policy": "workspace:*",
+    "@redai/storage": "workspace:*"
   }
 }

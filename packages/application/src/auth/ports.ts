@@ -106,6 +106,7 @@ export interface AuthRepository {
   /** Rotate the CSRF token bound to a session (session-introspection cold-load). */
   updateSessionCsrf(id: string, csrfHash: Buffer): Promise<void>;
   revokeSession(id: string, revokedAt: Date): Promise<void>;
+  listOwnerSessions(ownerId: string, workspaceId: string): Promise<SessionRecord[]>;
   revokeAllOwnerSessions(ownerId: string, workspaceId: string, revokedAt: Date): Promise<number>;
 
   /** Atomic: set the new password hash AND revoke every live session for the owner. */
@@ -114,6 +115,7 @@ export interface AuthRepository {
     workspaceId: string,
     passwordHash: string,
     changedAt: Date,
+    expectedPasswordHash: string,
   ): Promise<number>;
 
   /** Atomic: rotate password + recovery-code hash AND revoke every live session. */

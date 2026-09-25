@@ -60,6 +60,7 @@ export interface SecretCipherMaterial {
 }
 
 export interface InsertSecretInput {
+  id: string;
   workspaceId: string;
   projectId: string | null;
   name: string;
@@ -110,6 +111,7 @@ export interface ProviderConfigRecord {
   revision: number;
   enabled: boolean;
   probeStatus: string;
+  probeResult: Record<string, unknown> | null;
   lastProbeAt: Date | null;
   createdAt: Date;
   updatedAt: Date;

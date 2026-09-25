@@ -1,3 +1,4 @@
+import { originAllowed } from './origin.js';
 /**
  * Shared owner-auth guard adapter (coordinator wiring).
  *
@@ -28,18 +29,6 @@ export interface OwnerGuardContext {
 export interface OwnerGuard {
   authenticate(req: FastifyRequest): Promise<OwnerGuardContext | null>;
   authorizeMutation(req: FastifyRequest, ctx: OwnerGuardContext): boolean;
-}
-
-function originAllowed(req: FastifyRequest, config: AuthHttpConfig): boolean {
-  const origin = req.headers.origin;
-  if (typeof origin !== 'string' || origin === '') return false;
-  if (config.allowedOrigins.includes(origin)) return true;
-  const host = req.headers.host;
-  try {
-    return typeof host === 'string' && new URL(origin).host === host;
-  } catch {
-    return false;
-  }
 }
 
 export function createOwnerGuard(auth: AuthService, config: AuthHttpConfig): OwnerGuard {

@@ -24,8 +24,7 @@ const scrypt = promisify(scryptCb) as (
 ) => Promise<Buffer>;
 
 // scrypt work factor. N is CPU/memory cost (must be a power of two). These give a
-// ~ tens-of-ms hash on the control plane and comfortably exceed the interactive
-// login KDF floors; maxmem is raised to fit 128*N*r bytes for N=2^15.
+// legacy hash compatibility only. New hashes use Argon2id (argon2.ts).
 const SCRYPT_N = 1 << 15; // 32768
 const SCRYPT_R = 8;
 const SCRYPT_P = 1;
@@ -56,7 +55,7 @@ export const scryptHasher: PasswordHasher = {
     const n = Number(parts[1]);
     const r = Number(parts[2]);
     const p = Number(parts[3]);
-    if (!Number.isInteger(n) || !Number.isInteger(r) || !Number.isInteger(p)) return false;
+    if (n !== SCRYPT_N || r !== SCRYPT_R || p !== SCRYPT_P) return false;
     let salt: Buffer;
     let expected: Buffer;
     try {
@@ -65,7 +64,7 @@ export const scryptHasher: PasswordHasher = {
     } catch {
       return false;
     }
-    if (expected.length === 0) return false;
+    if (expected.length !== SCRYPT_KEYLEN || salt.length !== SCRYPT_SALT_BYTES) return false;
     const derived = await scrypt(plain, salt, expected.length, {
       N: n,
       r,

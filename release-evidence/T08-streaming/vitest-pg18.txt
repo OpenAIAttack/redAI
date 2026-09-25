@@ -1,0 +1,91 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/richard/Workspace/redAI
+
+ ✓ packages/llm/src/compatible.test.ts (37 tests) 226ms
+ ✓ apps/api/src/artifacts/plugin.test.ts (10 tests) 331ms
+ ✓ packages/application/src/artifacts/service.test.ts (11 tests) 199ms
+ ✓ packages/storage/src/objectStore.test.ts (14 tests) 247ms
+ ✓ packages/application/src/projects/service.test.ts (15 tests) 21ms
+ ✓ apps/api/src/auth/plugin.test.ts (12 tests) 200ms
+ ✓ packages/application/src/settings/service.test.ts (19 tests) 35ms
+ ✓ packages/application/src/workerIdentity/service.test.ts (12 tests) 16ms
+ ✓ packages/application/src/auth/service.test.ts (11 tests) 32ms
+ ✓ apps/api/src/worker/plugin.test.ts (9 tests) 202ms
+ ✓ packages/llm/src/stream.test.ts (19 tests) 125ms
+ ✓ apps/api/src/projects/plugin.test.ts (10 tests) 173ms
+ ✓ packages/application/src/projects/dbRepository.test.ts (10 tests) 6133ms
+   ✓ DB projects repository (live PostgreSQL) > HEADLINE: swapping a chat/note UUID from another project is rejected by the composite key 639ms
+   ✓ DB projects repository (live PostgreSQL) > a project is invisible under a different workspace_id (workspace predicate) 537ms
+   ✓ DB projects repository (live PostgreSQL) > the Inbox partial-unique blocks a second inbox and the Inbox cannot be archived 583ms
+   ✓ DB projects repository (live PostgreSQL) > archive preserves rows (chats/notes survive) and flips status only 543ms
+   ✓ DB projects repository (live PostgreSQL) > optimistic concurrency: a stale note update is a REVISION_CONFLICT (409-mapped) 564ms
+   ✓ DB projects repository (live PostgreSQL) > optimistic concurrency: two concurrent chat renames — exactly one wins 660ms
+   ✓ DB projects repository (live PostgreSQL) > selected_for_context drives the context read (what a context builder queries) 652ms
+   ✓ DB projects repository (live PostgreSQL) > worker binding: known worker binds; unknown worker/zone is a typed WorkerNotFound (FK) 675ms
+   ✓ DB projects repository (live PostgreSQL) > delete is blocked while an active run exists on the project/chat 619ms
+   ✓ DB projects repository (live PostgreSQL) > keyset pagination returns stable, non-overlapping pages ordered by updated_at desc 654ms
+ ✓ apps/api/src/settings/plugin.test.ts (12 tests) 160ms
+ ✓ packages/application/src/workerIdentity/dbRepository.test.ts (5 tests) 1025ms
+ ✓ tests/integration/db/settings-vault.test.ts (7 tests) 1183ms
+ ✓ packages/application/src/settings/vault.test.ts (12 tests) 13ms
+ ✓ tests/integration/db/artifacts.test.ts (9 tests) 6447ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > reaches ready only with verified bytes, and stores the observed digest 660ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > leaves the row pending on a hash mismatch (no partial ready) 666ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > is idempotent on duplicate finalize and the finalized payload is immutable 739ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > quarantines a media-type/bytes mismatch instead of publishing ready 574ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > crash between rename and DB commit: no public orphan, retry recovers 622ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > reconcile sweeps a rowless orphan object (finalized file, purged row) 621ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > surfaces a disk-full/IO publish failure as StorageIo and stays pending 1290ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > cross-project isolation: an artifact is invisible under a foreign project id 596ms
+   ✓ artifacts DB repository + service (live PG16 + local ObjectStore) > lists artifacts newest-first within a project only 676ms
+ ✓ tests/contracts/contracts.test.ts (43 tests) 1995ms
+   ✓ codegen drift guard > committed generated output is not stale 1480ms
+ ✓ tests/integration/db/auth-bootstrap.test.ts (5 tests) 4660ms
+   ✓ owner bootstrap (T04, DB-backed) > creates the singleton owner + Workspace + Inbox in one transaction 766ms
+   ✓ owner bootstrap (T04, DB-backed) > refuses a second owner under a concurrent race (exactly one wins) 871ms
+   ✓ owner bootstrap (T04, DB-backed) > login → session validate works against a bootstrapped owner 1069ms
+   ✓ owner bootstrap (T04, DB-backed) > runBootstrap creates once, prints a recovery code, then refuses 711ms
+   ✓ owner bootstrap (T04, DB-backed) > runReset reverifies the recovery code, resets, revokes sessions and rotates it 1241ms
+ ✓ tests/integration/db/immutability.test.ts (4 tests) 3953ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects UPDATE of a scope_version (immutable authority) 881ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects UPDATE of a finding_version (verification history is immutable) 985ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > rejects payload overwrite of a finalized artifact but allows non-payload updates 822ms
+   ✓ immutable rows (INV-003 versions, INV-007 artifacts) > allows payload changes while an artifact is still pending (not yet finalized) 1263ms
+ ✓ packages/storage/src/preview.test.ts (11 tests) 16ms
+ ✓ packages/application/src/settings/masterKey.test.ts (10 tests) 21ms
+ ✓ tests/integration/db/sessions.test.ts (4 tests) 3793ms
+   ✓ SessionRepository (T04) > stores only hashes and finds a session by its token hash 774ms
+   ✓ SessionRepository (T04) > slides idle expiry via touch, rotates CSRF, and revokes 1188ms
+   ✓ SessionRepository (T04) > revokeAllForOwner revokes every live session and reports the count 672ms
+   ✓ SessionRepository (T04) > enforces token_hash uniqueness and the expiry CHECK 1156ms
+ ✓ tests/integration/db/event-counter.test.ts (2 tests) 2412ms
+   ✓ event counter: commit-ordered, gap-free per workspace (INV-009) > serializes two concurrent transactions so counter order == commit order 1408ms
+   ✓ event counter: commit-ordered, gap-free per workspace (INV-009) > produces a gap-free, unique sequence under many concurrent commits 1001ms
+ ✓ tests/integration/db/migrations.test.ts (3 tests) 1913ms
+   ✓ migrations: fresh apply + ordered upgrade smoke > applies 0001 then 0002 in order on an empty DB, tracking each 837ms
+   ✓ migrations: fresh apply + ordered upgrade smoke > rejects a recorded migration whose on-disk checksum changed (drift guard) 1047ms
+ ✓ tests/integration/db/active-run.test.ts (3 tests) 2691ms
+   ✓ active-run uniqueness (INV-002) > enforces max_active_runs_chat = 1 via the partial unique index 711ms
+   ✓ active-run uniqueness (INV-002) > allows a new active run once the previous run reaches a terminal state 888ms
+   ✓ active-run uniqueness (INV-002) > does NOT cap active runs per workspace in the DB (application-level invariant) 1090ms
+ ✓ tests/integration/db/composite-fk.test.ts (2 tests) 1412ms
+   ✓ composite FK: cross-project references are rejected > a run cannot reference a chat that lives in a different project 699ms
+   ✓ composite FK: cross-project references are rejected > a message cannot attach to a run from a different project 710ms
+ ✓ tests/integration/db/vault-upgrade.test.ts (1 test) 711ms
+ ✓ packages/application/src/auth/crypto.test.ts (6 tests) 1532ms
+   ✓ scryptHasher > round-trips a password and rejects a wrong one 595ms
+   ✓ scryptHasher > produces a distinct salt (and therefore hash) each time 930ms
+ ✓ apps/api/src/health.test.ts (3 tests) 43ms
+ ✓ apps/api/src/server.test.ts (4 tests) 190ms
+ ✓ tests/import-boundary/boundary.test.ts (2 tests) 11ms
+ ✓ packages/domain/src/health.test.ts (4 tests) 6ms
+ ✓ apps/api/src/auth/bodySchemas.test.ts (3 tests) 12ms
+ ✓ apps/api/src/auth/origin.test.ts (7 tests) 114ms
+ ✓ packages/application/src/auth/argon2.test.ts (2 tests) 666ms
+   ✓ Argon2id password floor > uses the spec parameters and verifies correct/wrong passwords 428ms
+
+ Test Files  37 passed (37)
+      Tests  353 passed (353)
+   Start at  20:28:31
+   Duration  22.12s (transform 2.39s, setup 0ms, collect 7.65s, tests 42.92s, environment 15ms, prepare 4.83s)

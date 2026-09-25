@@ -102,3 +102,22 @@ export const parseUpdateSettings = makeParser<UpdateSettingsBody>(
   ajv.compile(UPDATE_SETTINGS_SCHEMA),
   'settings',
 );
+
+export interface ProbeBody {
+  confirmed: true;
+  expected_revision: number;
+}
+export const parseProbeBody = makeParser<ProbeBody>(
+  ajv.compile({
+    type: 'object',
+    properties: {
+      confirmed: { type: 'boolean', const: true },
+      expected_revision: { type: 'integer', minimum: 1, maximum: 2147483647 },
+    },
+    required: ['confirmed', 'expected_revision'],
+    additionalProperties: false,
+  }),
+  'provider probe',
+);
+export const isProbeUuid = (value: unknown): value is string =>
+  typeof value === 'string' && new RegExp(UUID_PATTERN).test(value);

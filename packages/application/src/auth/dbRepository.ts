@@ -13,7 +13,7 @@ import {
 } from '@redai/db';
 import type { Pool } from '@redai/db';
 import type { OwnerRow, SessionRow } from '@redai/db';
-import { OwnerExistsError } from './errors.js';
+import { OwnerExistsError, InvalidCredentialsError } from './errors.js';
 import type {
   AuthRepository,
   BootstrapInput,
@@ -61,6 +61,10 @@ export function createDbAuthRepository(pool: Pool): AuthRepository {
   const sessions = new SessionRepository(pool);
 
   return {
+    async listOwnerSessions(ownerId, workspaceId) {
+      return (await sessions.listByOwner(ownerId, workspaceId)).map(toSessionRecord);
+    },
+
     async countOwners(): Promise<number> {
       return owners.count();
     },
@@ -154,9 +158,14 @@ export function createDbAuthRepository(pool: Pool): AuthRepository {
       workspaceId: string,
       passwordHash: string,
       changedAt: Date,
+      expectedPasswordHash: string,
     ): Promise<number> {
       return withTransaction(pool, async (tx) => {
-        await new OwnerRepository(tx).updatePassword(ownerId, passwordHash, changedAt);
+        const changed = await tx.query(
+          'UPDATE owners SET password_hash=$3, password_changed_at=$4 WHERE id=$1 AND workspace_id=$2 AND password_hash=$5 RETURNING id',
+          [ownerId, workspaceId, passwordHash, changedAt, expectedPasswordHash],
+        );
+        if (changed.rowCount !== 1) throw new InvalidCredentialsError();
         return new SessionRepository(tx).revokeAllForOwner(ownerId, workspaceId, changedAt);
       });
     },

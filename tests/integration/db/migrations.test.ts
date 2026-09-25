@@ -16,7 +16,7 @@ d('migrations: fresh apply + ordered upgrade smoke', () => {
 
   it('reference dir has ordered, well-formed migrations', () => {
     const migrations = loadMigrations(migrationsDir);
-    expect(migrations.map((m) => m.version)).toEqual(['0001', '0002']);
+    expect(migrations.map((m) => m.version)).toEqual(['0001', '0002', '0003']);
     for (const m of migrations) expect(m.checksum).toMatch(/^[a-f0-9]{64}$/);
   });
 
@@ -41,7 +41,7 @@ d('migrations: fresh apply + ordered upgrade smoke', () => {
 
       // Phase 2: upgrade with the full dir — 0002 applied, 0001 skipped by checksum.
       const second = await migrate(db.pool, { dir: migrationsDir });
-      expect(second.applied.map((m) => m.version)).toEqual(['0002']);
+      expect(second.applied.map((m) => m.version)).toEqual(['0002', '0003']);
       expect(second.skipped.map((m) => m.version)).toEqual(['0001']);
 
       const fnAfter = await db.pool.query<{ n: string }>(
@@ -53,12 +53,12 @@ d('migrations: fresh apply + ordered upgrade smoke', () => {
       const recorded = await db.pool.query<{ version: string }>(
         'SELECT version FROM schema_migrations ORDER BY version',
       );
-      expect(recorded.rows.map((r) => r.version)).toEqual(['0001', '0002']);
+      expect(recorded.rows.map((r) => r.version)).toEqual(['0001', '0002', '0003']);
 
       // Phase 3: re-run is a no-op (no ORM auto-sync).
       const third = await migrate(db.pool, { dir: migrationsDir });
       expect(third.applied).toEqual([]);
-      expect(third.skipped.map((m) => m.version)).toEqual(['0001', '0002']);
+      expect(third.skipped.map((m) => m.version)).toEqual(['0001', '0002', '0003']);
     } finally {
       await db.drop();
     }

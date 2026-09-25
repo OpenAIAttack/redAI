@@ -1,0 +1,169 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/richard/Workspace/redAI
+
+ ↓ packages/application/src/projects/dbRepository.test.ts (10 tests | 10 skipped)
+stderr | packages/application/src/projects/dbRepository.test.ts
+
+[T06] DATABASE_URL is not set — the live-PostgreSQL projects suite is SKIPPED.
+      Start a throwaway PG16 cluster and export DATABASE_URL, e.g.:
+        export PGDATA=$PWD/.tmp-pg/t06 PGPORT=55462
+        initdb -D "$PGDATA" -U redai --auth=trust
+        pg_ctl -D "$PGDATA" -o "-p $PGPORT -k /tmp -c listen_addresses=127.0.0.1" -w start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+
+
+ ✓ packages/llm/src/compatible.test.ts (37 tests) 201ms
+ ✓ apps/api/src/artifacts/plugin.test.ts (10 tests) 340ms
+ ✓ packages/application/src/artifacts/service.test.ts (11 tests) 199ms
+ ✓ packages/storage/src/objectStore.test.ts (14 tests) 194ms
+ ✓ packages/application/src/projects/service.test.ts (15 tests) 29ms
+ ✓ packages/application/src/workerIdentity/service.test.ts (12 tests) 27ms
+stderr | tests/integration/db/artifacts.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/artifacts.test.ts (9 tests | 9 skipped)
+ ✓ packages/application/src/auth/service.test.ts (11 tests) 39ms
+ ✓ packages/application/src/settings/service.test.ts (13 tests) 24ms
+ ✓ apps/api/src/worker/plugin.test.ts (9 tests) 220ms
+ ✓ apps/api/src/projects/plugin.test.ts (10 tests) 277ms
+ ↓ packages/application/src/workerIdentity/dbRepository.test.ts (5 tests | 5 skipped)
+stderr | packages/application/src/workerIdentity/dbRepository.test.ts
+
+[T15] DATABASE_URL is not set — the worker-identity DB suite is SKIPPED.
+      Start a throwaway PostgreSQL cluster and export DATABASE_URL, then re-run:
+        pnpm exec vitest run packages/application/src/workerIdentity
+
+
+ ✓ apps/api/src/settings/plugin.test.ts (12 tests) 223ms
+stderr | tests/integration/db/settings-vault.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ✓ apps/api/src/auth/plugin.test.ts (10 tests) 193ms
+ ↓ tests/integration/db/settings-vault.test.ts (7 tests | 7 skipped)
+ ✓ packages/application/src/settings/vault.test.ts (11 tests) 31ms
+stderr | tests/integration/db/auth-bootstrap.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/auth-bootstrap.test.ts (5 tests | 5 skipped)
+ ↓ tests/integration/db/immutability.test.ts (4 tests | 4 skipped)
+stderr | tests/integration/db/immutability.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/sessions.test.ts (4 tests | 4 skipped)
+stderr | tests/integration/db/sessions.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ✓ packages/storage/src/preview.test.ts (11 tests) 17ms
+ ↓ tests/integration/db/event-counter.test.ts (2 tests | 2 skipped)
+stderr | tests/integration/db/event-counter.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ✓ packages/application/src/settings/masterKey.test.ts (10 tests) 22ms
+ ↓ tests/integration/db/active-run.test.ts (3 tests | 3 skipped)
+stderr | tests/integration/db/active-run.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/migrations.test.ts (3 tests | 3 skipped)
+stderr | tests/integration/db/migrations.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ↓ tests/integration/db/composite-fk.test.ts (2 tests | 2 skipped)
+stderr | tests/integration/db/composite-fk.test.ts
+
+[T02] DATABASE_URL is not set — DB integration suites are SKIPPED.
+      Start a throwaway PostgreSQL 16 cluster and export DATABASE_URL, e.g.:
+        export PGBIN=/usr/lib/postgresql/16/bin
+        export PGDATA=$PWD/.tmp-pg/t02 PGPORT=55432
+        "$PGBIN/initdb" -D "$PGDATA" -U redai --auth=trust
+        "$PGBIN/pg_ctl" -D "$PGDATA" -o "-p $PGPORT -k /tmp" -l "$PGDATA/log" start
+        export DATABASE_URL="postgres://redai@127.0.0.1:$PGPORT/postgres"
+      then re-run: pnpm exec vitest run tests/integration/db
+
+
+ ✓ tests/contracts/contracts.test.ts (43 tests) 2985ms
+   ✓ codegen drift guard > committed generated output is not stale 2303ms
+ ✓ tests/import-boundary/boundary.test.ts (2 tests) 5ms
+ ✓ apps/api/src/auth/bodySchemas.test.ts (3 tests) 16ms
+ ✓ packages/domain/src/health.test.ts (4 tests) 6ms
+ ✓ packages/application/src/auth/crypto.test.ts (6 tests) 1169ms
+   ✓ scryptHasher > round-trips a password and rejects a wrong one 511ms
+   ✓ scryptHasher > produces a distinct salt (and therefore hash) each time 652ms
+ ✓ apps/api/src/server.test.ts (3 tests) 113ms
+
+ Test Files  21 passed | 11 skipped (32)
+      Tests  257 passed | 54 skipped (311)
+   Start at  19:01:06
+   Duration  9.45s (transform 2.29s, setup 0ms, collect 7.75s, tests 6.33s, environment 14ms, prepare 5.16s)
